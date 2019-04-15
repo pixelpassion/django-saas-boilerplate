@@ -25,6 +25,7 @@ A boilerplate to get started with Django & django-rest-framework. It helps to ki
 * [Werkzeug](https://github.com/joeyespo/django-werkzeug), [iPython](https://ipython.org/install.html), [django-extensions](https://github.com/django-extensions/django-extensions), [django-debug-toolbar](https://github.com/jazzband/django-debug-toolbar) and [ipdb](https://pypi.org/project/ipdb/) installed for local debugging
 * [Pipenv](https://github.com/pypa/pipenv) integrated with the required packages
 * [Django Admin](https://docs.djangoproject.com/en/2.2/ref/contrib/admin/) with some links & optimizations
+* Security updates by [pyup.io](https://pyup.io) 
 
 ## Documentation
 
