@@ -8,9 +8,10 @@ django = "*"
 django-environ = "*"
 sentry-sdk = "*"
 django-rest-framework = "*"
-"psycopg2-binary" = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
+pytest = "*"
 
 [requires]
 python_version = "3.7"
