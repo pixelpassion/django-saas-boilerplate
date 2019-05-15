@@ -1,0 +1,34 @@
+{
+  "name": "project",
+  "scripts": {},
+  "env": {
+    "DEBUG": {
+      "required": true
+    },
+    "DJANGO_SETTINGS_MODULE": {
+      "required": true
+    },
+    "SENTRY_DSN": {
+      "required": true
+    },
+    "STAGE": {
+      "required": true
+    }
+  },
+  "formation": {
+    "worker": {
+      "quantity": 1
+    },
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+    "heroku-postgresql"
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-python.git"
+    }
+  ]
+}
