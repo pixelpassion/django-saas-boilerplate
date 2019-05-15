@@ -13,6 +13,8 @@ psycopg2-binary = "*"
 [dev-packages]
 pytest = "*"
 django-werkzeug = "*"
+django-debug-toolbar = "*"
+ipdb = "*"
 
 [requires]
 python_version = "3.7"
