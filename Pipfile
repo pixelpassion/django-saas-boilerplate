@@ -12,6 +12,7 @@ psycopg2-binary = "*"
 
 [dev-packages]
 pytest = "*"
+django-werkzeug = "*"
 
 [requires]
 python_version = "3.7"
