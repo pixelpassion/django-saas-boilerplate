@@ -62,7 +62,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "conf.urls"
 
-DJANGO_TEMPLATES = {
+TEMPLATES = [{
     "BACKEND": "django.template.backends.django.DjangoTemplates",
     "DIRS": [str(PROJECT_ROOT / "templates")],
     "APP_DIRS": True,
@@ -77,9 +77,7 @@ DJANGO_TEMPLATES = {
         "debug": DEBUG,
     },
     "NAME": "django",
-}
-
-TEMPLATES = [DJANGO_TEMPLATES]
+}]
 
 STATIC_URL = '/static/'
 
