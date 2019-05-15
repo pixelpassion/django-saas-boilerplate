@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "django.contrib.postgres",
     "rest_framework",
-
+    "apps.core",
 ]
 
 MIDDLEWARE = [
@@ -78,6 +78,10 @@ DJANGO_TEMPLATES = {
     },
     "NAME": "django",
 }
+
+TEMPLATES = [DJANGO_TEMPLATES]
+
+STATIC_URL = '/static/'
 
 WSGI_APPLICATION = "conf.wsgi.application"
 
