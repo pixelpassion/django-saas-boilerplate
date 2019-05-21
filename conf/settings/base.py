@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "django.contrib.redirects",
-    "django.contrib.gis",
     "django.contrib.postgres",
     "rest_framework",
     "apps.core",
@@ -88,7 +87,7 @@ STATIC_URL = '/static/'
 WSGI_APPLICATION = "conf.wsgi.application"
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation." "UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -113,10 +112,8 @@ FORMAT_MODULE_PATH = (str(PROJECT_ROOT / "locale"),)
 
 LOCALE_PATHS = FORMAT_MODULE_PATH
 
-RAVEN_CONFIG = {"dsn": env("SENTRY_DSN"), "integrations": [DjangoIntegration()]}
-HEROKU_SLUG_COMMIT = env("HEROKU_SLUG_COMMIT", default="nohash")[:8]
-SENTRY_PROJECT_NAME = env("SENTRY_PROJECT_NAME", default="project_name")
-RAVEN_CONFIG['release'] = f'{SENTRY_PROJECT_NAME}-{HEROKU_SLUG_COMMIT}'
-sentry_sdk.init(**RAVEN_CONFIG)
-
 USE_SENDGRID = env("USE_SENDGRID", default=True)
+
+HEROKU_SLUG_COMMIT = env("HEROKU_SLUG_COMMIT", default="nohash")[:8]
+
+

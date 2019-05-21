@@ -5,23 +5,23 @@
 version: 2
 jobs:
 
-  build-backend:
+  build:
     working_directory: ~/repo
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:3.7
         environment:
-        - DJANGO_SETTINGS_MODULE: conf.settings
+        - DJANGO_SETTINGS_MODULE: conf.settings.local
         - STAGE: test
-        - DATABASE_URL: postgres://postgres@127.0.0.1:5432/medicaljobs
+        - DATABASE_URL: postgres://postgres@127.0.0.1:5432/postgres
         - CELERY_TASK_ALWAYS_EAGER: True
 
     #Start test database & Redis
       - image: circleci/postgres:11.2
         environment:
           POSTGRES_USER: postgres
-          POSTGRES_DB: medicaljobs
+          POSTGRES_DB: postgres
           POSTGRES_PASSWORD: ""
       - image: redis:5.0.4
 
@@ -96,4 +96,4 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build-backend
+      - build
