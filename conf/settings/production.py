@@ -1,4 +1,8 @@
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 from .base import *
+
 
 RAVEN_CONFIG = {"dsn": env("SENTRY_DSN"), "integrations": [DjangoIntegration()]}
 SENTRY_PROJECT_NAME = env("SENTRY_PROJECT_NAME", default="project_name")

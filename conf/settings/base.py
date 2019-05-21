@@ -6,13 +6,12 @@ import sys
 import warnings
 from pathlib import Path
 
-import sentry_sdk
+
 from django.utils.translation import gettext_lazy as _
 
 import environ
 
-# Build paths inside the project like this: BASE_DIR / "foo" / "bar"
-from sentry_sdk.integrations.django import DjangoIntegration
+
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
 
@@ -116,4 +115,4 @@ USE_SENDGRID = env("USE_SENDGRID", default=True)
 
 HEROKU_SLUG_COMMIT = env("HEROKU_SLUG_COMMIT", default="nohash")[:8]
 
-
+DATABASES = {"default": env.db("DATABASE_URL")}

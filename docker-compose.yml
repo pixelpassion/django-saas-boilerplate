@@ -1,7 +1,7 @@
 version: '3.2'
 
 volumes:
-  postgres_data_dev: {}
+  postgres_data: {}
   redis_data: {}
 
 services:
@@ -9,18 +9,22 @@ services:
   postgres:
     build: ./devops/docker/postgres
     restart: always
+    container_name: ${PROJECT_NAME}_postgres
+    image: ${PROJECT_NAME}_postgres
     volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: ${PROJECT_NAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     command: -c fsync=off -c synchronous_commit=off -c full_page_writes=off
     networks:
       - default
 
   redis:
     restart: always
+    container_name: ${PROJECT_NAME}_redis
+    image: ${PROJECT_NAME}_redis
     build:
       context: ./devops/docker/redis/
     volumes:
