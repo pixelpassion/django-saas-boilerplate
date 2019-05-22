@@ -73,3 +73,8 @@ def foreman(c):
         dotenv.load_dotenv()
         print(os.getenv("SECRET_KEY"))
         c.run('foreman start -e {}'.format(f.name))
+
+
+@task
+def circleci(c):
+    c.run('circleci local execute', pty=True)
