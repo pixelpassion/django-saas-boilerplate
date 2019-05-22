@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "django_extensions",
     "rest_framework",
+    "django_rq",
     "apps.core",
 ]
 
@@ -117,3 +118,12 @@ USE_SENDGRID = env("USE_SENDGRID", default=True)
 HEROKU_SLUG_COMMIT = env("HEROKU_SLUG_COMMIT", default="nohash")[:8]
 
 DATABASES = {"default": env.db("DATABASE_URL")}
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': "{}_redis.docker".format(env("PROJECT_NAME")),
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+    },
+}
