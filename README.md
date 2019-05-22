@@ -35,11 +35,19 @@ Read our documentation at ..
 Download & install the Docker Community edition
 * https://www.docker.com/community-edition
 
+Install [docker-dns](https://github.com/zanaca/docker-dns) to make containers available by their hostnames
+
 Run the following commands, it will build & start the needed containers (Django, Worker, Postgres DB, Redis, Mailhog):
 
+```bash
+pipenv install --dev
+inv db
+inv migrate
+inv create-admin
+inv runserver
 ```
-$ ...
-```
+
+
 
 Open your browser and go to http://localhost:8000/
 

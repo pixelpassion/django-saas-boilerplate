@@ -1,11 +1,31 @@
-import platform
+import os
+import tempfile
 
+import dotenv
 from invoke import task
 
 
-IS_WINDOWS = platform.system() == "Windows"
+@task
+def db(c):
+    c.run("docker-compose up -d postgres redis", pty=True)
 
-PTY = not IS_WINDOWS
+
+@task
+def create_admin(c):
+    import django
+
+    os.environ["DJANGO_SETTINGS_MODULE"] = "conf.settings.local"
+    django.setup()
+    from django.contrib.auth.models import User
+
+    User.objects.create_superuser(
+        os.getenv("ADMIN_LOGIN"), os.getenv("ADMIN_EMAIL"), os.getenv("ADMIN_PASSWORD")
+    )
+
+
+@task
+def runserver(c):
+    c.run("python manage.py runserver_plus", pty=True)
 
 
 @task
@@ -31,7 +51,7 @@ def test(
     """
 
     if recreate_test_db:
-        c.run("py.test -vv --create-db --migrations --no-cov -k 'test_dummy'", pty=PTY)
+        c.run("py.test -vv --create-db --migrations --no-cov -k 'test_dummy'")
 
     # Run all the tests and report coverage.
     c.run(
@@ -41,15 +61,15 @@ def test(
             m=f"--maxfail={maxfail}" if maxfail > 0 else "",
             f="--ff" if failed_first else "",
             args=args,
-        ),
-        pty=PTY,
+        )
     )
 
-    # Remove any email attachments created during the test run.
-    run_django_code(
-        c,
-        """
-import os, shutil
-shutil.rmtree(os.path.join('_media', 'email-attachments'), ignore_errors=True)
-        """,
-    )
+
+@task
+def foreman(c):
+    with tempfile.NamedTemporaryFile(mode="w") as f:
+        f.write("DJANGO_SETTINGS_MODULE=conf.settings.local")
+        f.flush()
+        dotenv.load_dotenv()
+        print(os.getenv("SECRET_KEY"))
+        c.run('foreman start -e {}'.format(f.name))

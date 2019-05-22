@@ -10,26 +10,26 @@ from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 
 import environ
-
+import dotenv
 
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
-
+dotenv.load_dotenv()
 env = environ.Env()
 
-ENV_NOT_FOUND = False
-with warnings.catch_warnings():
-    try:
-        warnings.simplefilter("error", Warning)
-        environ.Env.read_env(env("PIPENV_DOTENV_LOCATION", default=str(PROJECT_ROOT / ".env")))
-    except Warning:
-        ENV_NOT_FOUND = True
+# ENV_NOT_FOUND = False
+# with warnings.catch_warnings():
+#     try:
+#         warnings.simplefilter("error", Warning)
+#         environ.Env.read_env(env("PIPENV_DOTENV_LOCATION", default=str(PROJECT_ROOT / ".env")))
+#     except Warning:
+#         ENV_NOT_FOUND = True
 
 STAGE = env.str("STAGE")
 API_DOCS_ENABLED = env.bool("API_DOCS_ENABLED", default=STAGE != "production")
 
-if ENV_NOT_FOUND is True and STAGE != "production":
-    print("**** No .env found - this can be ignored on production ****", file=sys.stderr)
+# if ENV_NOT_FOUND is True and STAGE != "production":
+#     print("**** No .env found - this can be ignored on production ****", file=sys.stderr)
 
 SECRET_KEY = env("SECRET_KEY", default="notsafeforproduction")
 DEBUG = env.bool("DEBUG", default=STAGE != "production")
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.redirects",
     "django.contrib.postgres",
+    "django_extensions",
     "rest_framework",
     "apps.core",
 ]

@@ -9,6 +9,9 @@ django-environ = "*"
 sentry-sdk = "*"
 django-rest-framework = "*"
 psycopg2-binary = "*"
+gunicorn = "*"
+python-dotenv = "*"
+django-extensions = "*"
 
 [dev-packages]
 pytest = "*"
