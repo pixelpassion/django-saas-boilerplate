@@ -1,4 +1,4 @@
-from .models import User
+from apps.users.models import User
 
 
 def test_user_str_method():
