@@ -1,14 +1,6 @@
 from .base import *
 
+INSTALLED_APPS = INSTALLED_APPS + ["django_werkzeug", "debug_toolbar"]
 
-CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=True)
+MIDDLEWARE = MIDDLEWARE + ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 
-
-INSTALLED_APPS = INSTALLED_APPS + [
-    'django_werkzeug',
-    'debug_toolbar',
-]
-
-MIDDLEWARE = MIDDLEWARE + [
-    'debug_toolbar.middleware.DebugToolbarMiddleware'
-]
