@@ -1,0 +1,44 @@
+output-format: text
+
+strictness: high
+test-warnings: true
+doc-warnings: false
+member-warnings: true
+
+uses:
+  - django
+
+pep8:
+  full: true
+  disable:
+    - D100
+    - D101
+    - D102
+    - D103
+    - D105
+    - D205
+    - D400
+    - N802
+  options:
+    max-line-length: 88
+
+pyflakes:
+  disable:
+    - F999
+
+pylint:
+  run: false
+
+dodgy:
+  run: true
+
+ignore-paths:
+  - htmlcov
+  - docs
+  - etc
+  - run
+  - logs
+  - notebooks
+  - scripts
+  - .env
+  - .venv

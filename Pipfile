@@ -15,20 +15,39 @@ django-extensions = "*"
 django-rq = "*"
 
 [dev-packages]
-pytest = "*"
 django-werkzeug = "*"
 django-debug-toolbar = "*"
 ipdb = "*"
 invoke = "*"
-pytest-cov = "*"
 django-coverage-plugin = "*"
-pytest-django = "*"
-pytest-xdist = "*"
 factory-boy = "*"
-pytest-sugar = "*"
 django-pdb = "*"
 werkzeug = "*"
 mypy = "*"
+factory_boy = "*"
+coverage = "*"
+ipython = "*"
+pre-commit = "*"
+prospector = ">=1.1.6.4"
+Faker = "*"
+black = "*"
+flake8 = "==3.4.0"                      # Old version, because prospector stick with old deps of pyflake and pycodestyles
+autopep8 = "==1.3.5"                    # Old version, because prospector stick with old deps of pyflake and pycodestyles
+pytest = "*"
+pytest-django = "*"
+pytest-xdist = "*"
+pytest-factoryboy = "*"
+pytest-freezegun = "*"
+pytest-mock = "*"
+pytest-sugar = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
+
+[scripts]
+go-docker = "docker-compose up -d"
+create-coverage = "coverage run -m py.test"
+show-coverage = "coverage report --fail-under=95"

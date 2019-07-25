@@ -14,12 +14,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_DB: ${PROJECT_NAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     command: -c fsync=off -c synchronous_commit=off -c full_page_writes=off
     networks:
       - default
+    ports:
+      - "${DOCKER_POSTGRES_PORT}:5432"
 
   redis:
     restart: always
@@ -31,7 +33,11 @@ services:
       - redis_data:/data
     networks:
       - default
+    ports:
+      - "${DOCKER_REDIS_PORT}:6379"
 
 
 networks:
   default:
+    ipam:
+      driver: default

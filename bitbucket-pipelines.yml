@@ -1,0 +1,50 @@
+# This is a sample build configuration for Python.
+# Check our guides at https://confluence.atlassian.com/x/x4UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+pipelines:
+  branches:
+    '{develop,master}':
+    - step:
+        name: Run backend tests
+        image: python:3.7
+        caches:
+          - pip
+        script:
+          - pip install pipenv
+          - pipenv install --dev
+          - pipenv run create-coverage
+          - pipenv run show-coverage
+        services:
+          - postgres
+    'release/staging':
+    - step:
+        image: python:3.7
+        name: Run backend tests
+        caches:
+          - pip
+        script:
+          - pip install pipenv
+          - pipenv install --dev
+          - pipenv run create-coverage
+        services:
+          - postgres
+    - step:
+       name: Deploy to staging
+       deployment: staging
+       script:
+         - pipe: atlassian/ssh-run:0.2.0
+           variables:
+             SSH_USER: $SSH_USER
+             SERVER: '127.0.0.1'
+             MODE: 'script'
+             COMMAND: './devops/deploy.sh'
+definitions:
+ services:
+  postgres:
+    image: postgres
+    variables:
+      POSTGRES_DB: "nevema_backend"
+      POSTGRES_USER: "nevema_backend"
+      POSTGRES_PASSWORD: "secret"
