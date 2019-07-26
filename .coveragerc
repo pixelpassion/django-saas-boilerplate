@@ -6,8 +6,8 @@ omit =
     *migrations/*
     *.local/*
     *conftest.py
-    nevema/settings.py
-    nevema/wsgi.py
+    conf/settings/*
+    conf/wsgi.py
     manage.py
 
 plugins =
