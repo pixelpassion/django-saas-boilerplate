@@ -74,7 +74,7 @@ jobs:
           name: Run tests and create a Report
           command: |
             mkdir test-reports
-            pipenv run inv test -r -a '--cache-clear --junitxml=test-reports/junit.xml'
+            pipenv run inv test
 
       - save_cache:
           key: v1-dependencies-{{ checksum "Pipfile.lock" }}

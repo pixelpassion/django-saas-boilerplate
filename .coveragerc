@@ -1,10 +1,15 @@
 [run]
 branch = True
-source =
-    *templates/*
 omit =
     *locale/*
-    *legacy/*
+    *documentation/*
+    *migrations/*
+    *.local/*
+    *conftest.py
+    conf/settings/*
+    conf/wsgi.py
+    manage.py
+
 plugins =
     django_coverage_plugin
 
@@ -25,7 +30,7 @@ exclude_lines =
     # Don't complain if non-runnable code isn't run:
     if 0:
     if __name__ == .__main__.:
-    
+
 # Exclude files with 100% coverage.
 skip_covered = True
 

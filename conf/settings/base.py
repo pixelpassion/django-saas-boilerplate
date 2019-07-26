@@ -31,7 +31,7 @@ API_DOCS_ENABLED = env.bool("API_DOCS_ENABLED", default=STAGE != "production")
 # if ENV_NOT_FOUND is True and STAGE != "production":
 #     print("**** No .env found - this can be ignored on production ****", file=sys.stderr)
 
-SECRET_KEY = env("SECRET_KEY", default="notsafeforproduction")
+SECRET_KEY = env.str("SECRET_KEY", default="notsafeforproduction")
 DEBUG = env.bool("DEBUG", default=STAGE != "production")
 APPEND_SLASH = True
 SITE_ID = 1
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_rq",
     "apps.core",
+    "apps.users",
 ]
 
 MIDDLEWARE = [
@@ -66,29 +67,33 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "conf.urls"
 
-TEMPLATES = [{
-    "BACKEND": "django.template.backends.django.DjangoTemplates",
-    "DIRS": [str(PROJECT_ROOT / "templates")],
-    "APP_DIRS": True,
-    "OPTIONS": {
-        "context_processors": [
-            "django.template.context_processors.debug",
-            "django.template.context_processors.request",
-            "django.contrib.auth.context_processors.auth",
-            "django.contrib.messages.context_processors.messages",
-        ],
-        "string_if_invalid": "{%s is missing}",
-        "debug": DEBUG,
-    },
-    "NAME": "django",
-}]
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [str(PROJECT_ROOT / "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+            "string_if_invalid": "{%s is missing}",
+            "debug": DEBUG,
+        },
+        "NAME": "django",
+    }
+]
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 WSGI_APPLICATION = "conf.wsgi.application"
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -119,11 +124,14 @@ HEROKU_SLUG_COMMIT = env("HEROKU_SLUG_COMMIT", default="nohash")[:8]
 
 DATABASES = {"default": env.db("DATABASE_URL")}
 
+# Custom user model
+AUTH_USER_MODEL = "users.User"
+
 RQ_QUEUES = {
-    'default': {
-        'HOST': "{}_redis.docker".format(env("PROJECT_NAME")),
-        'PORT': 6379,
-        'DB': 0,
-        'DEFAULT_TIMEOUT': 360,
-    },
+    "default": {
+        "HOST": "{}_redis.docker".format(env("PROJECT_NAME")),
+        "PORT": 6379,
+        "DB": 0,
+        "DEFAULT_TIMEOUT": 360,
+    }
 }

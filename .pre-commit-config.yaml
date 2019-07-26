@@ -1,0 +1,44 @@
+fail_fast: true
+repos:
+- repo: git://github.com/pre-commit/pre-commit-hooks
+  rev: v1.2.3
+  hooks:
+    - id: check-added-large-files
+      args: ['--maxkb=500']
+    - id: check-byte-order-marker
+    - id: check-case-conflict
+    - id: check-merge-conflict
+    - id: check-symlinks
+    - id: debug-statements
+    - id: detect-private-key
+    - id: trailing-whitespace
+    - id: flake8
+    - id: requirements-txt-fixer
+    - id: no-commit-to-branch
+
+- repo: https://github.com/ambv/black
+  rev: 18.9b0
+  hooks:
+    - id: black
+      language_version: python3.7
+
+- repo: local
+  hooks:
+  - id: isort
+    name: isort-local
+    entry : pipenv run isort
+    language: python
+    types: [python]
+    pass_filenames: true
+  - id: missing-migrations
+    name: missing-migrations-local
+    entry: pipenv run ./manage.py makemigrations --check
+    language: system
+    always_run: true
+    pass_filenames: false
+  - id: prospector
+    name: prospector-local
+    entry: pipenv run prospector --messages-only --
+    language: python
+    types: [python]
+    pass_filenames: true
