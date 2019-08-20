@@ -54,7 +54,7 @@ django-rest-boilerplate
 |   |   ├── postgres                    // Postgres Docker
 |   |   ├── redis                       // Redis Docker
 ├── .coveragerc                         
-├── .env.example                        // Local ENV variables, Copy to .env for local development                  
+├── .env.example                        // Copy to .env for local development                  
 ├── .gitignore                          // Default .gitignore                         
 ├── .pre-commit-config.yaml                         
 ├── .prospector.yaml                         
