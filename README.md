@@ -31,12 +31,12 @@ A boilerplate to get started with Django & django-rest-framework. It helps to ki
 
 ```
 django-rest-boilerplate
-├── .circleci                           // CircleCI configuration// CircleCI configuration
+├── .circleci                           // CircleCI configuration
 |   ├── config.yml                      
 ├── .github                             
 |   ├── ISSUE_TEMPLATE                  
 |   |   ├── bug---problem.md            // A Github template for reporting bugs
-|   |   └── feature_request.md          // A Github template for posting new feature ideas
+|   |   └── feature_request.md          // A Github template for posting new features
 |   ├── PULL_REQUEST_TEMPLATE.md        // A Github template layout for Pull requests
 ├── apps                                
 |   ├── core                            // Django core app
@@ -61,14 +61,14 @@ django-rest-boilerplate
 ├── LICENSE                         
 ├── Pipfile                             // Pipenv file                      
 ├── Pipfile.lock                        // Pipenv lock file                         
-├── Procfile                            // Defining Heroku processes                       
+├── Procfile                            // Declaration of Heroku processes                       
 ├── README.md                         
 ├── app.json                            // For automated Heroku deployment                         
 ├── conftest.py                         
 ├── docker-compose.yml                  // Docker handling for local development                        
 ├── manage.py                         
 ├── pytest.ini                         
-├── runtime.txt                         // Defining Python version for Heroku deployment                         
+├── runtime.txt                         // Python version for Heroku deployment                         
 ├── setup.cfg                         
 ├── tasks.py                                             
 ```
