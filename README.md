@@ -98,7 +98,7 @@ Open your browser and go to http://localhost:8000/
 
 ## Deployment
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/pixelpassion/django-rest-boilerplate)
 
 ## Install & Run Locally
 
