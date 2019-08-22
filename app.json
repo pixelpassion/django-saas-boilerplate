@@ -1,34 +1,43 @@
 {
-  "name": "project",
-  "scripts": {},
-  "env": {
-    "DEBUG": {
-      "required": true
-    },
-    "DJANGO_SETTINGS_MODULE": {
-      "required": true
-    },
-    "SENTRY_DSN": {
-      "required": true
-    },
-    "STAGE": {
-      "required": true
-    }
-  },
-  "formation": {
-    "worker": {
-      "quantity": 1
-    },
+   "name":"django-rest-boilerplate",
+   "description":"Another Django boilerplate for API-first development, local Docker and deployments on Heroku",
+   "keywords":[
+      "django",
+      "django-rest-framework",
+      "Heroku",
+      "RQ",
+      "Redis",
+      "Docker"
+   ],
+   "website":"https://www.pixelpassion.io",
+   "repository":"https://github.com/pixelpassion/django-rest-boilerplate",
+   "env":{
+      "ALLOWED_HOSTS":"*",
+      "CORS_ORIGIN_WHITELIST":"*",
+      "ENV":"production",
+      "SECRET_KEY":{
+         "generator":"secret"
+      }
+   },
+   "formation": {
     "web": {
       "quantity": 1
+    },
+    "worker": {
+      "quantity": 1
     }
   },
-  "addons": [
-    "heroku-postgresql"
-  ],
+   "addons":[
+      {
+         "plan":"heroku-postgresql:hobby-dev"
+      },
+      {
+         "plan":"heroku-redis:hobby-dev"
+      }
+   ],
   "buildpacks": [
     {
       "url": "https://github.com/heroku/heroku-buildpack-python.git"
     }
-  ]
+  ]  
 }
