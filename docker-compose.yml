@@ -14,14 +14,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: ${DB_USER}
+      POSTGRES_USER: ${PROJECT_NAME}
       POSTGRES_DB: ${PROJECT_NAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     command: -c fsync=off -c synchronous_commit=off -c full_page_writes=off
     networks:
       - default
     ports:
-      - "${DOCKER_POSTGRES_PORT}:5432"
+      - "${POSTGRES_PORT}:5432"
 
   redis:
     restart: always
@@ -34,7 +34,7 @@ services:
     networks:
       - default
     ports:
-      - "${DOCKER_REDIS_PORT}:6379"
+      - "${REDIS_PORT}:6379"
 
 
 networks:

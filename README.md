@@ -1,8 +1,10 @@
-[![unicorn.supplies](https://img.shields.io/badge/made%20by-Automagically-blue.svg)](https://www.unicorn.supplies/)
+[![pixelpassion.io](https://img.shields.io/badge/made%20by-pixelpassion.io-blue.svg)](https://www.pixelpassion.io/)
 
 # `django-rest-boilerplate`
 
-A boilerplate to get started with Django & django-rest-framework. It helps to kickstart a project with fundamental infastructure and services. 
+A boilerplate to get started with Django, django-rest-framework on Heroku. It is great to start a API-first SaaS-application. 
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/pixelpassion/django-rest-boilerplate)
 
 ## Features
 
@@ -93,12 +95,15 @@ inv runserver
 ```
 
 
+```
+pipenv install --dev
+docker-compose up -d
+```
 
 Open your browser and go to http://localhost:8000/
 
 ## Deployment
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/pixelpassion/django-rest-boilerplate)
 
 ## Install & Run Locally
 

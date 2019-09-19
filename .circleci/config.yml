@@ -12,7 +12,7 @@ jobs:
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:3.7
         environment:
-        - DJANGO_SETTINGS_MODULE: conf.settings.local
+        - DJANGO_SETTINGS_MODULE: conf.settings
         - STAGE: test
         - DATABASE_URL: postgres://postgres@127.0.0.1:5432/postgres
         - CELERY_TASK_ALWAYS_EAGER: True

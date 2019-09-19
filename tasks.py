@@ -14,7 +14,7 @@ def db(c):
 def create_admin(c):
     import django
 
-    os.environ["DJANGO_SETTINGS_MODULE"] = "conf.settings.local"
+    os.environ["DJANGO_SETTINGS_MODULE"] = "conf.settings"
     django.setup()
     from django.contrib.auth.models import User
 
@@ -44,7 +44,7 @@ def test(c,):
 @task
 def foreman(c):
     with tempfile.NamedTemporaryFile(mode="w") as f:
-        f.write("DJANGO_SETTINGS_MODULE=conf.settings.local")
+        f.write("DJANGO_SETTINGS_MODULE=conf.settings")
         f.flush()
         dotenv.load_dotenv()
         print(os.getenv("SECRET_KEY"))
