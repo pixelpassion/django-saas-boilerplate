@@ -129,9 +129,15 @@ AUTH_USER_MODEL = "users.User"
 
 RQ_QUEUES = {
     "default": {
-        "HOST": "{}_redis.docker".format(env("PROJECT_NAME")),
-        "PORT": 6379,
+        "HOST": env.str("RQ_HOST", default="localhost"),
+        "PORT": env.str("RQ_PORT", default="6379"),
+        "PASSWORD": env.str("RQ_PASSWORD", default="") or None,
         "DB": 0,
-        "DEFAULT_TIMEOUT": 360,
+        "DEFAULT_TIMEOUT": 300,
     }
 }
+
+if STAGE in ["production", "staging"]:
+    RQ_QUEUES = {
+        "default": {"URL": env.str("REDIS_URL"), "DB": 0, "DEFAULT_TIMEOUT": 300}
+    }
