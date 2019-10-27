@@ -4,7 +4,6 @@
 ##
 version: 2
 jobs:
-
   build:
     working_directory: ~/repo
     docker:
@@ -12,12 +11,11 @@ jobs:
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:3.7
         environment:
-        - DJANGO_SETTINGS_MODULE: conf.settings.local
-        - STAGE: test
-        - DATABASE_URL: postgres://postgres@127.0.0.1:5432/postgres
-        - CELERY_TASK_ALWAYS_EAGER: True
+          - DJANGO_SETTINGS_MODULE: conf.settings.local
+          - STAGE: test
+          - DATABASE_URL: postgres://postgres@127.0.0.1:5432/postgres
 
-    #Start test database & Redis
+      #Start test database & Redis
       - image: circleci/postgres:11.2
         environment:
           POSTGRES_USER: postgres
@@ -31,10 +29,10 @@ jobs:
           command:
             # Avoid Dockerize race conditions - https://discuss.circleci.com/t/prevent-race-conditions-by-waiting-for-services-with-dockerize/11215/3
             if \[ -f /usr/local/bin/dockerize \]; then
-              echo "dockerize found; skipping installation";
+            echo "dockerize found; skipping installation";
             else wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-              && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-              && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz;
+            && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz;
             fi
           environment:
             DOCKERIZE_VERSION: v0.3.0
@@ -74,7 +72,8 @@ jobs:
           name: Run tests and create a Report
           command: |
             mkdir test-reports
-            pipenv run inv test
+            pipenv run create-coverage
+            pipenv run codecov-report
 
       - save_cache:
           key: v1-dependencies-{{ checksum "Pipfile.lock" }}
