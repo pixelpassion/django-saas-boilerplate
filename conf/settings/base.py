@@ -1,9 +1,8 @@
 """
 Base settings. Please do not modify this file
 """
-import sys
+import os
 
-import warnings
 from pathlib import Path
 
 
@@ -17,19 +16,8 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
 dotenv.load_dotenv()
 env = environ.Env()
 
-# ENV_NOT_FOUND = False
-# with warnings.catch_warnings():
-#     try:
-#         warnings.simplefilter("error", Warning)
-#         environ.Env.read_env(env("PIPENV_DOTENV_LOCATION", default=str(PROJECT_ROOT / ".env")))
-#     except Warning:
-#         ENV_NOT_FOUND = True
-
 STAGE = env.str("STAGE")
 API_DOCS_ENABLED = env.bool("API_DOCS_ENABLED", default=STAGE != "production")
-
-# if ENV_NOT_FOUND is True and STAGE != "production":
-#     print("**** No .env found - this can be ignored on production ****", file=sys.stderr)
 
 SECRET_KEY = env.str("SECRET_KEY", default="notsafeforproduction")
 DEBUG = env.bool("DEBUG", default=STAGE != "production")
@@ -87,12 +75,15 @@ TEMPLATES = [
 ]
 
 STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(PROJECT_ROOT, "static_root")
 
 WSGI_APPLICATION = "conf.wsgi.application"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+        "NAME": (
+            "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+        )
     },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
