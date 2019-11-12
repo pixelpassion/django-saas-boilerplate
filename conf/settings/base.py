@@ -10,6 +10,7 @@ from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 from corsheaders.defaults import default_headers
 
+import os
 import environ
 import dotenv
 
@@ -59,6 +60,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -90,6 +92,7 @@ TEMPLATES = [
 ]
 
 STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(PROJECT_ROOT, "static_root")
 
 WSGI_APPLICATION = "conf.wsgi.application"
 
@@ -138,6 +141,9 @@ RQ_QUEUES = {
         "DEFAULT_TIMEOUT": 360,
     }
 }
+
+# Hosts
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default="*")
 
 # CORS
 CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL", default=False)
