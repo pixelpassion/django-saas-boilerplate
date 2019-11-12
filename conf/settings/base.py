@@ -8,6 +8,7 @@ from pathlib import Path
 
 
 from django.utils.translation import gettext_lazy as _
+from corsheaders.defaults import default_headers
 
 import environ
 import dotenv
@@ -135,3 +136,28 @@ RQ_QUEUES = {
         "DEFAULT_TIMEOUT": 360,
     }
 }
+
+# CORS
+CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL", default=False)
+
+CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS = env.list(
+    "CORS_ORIGIN_WHITELIST", default=[]
+)
+
+CORS_ALLOW_CREDENTIALS = env.bool("CORS_ALLOW_CREDENTIALS", default=True)
+
+CORS_ALLOW_HEADERS = default_headers + (
+    "If-None-Match",
+    "Last-Modified",
+    "Accept-Language",
+    "If-Modified-Since",
+    "Access-Control-Allow-Origin",
+)
+
+CORS_EXPOSE_HEADERS = (
+    "ETag",
+    "Last-Modified",
+    "HTTP_X_RESPONSE_ID",
+    "HTTP_GIT_BRANCH",
+    "Access-Control-Expose-Headers",
+)
