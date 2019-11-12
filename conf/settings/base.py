@@ -143,7 +143,7 @@ RQ_QUEUES = {
 }
 
 # Hosts
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default="*")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
 # CORS
 CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL", default=False)
