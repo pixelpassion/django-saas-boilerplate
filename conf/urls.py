@@ -6,5 +6,5 @@ from apps.core.urls import router
 urlpatterns = (
     path("admin/", admin.site.urls),
     path("api/v0/", include((router.urls, "apps.core"), namespace="v0")),
-    re_path(r'^django-rq/', include('django_rq.urls')),
+    re_path(r"^django-rq/", include("django_rq.urls")),
 )
