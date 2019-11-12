@@ -144,7 +144,7 @@ CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS = env.list(
     "CORS_ORIGIN_WHITELIST", default=[]
 )
 
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = env.bool("CORS_ALLOW_CREDENTIALS", default=True)
 
 CORS_ALLOW_HEADERS = default_headers + (
     "If-None-Match",
