@@ -110,4 +110,4 @@ venv.bak/
 .pytest_cache/
 
 # Vs code configs
- .vscode/
+.vscode

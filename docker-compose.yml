@@ -1,14 +1,13 @@
-version: '3.2'
+version: "3.2"
 
 volumes:
   postgres_data: {}
   redis_data: {}
 
 services:
-
   postgres:
     build: ./devops/docker/postgres
-    restart: always
+    restart: on-failure
     container_name: ${PROJECT_NAME}_postgres
     image: ${PROJECT_NAME}_postgres
     volumes:
@@ -24,7 +23,7 @@ services:
       - "${POSTGRES_PORT}:5432"
 
   redis:
-    restart: always
+    restart: on-failure
     container_name: ${PROJECT_NAME}_redis
     image: ${PROJECT_NAME}_redis
     build:
@@ -35,7 +34,6 @@ services:
       - default
     ports:
       - "${REDIS_PORT}:6379"
-
 
 networks:
   default:

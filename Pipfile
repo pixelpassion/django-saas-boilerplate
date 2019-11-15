@@ -4,21 +4,24 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"                        # Basics and boilerplate stuff (BSD-3)
-django-environ = "*"                # Configuration by environment variables according to 12Factor model (MIT)
-sentry-sdk = "*"                    # Error logging to Sentry
-djangorestframework = "*"           # Tools for RESTful API (BSD-2)
-psycopg2-binary = "*"               # Database connector (LGPL)
-gunicorn = "*"                      # Python WSGI HTTP Server
+django = "<3"                        # Basics and boilerplate stuff (BSD-3)
+django-environ = "*"                 # Configuration by environment variables according to 12Factor model (MIT)
+sentry-sdk = "*"                     # Error logging to Sentry
+django-rest-framework = "*"          # Tools for RESTful API (BSD-2)
+psycopg2-binary = "*"                # Database connector (LGPL)
+gunicorn = "*"                       # Python WSGI HTTP Server
+python-dotenv = "*"
+django-cors-headers = "*"
 django-extensions = "*"             # Different helpers for Django REST Framework
 django-rq = "*"                     # Asynchronous tasks
 django-redis = "*"                  # Redis cache backend (BSD-3)
+whitenoise = "*"
+urllib3 = "*"
 
 [dev-packages]
 django-werkzeug = "*"
 django-debug-toolbar = "*"
 ipdb = "*"                          # Debugging
-invoke = "*"
 django-coverage-plugin = "*"
 django-pdb = "*"
 werkzeug = "*"                      # A flexible WSGI implementation and toolkit (BSD-3)
@@ -49,4 +52,5 @@ allow_prereleases = true
 [scripts]
 go-docker = "docker-compose up -d"
 create-coverage = "coverage run -m py.test"
-show-coverage = "coverage report --fail-under=95"
+check-coverage = "coverage report --fail-under=95"
+codecov-report = "coverage xml"
