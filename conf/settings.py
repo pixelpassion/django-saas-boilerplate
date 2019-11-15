@@ -2,7 +2,7 @@ import environ
 import os
 import sys
 from django.utils.translation import ugettext_lazy as _
-
+from corsheaders.defaults import default_headers
 
 ########################################################################################################################
 #                                                                                                                      #
@@ -31,11 +31,11 @@ from django.utils.translation import ugettext_lazy as _
 #                                                                                                                      #
 ########################################################################################################################
 
-root = environ.Path(__file__) - 2
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # .env file handling and some logic to ignore warnings about it not being found on production
 env = environ.Env()
-environ.Env.read_env(env_file=root('.env'))
+environ.Env.read_env(env_file=os.path.join(BASE_DIR, ".env"))
 
 # Fail hard, every environment needs to set the stage
 ENV = env.str("ENV")
@@ -81,15 +81,15 @@ DEBUG = env.bool("DEBUG", False)
 SECRET_KEY = env("SECRET_KEY", default="notsafeforproduction")
 
 # Should have '*' for local, the site URL for production
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", [])
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
 if ENV == "production":
 
-    if DEBUG is True:
+    if DEBUG:
         print("**** CAUTION: You are running in production with DEBUG=True ****")
 
     if SECRET_KEY == "notsafeforproduction":
-        print("**** CAUTION: You are running in production with SECRET_KEY=notsafeforproduction ****")
+        sys.exit("**** CAUTION: You are running in production with SECRET_KEY=notsafeforproduction ****")
 
     if ALLOWED_HOSTS == "*":
         print("**** CAUTION: You are running in production with ALLOWED_HOSTS=* ****")
@@ -115,7 +115,7 @@ SITE_ID = 1
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [str(root.path("templates"))],
+        "DIRS": [str(os.path.join(BASE_DIR, "templates"))],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -152,6 +152,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.redirects",
     "django.contrib.postgres",
+    "corsheaders",
     "django_extensions",
     "rest_framework",
     "django_rq",
@@ -160,7 +161,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -170,9 +173,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-if ENV == "local" and DEBUG is True:
+if ENV == "local" and DEBUG:
 
-    INSTALLED_APPS = INSTALLED_APPS + ["django_werkzeug", "debug_toolbar"]
+    INSTALLED_APPS = INSTALLED_APPS + ["django_werkzeug"]
     MIDDLEWARE = MIDDLEWARE + ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 
     DEBUG_TOOLBAR_PANELS = [
@@ -222,8 +225,6 @@ if SENTRY_DSN is not None:
 
 DATABASE_URL = env.str("DATABASE_URL", default="No")
 
-print(DATABASE_URL)
-
 DATABASES = {"default": env.db("DATABASE_URL")}
 
 
@@ -270,7 +271,51 @@ if REDIS_URL:
         "high": {"USE_REDIS_CACHE": "rq", "DEFAULT_TIMEOUT": RQ_DEFAULT_TIMEOUT},
         "low": {"USE_REDIS_CACHE": "rq", "DEFAULT_TIMEOUT": RQ_DEFAULT_TIMEOUT},
     }
+########################################################################################################################
+#                                                                                                                      #
+#                                           CORS                                                                       #
+#                                                                                                                      #
+########################################################################################################################
+CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL", default=False)
 
+CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS = env.list(
+    "CORS_ORIGIN_WHITELIST", default=[]
+)
+
+CORS_ALLOW_CREDENTIALS = env.bool("CORS_ALLOW_CREDENTIALS", default=True)
+
+CORS_ALLOW_HEADERS = default_headers + (
+    "If-None-Match",
+    "Last-Modified",
+    "Accept-Language",
+    "If-Modified-Since",
+    "Access-Control-Allow-Origin",
+)
+
+CORS_EXPOSE_HEADERS = (
+    "ETag",
+    "Last-Modified",
+    "HTTP_X_RESPONSE_ID",
+    "HTTP_GIT_BRANCH",
+    "Access-Control-Expose-Headers",
+)
+########################################################################################################################
+#                                                                                                                      #
+#                                           Silk                                                                       #
+#                                                                                                                      #
+########################################################################################################################
+SILKY_PROFILER = env.bool("SILKY_PROFILER", False)
+
+if SILKY_PROFILER is True:
+
+    # Do not use potentially insecure and unnecessary apps in production
+    INSTALLED_APPS += ["silk"]
+
+    MIDDLEWARE = MIDDLEWARE + ["silk.middleware.SilkyMiddleware"]
+
+    SILKY_AUTHENTICATION = True  # User must login
+    SILKY_AUTHORISATION = True  # User must have permissions
+    SILKY_META = env.bool("SILKY_META", False)  # Log time required for profiling by Silky
 
 ########################################################################################################################
 #                                                                                                                      #
@@ -376,10 +421,6 @@ if ENV == "test":
     # Disabling debugging speeds up things
     DEBUG = False
     TEMPLATE_DEBUG = False
-
-    # Celery needs ot be taken care of
-    CELERY_TASK_ALWAYS_EAGER = True
-    CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 
     # No SSL in testing
     DEFAULT_PROTOCOL = "http"
