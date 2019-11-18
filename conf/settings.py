@@ -1,45 +1,50 @@
-import environ
-import dotenv
 import os
 import sys
+
 from django.utils.translation import ugettext_lazy as _
+
+import dotenv
+import environ
 from corsheaders.defaults import default_headers
 
-########################################################################################################################
-#                                                                                                                      #
-#                                                                                                                      #
-#                                                   DJANGO SETTINGS                                                    #
-#                                                                                                                      #
-#   For more information on this file, see                                                                             #
-#   https://docs.djangoproject.com/en/2.2/topics/settings/                                                             #
-#                                                                                                                      #
-#   For the full list of settings and their values, see                                                                #
-#   https://docs.djangoproject.com/en/2.2/ref/settings/                                                                #
-#                                                                                                                      #
-#                                                                                                                      #
-#                   - Environment specifics                                                                            #
-#                   - Django basics                                                                                    #
-#                   - Installed Apps & Middleware                                                                      #
-#                   - Logging                                                                                          #
-#                   - Databases                                                                                        #
-#                   - Caching & RQ                                                                                     #
-#                   - Static files                                                                                     #
-#                   - API                                                                                              #
-#                   - Security                                                                                         #
-#                   - Testing                                                                                          #
-#                   - App specific                                                                                     #
-#                                                                                                                      #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                                                                                      #
+#                                                   DJANGO SETTINGS                    #
+#                                                                                      #
+#   For more information on this file, see                                             #
+#   https://docs.djangoproject.com/en/2.2/topics/settings/                             #
+#                                                                                      #
+#   For the full list of settings and their values, see                                #
+#   https://docs.djangoproject.com/en/2.2/ref/settings/                                #
+#                                                                                      #
+#                                                                                      #
+#                   - Environment specifics                                            #
+#                   - Django basics                                                    #
+#                   - Installed Apps & Middleware                                      #
+#                   - Logging                                                          #
+#                   - Databases                                                        #
+#                   - Caching & RQ                                                     #
+#                   - Static files                                                     #
+#                   - API                                                              #
+#                   - Security                                                         #
+#                   - Testing                                                          #
+#                   - App specific                                                     #
+#                                                                                      #
+#                                                                                      #
+########################################################################################
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# .env file handling and some logic to ignore warnings about it not being found on production
+# .env file handling and some logic to ignore warnings about it not
+# being found on production
 dotenv.load_dotenv()
 env = environ.Env()
 environ.Env.read_env(env_file=os.path.join(BASE_DIR, ".env"))
+
 # Fail hard, every environment needs to set the stage
 ENV = env.str("ENV")
+
 # Some handling for Heroku
 
 HEROKU_APP_ID = env.str("HEROKU_APP_ID", default=None)
@@ -68,16 +73,16 @@ if sys.argv[0] == "manage.py" and sys.argv[1] == "test":
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-
-########################################################################################################################
-#                                                                                                                      #
-#                                            Django basics                                                             #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                                            Django basics                             #
+#                                                                                      #
+########################################################################################
 
 DEBUG = env.bool("DEBUG", False)
 
-# To make things easy for new developers, we are starting with a SECRET_KEY - we are checking this on production
+# To make things easy for new developers, we are starting with a SECRET_KEY - we are
+# checking this on production
 SECRET_KEY = env("SECRET_KEY", default="notsafeforproduction")
 
 # Should have '*' for local, the site URL for production
@@ -89,7 +94,10 @@ if ENV == "production":
         print("**** CAUTION: You are running in production with DEBUG=True ****")
 
     if SECRET_KEY == "notsafeforproduction":
-        sys.exit("**** CAUTION: You are running in production with SECRET_KEY=notsafeforproduction ****")
+        sys.exit(
+            "**** CAUTION: You are running in production with "
+            "SECRET_KEY=notsafeforproduction ****"
+        )
 
     if ALLOWED_HOSTS == "*":
         print("**** CAUTION: You are running in production with ALLOWED_HOSTS=* ****")
@@ -135,11 +143,11 @@ WSGI_APPLICATION = "conf.wsgi.application"
 
 AUTH_USER_MODEL = "users.User"
 
-########################################################################################################################
-#                                                                                                                      #
-#                                            Installed apps + Middleware                                               #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                            Installed apps + Middleware                               #
+#                                                                                      #
+########################################################################################
 
 
 INSTALLED_APPS = [
@@ -197,11 +205,11 @@ if ENV == "local" and DEBUG:
     INTERNAL_IPS = ("127.0.0.1",)
 
 
-########################################################################################################################
-#                                                                                                                      #
-#                                           Logging                                                                    #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                                           Logging                                    #
+#                                                                                      #
+########################################################################################
 
 SENTRY_DSN = env.str("SENTRY_DSN", default=None)
 
@@ -213,25 +221,25 @@ if SENTRY_DSN is not None:
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         integrations=[DjangoIntegration()],
-        release=f'{PROJECT_NAME}-{HEROKU_SLUG_COMMIT}'
+        release=f"{PROJECT_NAME}-{HEROKU_SLUG_COMMIT}",
     )
 
 
-########################################################################################################################
-#                                                                                                                      #
-#                                           Databases                                                                  #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                                          Databases                                  #
+#                                                                                      #
+########################################################################################
 
 DATABASE_URL = env.str("DATABASE_URL", default="No")
 DATABASES = {"default": env.db("DATABASE_URL")}
 
 
-########################################################################################################################
-#                                                                                                                      #
-#                                           Caching & RQ                                                               #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                                           Caching & RQ                               #
+#                                                                                      #
+########################################################################################
 
 REDIS_URL = env.str("REDIS_URL", default="redis://redis:6379")
 
@@ -257,24 +265,24 @@ if REDIS_URL:
 
     RQ = {
         "DEFAULT_RESULT_TTL": env.int(
-            "RQ_DEFAULT_RESULT_TTL", default=86400   # How long will the result be kept in the database?
-        )
+            "RQ_DEFAULT_RESULT_TTL", default=86400  # How long will the result be kept
+        )  # in the database?
     }
 
     RQ_DEFAULT_TIMEOUT = env.int(
-        "RQ_DEFAULT_TIMEOUT", default=180   # maximum runtime of the job before it’s interrupted / marked as failed
-    )
+        "RQ_DEFAULT_TIMEOUT", default=180  # maximum runtime of the job before it’s
+    )  # interrupted / marked as failed
 
     RQ_QUEUES = {
         "default": {"USE_REDIS_CACHE": "rq", "DEFAULT_TIMEOUT": RQ_DEFAULT_TIMEOUT},
         "high": {"USE_REDIS_CACHE": "rq", "DEFAULT_TIMEOUT": RQ_DEFAULT_TIMEOUT},
         "low": {"USE_REDIS_CACHE": "rq", "DEFAULT_TIMEOUT": RQ_DEFAULT_TIMEOUT},
     }
-########################################################################################################################
-#                                                                                                                      #
-#                                           CORS                                                                       #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                                           CORS                                       #
+#                                                                                      #
+########################################################################################
 CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL", default=False)
 
 CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS = env.list(
@@ -298,11 +306,11 @@ CORS_EXPOSE_HEADERS = (
     "HTTP_GIT_BRANCH",
     "Access-Control-Expose-Headers",
 )
-########################################################################################################################
-#                                                                                                                      #
-#                                           Silk                                                                       #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                                           Silk                                       #
+#                                                                                      #
+########################################################################################
 SILKY_PROFILER = env.bool("SILKY_PROFILER", False)
 
 if SILKY_PROFILER is True:
@@ -314,13 +322,13 @@ if SILKY_PROFILER is True:
 
     SILKY_AUTHENTICATION = True  # User must login
     SILKY_AUTHORISATION = True  # User must have permissions
-    SILKY_META = env.bool("SILKY_META", False)  # Log time required for profiling by Silky
+    SILKY_META = env.bool("SILKY_META", False)  # Log time required for Silky profiling
 
-########################################################################################################################
-#                                                                                                                      #
-#                                           Static files                                                               #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                                           Static files                               #
+#                                                                                      #
+########################################################################################
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
@@ -340,45 +348,34 @@ STATICFILES_FINDERS = (
 STATICFILES_DIRS = (str(os.path.join(BASE_DIR, "static")),)
 
 
-########################################################################################################################
-#                                                                                                                      #
-#                                           API                                                                        #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                                           API                                        #
+#                                                                                      #
+########################################################################################
 
 
-########################################################################################################################
-#                                                                                                                      #
-#                                           Security                                                                   #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                                           Security                                   #
+#                                                                                      #
+########################################################################################
 
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",  # noqa
         "OPTIONS": {
             "max_similarity": 0.7,
-            "user_attributes": (
-                "username",
-                "first_name",
-                "last_name",
-                "email"
-            )
+            "user_attributes": ("username", "first_name", "last_name", "email"),
         },
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        "OPTIONS": {
-            "min_length": 8
-        }
+        "OPTIONS": {"min_length": 8},
     },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 PASSWORD_HASHERS = [
@@ -391,9 +388,13 @@ if ENV == "production":
     SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
     SECURE_REDIRECT_EXEMPT = env.list("SECURE_REDIRECT_EXEMPT", default=["ht/"])
 
-    # In order to detect when a request is made via SSL in Django (for use in request.is_secure())
+    # In order to detect when a request is made via SSL in Django
+    # (for use in request.is_secure())
     # https://devcenter.heroku.com/articles/http-routing#heroku-headers
-    SECURE_PROXY_SSL_HEADER = (env.str("SECURE_PROXY_SSL_HEADER", default="x-forwarded-proto"), "https")
+    SECURE_PROXY_SSL_HEADER = (
+        env.str("SECURE_PROXY_SSL_HEADER", default="x-forwarded-proto"),
+        "https",
+    )
 
     # https://docs.djangoproject.com/en/1.10/ref/settings/#std:setting-SESSION_COOKIE_SECURE
     SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=True)
@@ -404,17 +405,19 @@ if ENV == "production":
     CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=True)
 
 
-########################################################################################################################
-#                                                                                                                      #
-#                                           Testing                                                                    #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                                           Testing                                    #
+#                                                                                      #
+########################################################################################
 
 
-# RUNNING_TESTS should used really rarely because we want the CI to test the real production setup
+# RUNNING_TESTS should used really rarely because we want the CI to test
+# the real production setup
 if ENV == "test":
 
-    # Django uses strong hashing algorithms, these are not needed in testing, this speeds up things
+    # Django uses strong hashing algorithms, these are not needed in testing,
+    # this speeds up things
     PASSWORD_HASHERS = ("django.contrib.auth.hashers.MD5PasswordHasher",)
 
     # Disabling debugging speeds up things
@@ -435,8 +438,8 @@ if ENV == "test":
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 
 
-########################################################################################################################
-#                                                                                                                      #
-#                                           App specific                                                               #
-#                                                                                                                      #
-########################################################################################################################
+########################################################################################
+#                                                                                      #
+#                                           App specific                               #
+#                                                                                      #
+########################################################################################
