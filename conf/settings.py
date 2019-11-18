@@ -1,4 +1,5 @@
 import environ
+import dotenv
 import os
 import sys
 from django.utils.translation import ugettext_lazy as _
@@ -34,12 +35,11 @@ from corsheaders.defaults import default_headers
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # .env file handling and some logic to ignore warnings about it not being found on production
+dotenv.load_dotenv()
 env = environ.Env()
 environ.Env.read_env(env_file=os.path.join(BASE_DIR, ".env"))
-
 # Fail hard, every environment needs to set the stage
 ENV = env.str("ENV")
-
 # Some handling for Heroku
 
 HEROKU_APP_ID = env.str("HEROKU_APP_ID", default=None)
@@ -155,7 +155,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_extensions",
     "rest_framework",
-    #"django_rq",
+    "django_rq",
     "apps.core",
     "apps.users",
 ]
@@ -224,7 +224,6 @@ if SENTRY_DSN is not None:
 ########################################################################################################################
 
 DATABASE_URL = env.str("DATABASE_URL", default="No")
-
 DATABASES = {"default": env.db("DATABASE_URL")}
 
 
@@ -441,7 +440,3 @@ if ENV == "test":
 #                                           App specific                                                               #
 #                                                                                                                      #
 ########################################################################################################################
-
-
-
-

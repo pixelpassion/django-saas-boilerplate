@@ -20,7 +20,7 @@ services:
     networks:
       - default
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "${DOCKER_POSTGRES_PORT}:5432"
 
   redis:
     restart: on-failure
@@ -33,7 +33,7 @@ services:
     networks:
       - default
     ports:
-      - "${REDIS_PORT}:6379"
+      - "${DOCKER_REDIS_PORT}:6379"
 
 networks:
   default:
