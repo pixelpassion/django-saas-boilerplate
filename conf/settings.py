@@ -62,11 +62,6 @@ else:
     PROJECT_NAME = HEROKU_APP_ID
     ENV = "production"
 
-# Avoid the use of "python manage.py test", we are using py.test for testing
-
-if sys.argv[0] == "manage.py" and sys.argv[1] == "test":
-    print("TESTING is only supported with py.test!")
-    sys.exit(-1)
 
 # Set important directories
 
