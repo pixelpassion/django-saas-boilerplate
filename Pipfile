@@ -21,7 +21,6 @@ django-silk = "*"
 
 [dev-packages]
 django-werkzeug = "*"
-django-debug-toolbar = "*"
 ipdb = "*"                          # Debugging
 django-coverage-plugin = "*"
 django-pdb = "*"
