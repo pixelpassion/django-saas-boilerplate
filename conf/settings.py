@@ -82,6 +82,7 @@ SECRET_KEY = env("SECRET_KEY", default="notsafeforproduction")
 
 # Should have '*' for local, the site URL for production
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
+USE_X_FORWARDED_HOST = env.list("USE_X_FORWARDED_HOST", default=False)
 
 if ENV == "production":
 
@@ -137,7 +138,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "conf.wsgi.application"
 
 AUTH_USER_MODEL = "users.User"
-
+ADMIN_URL = "admin/"
 ########################################################################################
 #                                                                                      #
 #                            Installed apps + Middleware                               #
@@ -379,7 +380,24 @@ if ENV == "production":
     # https://docs.djangoproject.com/en/1.10/ref/settings/#csrf-cookie-secure
     CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=True)
 
+    # https://docs.djangoproject.com/en/2.2/ref/middleware/#http-strict-transport-security
+    HSTS_ENABLED = env.bool("SESSION_COOKIE_SECURE", default=True)
+    if HSTS_ENABLED:
+        SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=31_536_000)
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
+            "SECURE_HSTS_INCLUDE_SUBDOMAINS", default=True
+        )
+        SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=True)
 
+    # https://docs.djangoproject.com/en/2.2/ref/clickjacking/
+    X_FRAME_MIDDLEWARE_ENABLED = env.bool("X_FRAME_MIDDLEWARE_ENABLED", default=False)
+    if X_FRAME_MIDDLEWARE_ENABLED:
+        MIDDLEWARE = MIDDLEWARE + [
+            "django.middleware.clickjacking.XFrameOptionsMiddleware"
+        ]
+        X_FRAME_OPTIONS = env.str("X_FRAME_OPTIONS", default="DENY")
+    # https://docs.djangoproject.com/en/2.2/ref/middleware/#x-content-type-options-nosniff
+    SECURE_CONTENT_TYPE_NOSNIFF = env.bool("SECURE_CONTENT_TYPE_NOSNIFF", default=False)
 ########################################################################################
 #                                                                                      #
 #                                           Testing                                    #
