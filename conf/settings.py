@@ -179,26 +179,6 @@ MIDDLEWARE = [
 if ENV == "local" and DEBUG:
 
     INSTALLED_APPS = INSTALLED_APPS + ["django_werkzeug"]
-    MIDDLEWARE = MIDDLEWARE + ["debug_toolbar.middleware.DebugToolbarMiddleware"]
-
-    DEBUG_TOOLBAR_PANELS = [
-        "debug_toolbar.panels.versions.VersionsPanel",
-        "debug_toolbar.panels.timer.TimerPanel",
-        "debug_toolbar.panels.settings.SettingsPanel",
-        "debug_toolbar.panels.headers.HeadersPanel",
-        "debug_toolbar.panels.request.RequestPanel",
-        "debug_toolbar.panels.sql.SQLPanel",
-        "debug_toolbar.panels.staticfiles.StaticFilesPanel",
-        "debug_toolbar.panels.templates.TemplatesPanel",
-        "debug_toolbar.panels.cache.CachePanel",
-        "debug_toolbar.panels.signals.SignalsPanel",
-        "debug_toolbar.panels.logging.LoggingPanel",
-        "debug_toolbar.panels.redirects.RedirectsPanel",
-        "debug_toolbar.panels.profiling.ProfilingPanel",
-    ]
-
-    INTERNAL_IPS = ("127.0.0.1",)
-
 
 ########################################################################################
 #                                                                                      #
@@ -240,7 +220,7 @@ REDIS_URL = env.str("REDIS_URL", default="redis://redis:6379")
 
 if REDIS_URL:
 
-    CACHE_TIMEOUT = env.int("CACHE_TIMEOUT", default=86400)
+    CACHE_TIMEOUT = env.int("CACHE_TIMEOUT", default=300)
     AUTOCOMPLETES_CACHE_NAME = "autocompletes"
     CACHES = {
         "default": {
@@ -380,7 +360,7 @@ PASSWORD_HASHERS = [
 ]
 
 if ENV == "production":
-    SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
+    SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
     SECURE_REDIRECT_EXEMPT = env.list("SECURE_REDIRECT_EXEMPT", default=["ht/"])
 
     # In order to detect when a request is made via SSL in Django
