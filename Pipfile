@@ -10,7 +10,6 @@ sentry-sdk = "*"                     # Error logging to Sentry
 django-rest-framework = "*"          # Tools for RESTful API (BSD-2)
 psycopg2-binary = "*"                # Database connector (LGPL)
 gunicorn = "*"                       # Python WSGI HTTP Server
-python-dotenv = "*"
 django-cors-headers = "*"
 django-extensions = "*"             # Different helpers for Django REST Framework
 django-rq = "*"                     # Asynchronous tasks

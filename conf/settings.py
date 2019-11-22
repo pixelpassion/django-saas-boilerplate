@@ -3,7 +3,6 @@ import sys
 
 from django.utils.translation import ugettext_lazy as _
 
-import dotenv
 import environ
 from corsheaders.defaults import default_headers
 
@@ -38,7 +37,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # .env file handling and some logic to ignore warnings about it not
 # being found on production
-dotenv.load_dotenv()
 env = environ.Env()
 environ.Env.read_env(env_file=os.path.join(BASE_DIR, ".env"))
 
@@ -56,7 +54,6 @@ HEROKU_SLUG_DESCRIPTION = env.str("HEROKU_SLUG_DESCRIPTION", default=None)
 if HEROKU_APP_ID is None:
     ON_HEROKU = False
     PROJECT_NAME = env.str("PROJECT_NAME", default="Unnamed")
-
 else:
     ON_HEROKU = True
     PROJECT_NAME = HEROKU_APP_ID
@@ -66,7 +63,6 @@ else:
 # Set important directories
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 ########################################################################################
 #                                                                                      #
@@ -78,23 +74,20 @@ DEBUG = env.bool("DEBUG", False)
 
 # To make things easy for new developers, we are starting with a SECRET_KEY - we are
 # checking this on production
-SECRET_KEY = env("SECRET_KEY", default="notsafeforproduction")
+SECRET_KEY = env.str("SECRET_KEY", default="notsafeforproduction")
 
 # Should have '*' for local, the site URL for production
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
-USE_X_FORWARDED_HOST = env.list("USE_X_FORWARDED_HOST", default=False)
+USE_X_FORWARDED_HOST = env.bool("USE_X_FORWARDED_HOST", default=False)
 
 if ENV == "production":
-
     if DEBUG:
         print("**** CAUTION: You are running in production with DEBUG=True ****")
-
     if SECRET_KEY == "notsafeforproduction":
         sys.exit(
             "**** CAUTION: You are running in production with "
             "SECRET_KEY=notsafeforproduction ****"
         )
-
     if ALLOWED_HOSTS == "*":
         print("**** CAUTION: You are running in production with ALLOWED_HOSTS=* ****")
 
@@ -178,7 +171,6 @@ MIDDLEWARE = [
 ]
 
 if ENV == "local" and DEBUG:
-
     INSTALLED_APPS = INSTALLED_APPS + ["django_werkzeug"]
 
 ########################################################################################
@@ -209,7 +201,6 @@ if SENTRY_DSN is not None:
 
 DATABASE_URL = env.str("DATABASE_URL", default="No")
 DATABASES = {"default": env.db("DATABASE_URL")}
-
 
 ########################################################################################
 #                                                                                      #
@@ -289,7 +280,7 @@ CORS_EXPOSE_HEADERS = (
 ########################################################################################
 SILKY_PROFILER = env.bool("SILKY_PROFILER", False)
 
-if SILKY_PROFILER is True:
+if SILKY_PROFILER:
 
     # Do not use potentially insecure and unnecessary apps in production
     INSTALLED_APPS += ["silk"]
