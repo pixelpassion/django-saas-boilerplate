@@ -331,7 +331,10 @@ STATICFILES_DIRS = (str(os.path.join(BASE_DIR, "static")),)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",  # noqa
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "UserAttributeSimilarityValidator"
+        ),
         "OPTIONS": {
             "max_similarity": 0.7,
             "user_attributes": ("username", "first_name", "last_name", "email"),
