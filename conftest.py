@@ -14,7 +14,7 @@ def remove_tempdir(request):
     """
 
     def fin():
-        if all([os.path.isdir(settings.MEDIA_ROOT), "test" == settings.STAGE]):
+        if all([os.path.isdir(settings.MEDIA_ROOT), "test" == settings.ENV]):
             shutil.rmtree(settings.MEDIA_ROOT)
 
     request.addfinalizer(fin)

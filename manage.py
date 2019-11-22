@@ -3,7 +3,11 @@ import os
 import sys
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings.local")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf.settings")
+    # Avoid the use of "python manage.py test", we are using py.test for testing
+    if sys.argv[0] == "manage.py" and sys.argv[1] == "test":
+        print("TESTING is only supported with py.test!")
+        sys.exit(-1)
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
