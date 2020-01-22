@@ -251,10 +251,7 @@ if REDIS_URL:
 #                                      DJANGO REST                                     #
 #                                                                                      #
 ########################################################################################
-REST_FRAMEWORK = {
-    "NON_FIELD_ERRORS_KEY": "error",
-    "EXCEPTION_HANDLER": "apps.core.exceptions.core_exception_handler",
-}
+REST_FRAMEWORK = {"EXCEPTION_HANDLER": "apps.core.exceptions.core_exception_handler"}
 
 ########################################################################################
 #                                                                                      #
