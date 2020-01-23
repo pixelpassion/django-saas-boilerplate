@@ -251,7 +251,9 @@ if REDIS_URL:
 #                                      DJANGO REST                                     #
 #                                                                                      #
 ########################################################################################
-REST_FRAMEWORK = {"EXCEPTION_HANDLER": "apps.core.exceptions.core_exception_handler"}
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "apps.core.custom_exceptions.custom_exception_handler"
+}
 
 ########################################################################################
 #                                                                                      #
