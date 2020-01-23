@@ -41,6 +41,7 @@ pytest-factoryboy = "*"
 pytest-freezegun = "*"
 pytest-mock = "*"
 pytest-sugar = "*"
+pytest-env = "*"
 
 [requires]
 python_version = "3.7"
