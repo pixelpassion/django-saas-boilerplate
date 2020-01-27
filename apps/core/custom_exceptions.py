@@ -6,10 +6,9 @@ from rest_framework.views import exception_handler
 
 def custom_exception_handler(exc: object, context: dict):
     response = exception_handler(exc, context)
-
     if response is None:
         response = Response(
-            data=exc.messages,
+            data=exc.args,
             content_type="application/json",
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
