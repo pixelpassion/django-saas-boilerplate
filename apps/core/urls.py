@@ -8,6 +8,7 @@ from .views import TestApiView
 router = DefaultRouter()
 urlpatterns = []
 
+# TODO: remove this test handler as soon as we have actual views to test against
 if settings.ENV in ["test", "local"]:
     urlpatterns += [
         path("handler-test/", TestApiView.as_view(), name="handler-test-url")
