@@ -7,7 +7,7 @@ from apps.core.custom_exceptions import custom_exception_handler
 EXC_MESSAGE = "error_message"
 
 
-def _check_response_data(response, status_code, error_code, exc_message):
+def check_response_data(response, status_code, error_code, exc_message):
     assert response.status_code == status_code
     assert response.data["error_code"] == error_code
     assert response.data["status_code"] == status_code
@@ -25,13 +25,13 @@ def get_exception_and_context(rf, exc_class):
     return context, exc
 
 
-def test_custom_exception_handler_calidation_error(rf):
+def test_custom_exception_handler_validation_error(rf):
     context, exc = get_exception_and_context(rf, django_extencions.ValidationError)
     status_code = 500
     error_code = "ValidationError"
 
     response = custom_exception_handler(exc, context)
-    _check_response_data(response, status_code, error_code, EXC_MESSAGE)
+    check_response_data(response, status_code, error_code, EXC_MESSAGE)
 
 
 def test_exception_handler_not_found(rf):
@@ -40,7 +40,7 @@ def test_exception_handler_not_found(rf):
     error_code = exc.default_code
 
     response = custom_exception_handler(exc, context)
-    _check_response_data(response, status_code, error_code, EXC_MESSAGE)
+    check_response_data(response, status_code, error_code, EXC_MESSAGE)
 
 
 def test_exception_handler_api_exception(rf):
@@ -49,7 +49,7 @@ def test_exception_handler_api_exception(rf):
     error_code = exc.default_code
 
     response = custom_exception_handler(exc, context)
-    _check_response_data(response, status_code, error_code, EXC_MESSAGE)
+    check_response_data(response, status_code, error_code, EXC_MESSAGE)
 
 
 def test_exception_handler_permission_denied(rf):
@@ -58,7 +58,7 @@ def test_exception_handler_permission_denied(rf):
     error_code = exc.default_code
 
     response = custom_exception_handler(exc, context)
-    _check_response_data(response, status_code, error_code, EXC_MESSAGE)
+    check_response_data(response, status_code, error_code, EXC_MESSAGE)
 
 
 def test_exception_handler_method_not_allowed(rf):
@@ -67,7 +67,7 @@ def test_exception_handler_method_not_allowed(rf):
     error_code = exc.default_code
 
     response = custom_exception_handler(exc, context)
-    _check_response_data(
+    check_response_data(
         response, status_code, error_code, f'Method "{EXC_MESSAGE}" not allowed.'
     )
 
@@ -78,7 +78,7 @@ def test_exception_handler_auth_failed(rf):
     error_code = exc.default_code
 
     response = custom_exception_handler(exc, context)
-    _check_response_data(response, status_code, error_code, EXC_MESSAGE)
+    check_response_data(response, status_code, error_code, EXC_MESSAGE)
 
 
 def test_exception_handler_non_auth(rf):
@@ -87,7 +87,7 @@ def test_exception_handler_non_auth(rf):
     error_code = exc.default_code
 
     response = custom_exception_handler(exc, context)
-    _check_response_data(response, status_code, error_code, EXC_MESSAGE)
+    check_response_data(response, status_code, error_code, EXC_MESSAGE)
 
 
 def test_exception_handler_parse_error(rf):
@@ -96,4 +96,4 @@ def test_exception_handler_parse_error(rf):
     error_code = exc.default_code
 
     response = custom_exception_handler(exc, context)
-    _check_response_data(response, status_code, error_code, EXC_MESSAGE)
+    check_response_data(response, status_code, error_code, EXC_MESSAGE)
