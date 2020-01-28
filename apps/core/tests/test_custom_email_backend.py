@@ -1,4 +1,4 @@
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMessage
 
 import pytest
 
@@ -106,7 +106,7 @@ def test_custom_email_backend_with_wrong_email_message_class(settings, mocker):
     mocked_create_mail_func, mocked_send_mail_func = get_mocked_saasy_functions(mocker)
 
     with pytest.raises(ValueError) as em:
-        email_message = EmailMultiAlternatives(to=[RECIPIENT_EMAIL])
+        email_message = EmailMessage(to=[RECIPIENT_EMAIL])
         email_message.send()
     assert INVALID_EMAIL_CLASS_USED_MESSAGE == em.value.args[0]
 
