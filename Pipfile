@@ -16,7 +16,6 @@ django-rq = "*"                     # Asynchronous tasks
 django-redis = "*"                  # Redis cache backend (BSD-3)
 whitenoise = "*"
 urllib3 = "*"
-django-silk = "*"
 
 [dev-packages]
 django-werkzeug = "*"
@@ -34,6 +33,7 @@ Faker = "*"
 black = "*"
 flake8 = "==3.4.0"                  # Old version, because prospector stick with old deps of pyflake and pycodestyles
 autopep8 = "==1.3.5"                # Old version, because prospector stick with old deps of pyflake and pycodestyles
+django-silk = "*"
 pytest = "*"                        # Better testing
 pytest-django = "*"
 pytest-xdist = "*"
