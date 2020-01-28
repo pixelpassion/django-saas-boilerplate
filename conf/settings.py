@@ -245,6 +245,16 @@ if REDIS_URL:
         "high": {"USE_REDIS_CACHE": "rq", "DEFAULT_TIMEOUT": RQ_DEFAULT_TIMEOUT},
         "low": {"USE_REDIS_CACHE": "rq", "DEFAULT_TIMEOUT": RQ_DEFAULT_TIMEOUT},
     }
+
+########################################################################################
+#                                                                                      #
+#                                      DJANGO REST                                     #
+#                                                                                      #
+########################################################################################
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "apps.core.custom_exceptions.custom_exception_handler"
+}
+
 ########################################################################################
 #                                                                                      #
 #                                           CORS                                       #
