@@ -1,8 +1,6 @@
-from django.core.mail import EmailMessage, EmailMultiAlternatives
-
 import pytest
 
-from apps.core.custom_email_backend import CustomEmailBackend
+from apps.core.custom_email_backend import CustomEmailBackend, SaasyEmailMessage
 
 DEFAULT_CONTEXT = {
     "first_context_variable": "Hello",
@@ -25,13 +23,12 @@ def get_mocked_saasy_functions(mocker):
     return mocked_create_mail_func, mocked_send_mail_func
 
 
-@pytest.mark.parametrize("email_class", [EmailMultiAlternatives, EmailMessage])
-def test_custom_backend_send_email(settings, mocker, email_class):
+def test_custom_backend_send_email(settings, mocker):
     change_project_settings(settings)
     mocked_create_mail_func, mocked_send_mail_func = get_mocked_saasy_functions(mocker)
 
-    email_message = email_class(
-        subject=TEMPLATE_NAME, body=DEFAULT_CONTEXT, to=[RECIPIENT_EMAIL]
+    email_message = SaasyEmailMessage(
+        template=TEMPLATE_NAME, context=DEFAULT_CONTEXT, to=[RECIPIENT_EMAIL]
     )
     email_message.send()
 
@@ -45,13 +42,12 @@ def test_custom_backend_send_email(settings, mocker, email_class):
     assert mocked_send_mail_func.call_args[0][0] == 1
 
 
-@pytest.mark.parametrize("email_class", [EmailMultiAlternatives, EmailMessage])
-def test_custom_email_backend_correct_email_messages(settings, mocker, email_class):
+def test_custom_email_backend_correct_email_messages(settings, mocker):
     change_project_settings(settings)
     mocked_create_mail_func, mocked_send_mail_func = get_mocked_saasy_functions(mocker)
 
-    email_message = email_class(
-        subject=TEMPLATE_NAME, body=DEFAULT_CONTEXT, to=[RECIPIENT_EMAIL]
+    email_message = SaasyEmailMessage(
+        template=TEMPLATE_NAME, context=DEFAULT_CONTEXT, to=[RECIPIENT_EMAIL]
     )
 
     CustomEmailBackend().send_messages([email_message])
@@ -70,8 +66,8 @@ def test_custom_email_backend_without_api_key(settings):
     settings.EMAIL_BACKEND = "apps.core.custom_email_backend.CustomEmailBackend"
 
     with pytest.raises(ValueError) as em:
-        email_message = EmailMultiAlternatives(
-            subject=TEMPLATE_NAME, body=DEFAULT_CONTEXT, to=[RECIPIENT_EMAIL]
+        email_message = SaasyEmailMessage(
+            template=TEMPLATE_NAME, context=DEFAULT_CONTEXT, to=[RECIPIENT_EMAIL]
         )
         email_message.send()
     assert (
@@ -79,14 +75,11 @@ def test_custom_email_backend_without_api_key(settings):
     ) == em.value.args[0]
 
 
-@pytest.mark.parametrize("email_class", [EmailMultiAlternatives, EmailMessage])
-def test_custom_email_backend_messages_without_recipients(
-    settings, mocker, email_class
-):
+def test_custom_email_backend_messages_without_recipients(settings, mocker):
     change_project_settings(settings)
     mocked_create_mail_func, mocked_send_mail_func = get_mocked_saasy_functions(mocker)
 
-    email_message = email_class(subject=TEMPLATE_NAME, body=DEFAULT_CONTEXT)
+    email_message = SaasyEmailMessage(template=TEMPLATE_NAME, context=DEFAULT_CONTEXT)
 
     backend_response = CustomEmailBackend().send_messages([email_message])
 
