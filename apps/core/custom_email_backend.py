@@ -12,11 +12,13 @@ from .constants import (
 
 
 class SaasyEmailMessage(EmailMessage):
-    """ Added two new arguments (context, template) for working with saashi
+    """ Added two new arguments (context, template) for working with saasy
     """
 
     def __init__(
         self,
+        context: dict,
+        template: str,
         subject="",
         body="",
         from_email=None,
@@ -27,8 +29,6 @@ class SaasyEmailMessage(EmailMessage):
         headers=None,
         cc=None,
         reply_to=None,
-        context=None,
-        template=None,
     ):
         super().__init__(
             subject,
@@ -42,13 +42,11 @@ class SaasyEmailMessage(EmailMessage):
             cc,
             reply_to,
         )
-        if context:
-            if not isinstance(context, dict):
-                raise TypeError(INVALID_ARG_TYPE_MESSAGE.format("context", "dict"))
+        if not isinstance(context, dict):
+            raise TypeError(INVALID_ARG_TYPE_MESSAGE.format("context", "dict"))
         self.context = context
-        if template:
-            if not isinstance(template, str):
-                raise TypeError(INVALID_ARG_TYPE_MESSAGE.format("template", "string"))
+        if not isinstance(template, str):
+            raise TypeError(INVALID_ARG_TYPE_MESSAGE.format("template", "string"))
         self.template = template
 
 
@@ -64,24 +62,21 @@ class CustomEmailBackend(BaseEmailBackend):
         self.saasy = Client(auth_token=settings.SAASY_API_KEY)
 
     def _check_and_get_context_and_template(self, email_message):
-        try:
-            context = email_message.context
-            template = email_message.template
-        except AttributeError:
+        if not isinstance(email_message, SaasyEmailMessage):
             raise ValueError(INVALID_EMAIL_CLASS_USED_MESSAGE)
-        if not context or not template:
-            raise ValueError(INVALID_EMAIL_CLASS_USED_MESSAGE)
+        context = email_message.context
+        template = email_message.template
         return context, template
 
     def send_messages(self, email_messages):
         if not email_messages:
-            return False
+            return None
 
         for email_message in email_messages:
             context, template = self._check_and_get_context_and_template(email_message)
             recipients = email_message.recipients()
             if not recipients:
-                return False
+                continue
 
             for recipient in recipients:
                 mail = self.saasy.create_mail(

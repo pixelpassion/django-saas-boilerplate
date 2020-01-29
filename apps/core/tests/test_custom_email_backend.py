@@ -1,4 +1,4 @@
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 
 import pytest
 
@@ -28,25 +28,6 @@ def get_mocked_saasy_functions(mocker):
     mocked_send_mail_func = mocker.patch("saasy.client.Client.send_mail")
 
     return mocked_create_mail_func, mocked_send_mail_func
-
-
-def test_custom_backend_send_email(settings, mocker):
-    change_project_settings(settings)
-    mocked_create_mail_func, mocked_send_mail_func = get_mocked_saasy_functions(mocker)
-
-    email_message = SaasyEmailMessage(
-        template=TEMPLATE_NAME, context=DEFAULT_CONTEXT, to=[RECIPIENT_EMAIL]
-    )
-    email_message.send()
-
-    assert mocked_create_mail_func.call_count == 1
-    assert mocked_send_mail_func.call_count == 1
-    assert mocked_create_mail_func.call_args[0][0] == {
-        "to_address": RECIPIENT_EMAIL,
-        "context": DEFAULT_CONTEXT,
-        "template": TEMPLATE_NAME,
-    }
-    assert mocked_send_mail_func.call_args[0][0] == 1
 
 
 def test_custom_email_backend_correct_email_messages(settings, mocker):
@@ -81,20 +62,41 @@ def test_custom_email_backend_without_api_key(settings):
 
 
 @pytest.mark.parametrize(
-    "args",
+    "message_args, missing",
     [
-        {"context": DEFAULT_CONTEXT, "to": [RECIPIENT_EMAIL]},
-        {"template": TEMPLATE_NAME, "to": [RECIPIENT_EMAIL]},
-        {"to": [RECIPIENT_EMAIL]},
+        [{"context": DEFAULT_CONTEXT}, "template"],
+        [{"template": TEMPLATE_NAME}, "context"],
     ],
 )
-def test_custom_email_backend_email_message_without_needed_args(settings, mocker, args):
+def test_custom_email_backend_email_message_without_needed_args(
+    settings, mocker, message_args, missing
+):
+    change_project_settings(settings)
+    mocked_create_mail_func, mocked_send_mail_func = get_mocked_saasy_functions(mocker)
+
+    with pytest.raises(TypeError) as em:
+        email_message = SaasyEmailMessage(**message_args)
+        email_message.send()
+    assert (
+        f"__init__() missing 1 required positional argument: '{missing}'"
+        == em.value.args[0]
+    )
+
+    assert mocked_create_mail_func.call_count == 0
+    assert mocked_send_mail_func.call_count == 0
+
+
+def test_custom_backend_send_email_incorrect_function(settings, mocker):
     change_project_settings(settings)
     mocked_create_mail_func, mocked_send_mail_func = get_mocked_saasy_functions(mocker)
 
     with pytest.raises(ValueError) as em:
-        email_message = SaasyEmailMessage(**args)
-        email_message.send()
+        send_mail(
+            "Subject here",
+            "Here is the message.",
+            "from@example.com",
+            ["to@example.com"],
+        )
     assert INVALID_EMAIL_CLASS_USED_MESSAGE == em.value.args[0]
 
     assert mocked_create_mail_func.call_count == 0
@@ -118,33 +120,40 @@ def test_custom_email_backend_messages_without_recipients(settings, mocker):
     change_project_settings(settings)
     mocked_create_mail_func, mocked_send_mail_func = get_mocked_saasy_functions(mocker)
 
-    email_message = SaasyEmailMessage(template=TEMPLATE_NAME, context=DEFAULT_CONTEXT)
+    message_with_recipients = SaasyEmailMessage(
+        template=TEMPLATE_NAME, context=DEFAULT_CONTEXT, to=[RECIPIENT_EMAIL]
+    )
+    message_without_recipients = SaasyEmailMessage(
+        template=TEMPLATE_NAME, context=DEFAULT_CONTEXT
+    )
 
-    backend_response = CustomEmailBackend().send_messages([email_message])
+    CustomEmailBackend().send_messages(
+        [message_with_recipients, message_without_recipients]
+    )
 
-    assert backend_response is False
-    assert mocked_create_mail_func.call_count == 0
-    assert mocked_send_mail_func.call_count == 0
+    assert mocked_create_mail_func.call_count == 1
+    assert mocked_send_mail_func.call_count == 1
 
 
-def test_custom_email_backend_messages_without_messages(settings, mocker):
+@pytest.mark.parametrize("messages", [[], None, ""])
+def test_custom_email_backend_messages_without_messages(settings, mocker, messages):
     change_project_settings(settings)
     mocked_create_mail_func, mocked_send_mail_func = get_mocked_saasy_functions(mocker)
 
-    backend_response = CustomEmailBackend().send_messages([])
+    backend_response = CustomEmailBackend().send_messages(messages)
 
-    assert backend_response is False
+    assert backend_response is None
     assert mocked_create_mail_func.call_count == 0
     assert mocked_send_mail_func.call_count == 0
 
 
 def test_create_saasy_email_message_invalid_arg_type():
     with pytest.raises(TypeError) as em:
-        SaasyEmailMessage(context="some_context")
+        SaasyEmailMessage(context="some_context", template=TEMPLATE_NAME)
     assert em.value.args[0] == INVALID_ARG_TYPE_MESSAGE.format("context", "dict")
 
 
 def test_create_saasy_email_message_invalid_template_arg_type():
     with pytest.raises(TypeError) as em:
-        SaasyEmailMessage(template={"hello": "world"})
+        SaasyEmailMessage(template={"hello": "world"}, context=DEFAULT_CONTEXT)
     assert em.value.args[0] == INVALID_ARG_TYPE_MESSAGE.format("template", "string")
