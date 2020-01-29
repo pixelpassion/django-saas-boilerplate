@@ -61,19 +61,15 @@ class CustomEmailBackend(BaseEmailBackend):
             raise ValueError(SAASY_API_KEY_NOT_ASSIGNED_MESSAGE)
         self.saasy = Client(auth_token=settings.SAASY_API_KEY)
 
-    def _check_and_get_context_and_template(self, email_message):
-        if not isinstance(email_message, SaasyEmailMessage):
-            raise ValueError(INVALID_EMAIL_CLASS_USED_MESSAGE)
-        context = email_message.context
-        template = email_message.template
-        return context, template
-
     def send_messages(self, email_messages):
         if not email_messages:
             return None
 
         for email_message in email_messages:
-            context, template = self._check_and_get_context_and_template(email_message)
+            if not isinstance(email_message, SaasyEmailMessage):
+                raise ValueError(INVALID_EMAIL_CLASS_USED_MESSAGE)
+            context = email_message.context
+            template = email_message.template
             recipients = email_message.recipients()
             if not recipients:
                 continue
