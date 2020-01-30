@@ -10,6 +10,3 @@ INVALID_EMAIL_CLASS_USED_MESSAGE = _(
     " when creating the email object."
 )
 INVALID_ARG_TYPE_MESSAGE = _('"{}" argument must be a {}')
-NO_RELEVANT_VALUES_IN_THE_CONTEXT_MESSAGE = _(
-    "There are no relevant values in the context."
-)
