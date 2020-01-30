@@ -17,6 +17,8 @@ django-redis = "*"                  # Redis cache backend (BSD-3)
 whitenoise = "*"
 urllib3 = "*"
 saasy = "*"
+django-rest-auth = "*"
+djangorestframework-jwt = "*"
 
 [dev-packages]
 django-werkzeug = "*"

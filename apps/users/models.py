@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext as _
@@ -11,6 +13,13 @@ class User(AbstractUser):
     """
 
     email = models.EmailField(_("Email address"), unique=True)
+    privacy_policy = models.BooleanField(_("Privacy policy accepted"), default=True)
+    security_hash = models.UUIDField(
+        _("Security hash"), default=uuid.uuid4, unique=True
+    )
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
 
     class Meta:
         """

@@ -1,3 +1,4 @@
+import datetime
 import os
 import sys
 
@@ -152,6 +153,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_extensions",
     "rest_framework",
+    "rest_auth",
     "django_rq",
     "apps.core",
     "apps.users",
@@ -251,12 +253,37 @@ if REDIS_URL:
 #                                      DJANGO REST                                     #
 #                                                                                      #
 ########################################################################################
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-    ],
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+    ),
     "EXCEPTION_HANDLER": "apps.core.custom_exceptions.custom_exception_handler",
+}
+
+REST_AUTH_SERIALIZERS = {
+    "PASSWORD_RESET_SERIALIZER": (
+        "apps.users.serializers.CustomPasswordResetSerializer"
+    ),
+    "PASSWORD_RESET_CONFIRM_SERIALIZER": (
+        "apps.users.serializers.CustomPasswordResetConfirmSerializer"
+    ),
+}
+
+JWT_AUTH = {
+    "JWT_EXPIRATION_DELTA": datetime.timedelta(seconds=60 * 60 * 72),
+    "JWT_ALLOW_REFRESH": env.bool("JWT_ALLOW_REFRESH", True),
+    "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=60 * 60 * 12),
+    "JWT_AUTH_HEADER_PREFIX": "Bearer",
+    "JWT_DECODE_HANDLER": "apps.users.custom_jwt.custom_jwt_decode_handler",
+    "JWT_PAYLOAD_HANDLER": "apps.users.custom_jwt.custom_jwt_payload_handler",
+    "JWT_RESPONSE_PAYLOAD_HANDLER": "apps.users.utils.jwt_response_payload_handler",
 }
 
 ########################################################################################
