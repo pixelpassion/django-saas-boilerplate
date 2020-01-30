@@ -6,6 +6,20 @@ import shutil
 from django.conf import settings
 
 import pytest
+from pytest_factoryboy import register
+
+from apps.users.constants.urls_for_tests import REST_LOGIN_URL
+from apps.users.tests.constants import TEST_EMAIL, TEST_PASSWORD
+from apps.users.tests.factories import UserFactory
+
+
+@pytest.fixture()
+def logged_in_client(user, client):
+    response = client.post(
+        REST_LOGIN_URL, {"email": user.email, "password": TEST_PASSWORD}
+    )
+    assert response.status_code == 200
+    return client
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -18,3 +32,6 @@ def remove_tempdir(request):
             shutil.rmtree(settings.MEDIA_ROOT)
 
     request.addfinalizer(fin)
+
+
+register(UserFactory, email=TEST_EMAIL)

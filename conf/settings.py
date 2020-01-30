@@ -252,7 +252,11 @@ if REDIS_URL:
 #                                                                                      #
 ########################################################################################
 REST_FRAMEWORK = {
-    "EXCEPTION_HANDLER": "apps.core.custom_exceptions.custom_exception_handler"
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "EXCEPTION_HANDLER": "apps.core.custom_exceptions.custom_exception_handler",
 }
 
 ########################################################################################
