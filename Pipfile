@@ -16,6 +16,7 @@ django-rq = "*"                     # Asynchronous tasks
 django-redis = "*"                  # Redis cache backend (BSD-3)
 whitenoise = "*"
 urllib3 = "*"
+saasy = "*"
 
 [dev-packages]
 django-werkzeug = "*"
