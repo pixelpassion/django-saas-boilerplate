@@ -1,8 +1,6 @@
 import pytest
 
-from apps.users.constants.urls_for_tests import CHANGE_PASS_URL
-
-from .constants import NEW_TEST_PASSWORD, TEST_PASSWORD
+from .constants import CHANGE_PASS_URL, NEW_TEST_PASSWORD, TEST_PASSWORD
 
 pytestmark = pytest.mark.django_db
 

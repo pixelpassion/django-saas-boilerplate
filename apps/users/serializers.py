@@ -100,6 +100,7 @@ class UserDetailSerializer(BaseUserSerializer):
     def get_admin_url(self, instance):
         if instance.is_staff or instance.is_superuser:
             return settings.ADMIN_URL
+        return None
 
 
 class UserRegistrationSerializer(BaseUserSerializer):

@@ -6,13 +6,12 @@ from django.test import Client
 import pytest
 from rest_framework import status
 
-from apps.users.constants.urls_for_tests import (
+from .constants import (
     REFRESH_TOKEN_URL,
+    TEST_PASSWORD,
     TOKEN_AUTH_URL,
     TOKEN_VERIFY_URL,
 )
-
-from .constants import TEST_PASSWORD
 
 pytestmark = pytest.mark.django_db
 

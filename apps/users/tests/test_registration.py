@@ -8,10 +8,9 @@ from apps.users.constants.messages import (
     UNIQUE_EMAIL_MESSAGE,
     VALID_BOOLEAN_FIELD_MESSAGE,
 )
-from apps.users.constants.urls_for_tests import USER_REGISTRATION_URL
 from apps.users.models import User
 
-from .constants import CORRECT_REG_DATA
+from .constants import CORRECT_REG_DATA, USER_REGISTRATION_URL
 
 pytestmark = pytest.mark.django_db
 

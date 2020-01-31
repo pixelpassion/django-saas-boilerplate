@@ -1,8 +1,6 @@
 import pytest
 
-from apps.users.constants.urls_for_tests import TOKEN_AUTH_URL
-
-from .constants import TEST_EMAIL, TEST_PASSWORD
+from .constants import TEST_EMAIL, TEST_PASSWORD, TOKEN_AUTH_URL
 
 pytestmark = pytest.mark.django_db
 

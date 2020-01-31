@@ -8,8 +8,7 @@ from django.conf import settings
 import pytest
 from pytest_factoryboy import register
 
-from apps.users.constants.urls_for_tests import TOKEN_AUTH_URL
-from apps.users.tests.constants import TEST_EMAIL, TEST_PASSWORD
+from apps.users.tests.constants import TEST_EMAIL, TEST_PASSWORD, TOKEN_AUTH_URL
 from apps.users.tests.factories import UserFactory
 
 

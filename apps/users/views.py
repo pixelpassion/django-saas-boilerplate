@@ -15,7 +15,6 @@ class UserRegistrationView(APIView):
 
     permission_classes = (AllowAny,)
     http_method_names = ["post"]
-    throttle_scope = "secured"
 
     def post(self, request):
         """ Creates User

@@ -2,7 +2,7 @@ from django.conf import settings
 
 import pytest
 
-from apps.users.constants.urls_for_tests import USER_API_URL
+from .constants import USER_API_URL
 
 pytestmark = pytest.mark.django_db
 
@@ -64,11 +64,11 @@ def test_get_admin_url_user_is_not_staff(logged_in_client, user):
     response = logged_in_client.get(USER_API_URL)
     assert response.status_code == 200
 
-    assert not response.data["admin_url"]
+    assert response.data["admin_url"] is None
 
 
 def test_get_admin_url_user_is_not_superuser(logged_in_client, user):
     response = logged_in_client.get(USER_API_URL)
     assert response.status_code == 200
 
-    assert not response.data["admin_url"]
+    assert response.data["admin_url"] is None
