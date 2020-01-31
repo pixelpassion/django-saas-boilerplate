@@ -268,6 +268,9 @@ REST_FRAMEWORK = {
 }
 
 REST_AUTH_SERIALIZERS = {
+    "PASSWORD_CHANGE_SERIALIZER": (
+        "apps.users.serializers.CustomPasswordChangeSerializer"
+    ),
     "PASSWORD_RESET_SERIALIZER": (
         "apps.users.serializers.CustomPasswordResetSerializer"
     ),

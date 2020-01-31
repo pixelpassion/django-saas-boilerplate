@@ -1,6 +1,7 @@
 from django.urls import reverse
 
 from .url_names import (
+    CHANGE_PASS_URL_NAME,
     LOGOUT_URL_NAME,
     PASS_RESET_CONFIRM_URL_NAME,
     PASS_RESET_URL_NAME,
@@ -20,3 +21,4 @@ TOKEN_VERIFY_URL = reverse(f"v0:{TOKEN_VERIFY_URL_NAME}")
 LOGOUT_URL = reverse(f"v0:{LOGOUT_URL_NAME}")
 PASS_RESET_URL = reverse(f"v0:{PASS_RESET_URL_NAME}")
 PASS_RESET_CONFIRM_URL = reverse(f"v0:{PASS_RESET_CONFIRM_URL_NAME}")
+CHANGE_PASS_URL = reverse(f"v0:{CHANGE_PASS_URL_NAME}")

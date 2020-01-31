@@ -1,5 +1,6 @@
 from django.conf import settings
-from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_text
@@ -148,3 +149,37 @@ class UserRegistrationSerializer(BaseUserSerializer):
         user.set_password(validated_data.get("password"))
         user.save()
         return user
+
+
+class CustomPasswordChangeSerializer(serializers.Serializer):
+    """ Customized serializer for changing user password
+    """
+
+    old_password = serializers.CharField(max_length=128)
+    new_password = serializers.CharField(max_length=128)
+
+    set_password_form_class = PasswordChangeForm
+
+    def __init__(self, *args, **kwargs):
+        super(CustomPasswordChangeSerializer, self).__init__(*args, **kwargs)
+
+        self.request = self.context.get("request")
+        self.user = getattr(self.request, "user", None)
+
+    def validate(self, attrs):
+        self.set_password_form = self.set_password_form_class(
+            user=self.user,
+            data={
+                "old_password": attrs["old_password"],
+                "new_password1": attrs["new_password"],
+                "new_password2": attrs["new_password"],
+            },
+        )
+
+        if not self.set_password_form.is_valid():
+            raise serializers.ValidationError(self.set_password_form.errors)
+        return attrs
+
+    def save(self):
+        self.set_password_form.save()
+        update_session_auth_hash(self.request, self.user)

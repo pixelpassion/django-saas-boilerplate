@@ -1,6 +1,11 @@
 from django.urls import path
 
-from rest_auth.views import LogoutView, PasswordResetConfirmView, PasswordResetView
+from rest_auth.views import (
+    LogoutView,
+    PasswordChangeView,
+    PasswordResetConfirmView,
+    PasswordResetView,
+)
 from rest_framework_jwt.views import (
     ObtainJSONWebToken,
     refresh_jwt_token,
@@ -8,6 +13,7 @@ from rest_framework_jwt.views import (
 )
 
 from .constants.url_names import (
+    CHANGE_PASS_URL_NAME,
     LOGOUT_URL_NAME,
     PASS_RESET_CONFIRM_URL_NAME,
     PASS_RESET_URL_NAME,
@@ -25,6 +31,7 @@ urlpatterns = [
     path("api-token-refresh/", refresh_jwt_token, name=REFRESH_TOKEN_URL_NAME),
     path("api-token-verify/", verify_jwt_token, name=TOKEN_VERIFY_URL_NAME),
     path("logout/", LogoutView.as_view(), name=LOGOUT_URL_NAME),
+    path("password/change/", PasswordChangeView.as_view(), name=CHANGE_PASS_URL_NAME),
     path("password/reset/", PasswordResetView.as_view(), name=PASS_RESET_URL_NAME),
     path(
         "password/reset/confirm/",
