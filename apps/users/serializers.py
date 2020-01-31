@@ -106,8 +106,8 @@ class UserRegistrationSerializer(BaseUserSerializer):
     """
 
     token = serializers.SerializerMethodField(read_only=True)
-    first_name = serializers.CharField(max_length=256, write_only=True)
-    last_name = serializers.CharField(max_length=256, write_only=True)
+    first_name = serializers.CharField(max_length=256, required=True)
+    last_name = serializers.CharField(max_length=256, required=True)
     password = serializers.CharField(write_only=True)
     privacy_policy = serializers.BooleanField(required=True, write_only=True)
 

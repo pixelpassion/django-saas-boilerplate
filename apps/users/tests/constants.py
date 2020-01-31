@@ -7,4 +7,5 @@ CORRECT_REG_DATA = {
     "last_name": "User",
     "email": TEST_EMAIL,
     "password": TEST_PASSWORD,
+    "privacy_policy": True,
 }

@@ -30,7 +30,7 @@ def test_normal_registration_returned_data(client):
 
     user = User.objects.latest("id")
 
-    assert set(["first_name", "last_name", "email"]) == set(
+    assert set(["first_name", "last_name", "email", "token"]) == set(
         [field for field, value in response.data.items()]
     )
 
@@ -49,7 +49,7 @@ def test_registration_unaccepted_privacy_policy(client):
 
     response = client.post(USER_REGISTRATION_URL, post_data, format="json")
     assert response.status_code == 400
-    assert str(response.data[field][0]) == REQUIRED_FLAG_MESSAGE
+    assert response.data["messages"][0] == f"{field}: {REQUIRED_FLAG_MESSAGE}"
 
 
 @pytest.mark.parametrize(
@@ -68,7 +68,7 @@ def test_registration_required_fields(client, empty_field, error_message):
 
     response = client.post(USER_REGISTRATION_URL, post_data, format="json")
     assert response.status_code == 400
-    assert str(response.data[empty_field][0]) == error_message
+    assert response.data["messages"][0] == f"{empty_field}: {error_message}"
 
 
 def test_registration_dublicated_email(client, user):
@@ -79,4 +79,4 @@ def test_registration_dublicated_email(client, user):
     response = client.post(USER_REGISTRATION_URL, post_data, format="json")
     assert response.status_code == 400
     assert User.objects.count() == users_before
-    assert str(response.data["email"][0]) == UNIQUE_EMAIL_MESSAGE
+    assert response.data["messages"][0] == f"email: {UNIQUE_EMAIL_MESSAGE}"
