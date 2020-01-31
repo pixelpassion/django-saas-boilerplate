@@ -1,0 +1,62 @@
+from django.utils.encoding import force_text
+
+import pytest
+
+from apps.users.constants.messages import EXPIRED_LINK_MESSAGE
+from apps.users.constants.urls_for_tests import PASS_RESET_CONFIRM_URL, PASS_RESET_URL
+
+from .base import generate_uid_and_token, mock_email_backend_send_messages
+from .constants import NEW_TEST_PASSWORD
+
+pytestmark = pytest.mark.django_db
+
+
+def test_password_reset_with_invalid_email(client, mocker, settings):
+    mocked_email_func = mock_email_backend_send_messages(mocker, settings)
+
+    post_data = {"email": "wrong_email@mail.com"}
+    response = client.post(PASS_RESET_URL, post_data)
+
+    assert mocked_email_func.call_count == 0
+    assert response.status_code == 200
+
+
+def test_password_reset_with_valid_email(user, client, mocker, settings):
+    mocked_email_func = mock_email_backend_send_messages(mocker, settings)
+
+    post_data = {"email": user.email}
+    response = client.post(PASS_RESET_URL, post_data)
+
+    assert response.status_code == 200
+    assert mocked_email_func.call_count == 1
+
+
+def test_password_set_with_valid_password(user, client):
+    url_kwargs = generate_uid_and_token(user)
+
+    post_data = {
+        "new_password": NEW_TEST_PASSWORD,
+        "uid": force_text(url_kwargs["uuid"]),
+        "token": url_kwargs["token"],
+    }
+
+    response = client.post(PASS_RESET_CONFIRM_URL, post_data, format="json")
+    user.refresh_from_db()
+
+    assert response.status_code == 200
+    assert user.check_password(NEW_TEST_PASSWORD)
+
+
+def test_password_set_with_invalid_uid_and_token(user, client):
+    post_data = {
+        "new_password": NEW_TEST_PASSWORD,
+        "uid": "invalid",
+        "token": "invalid",
+    }
+
+    response = client.post(PASS_RESET_CONFIRM_URL, post_data, format="json")
+    user.refresh_from_db()
+
+    assert response.status_code == 400
+    assert response.data["messages"][0] == f"non_field_errors: {EXPIRED_LINK_MESSAGE}"
+    assert not user.check_password(NEW_TEST_PASSWORD)
