@@ -10,7 +10,7 @@ from apps.users.constants.messages import (
 )
 from apps.users.models import User
 
-from .constants import CORRECT_REG_DATA, USER_API_URL, USER_REGISTRATION_URL
+from .constants import CORRECT_REG_DATA, TOKEN_VERIFY_URL, USER_REGISTRATION_URL
 
 pytestmark = pytest.mark.django_db
 
@@ -42,11 +42,7 @@ def test_normal_registration_returned_data(client):
                 assert getattr(user, field) == value
 
     # check access token
-    user.is_active = True
-    user.save()
-
-    client.defaults["HTTP_AUTHORIZATION"] = f"Bearer {response.data['access']}"
-    assert client.get(USER_API_URL).status_code == 200  # url for auth users
+    response = client.post(TOKEN_VERIFY_URL, {"token": response.data["access"]})
 
 
 def test_registration_unaccepted_privacy_policy(client):
