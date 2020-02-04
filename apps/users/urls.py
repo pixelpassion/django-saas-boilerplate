@@ -6,30 +6,33 @@ from rest_auth.views import (
     PasswordResetConfirmView,
     PasswordResetView,
 )
-from rest_framework_jwt.views import (
-    ObtainJSONWebToken,
-    refresh_jwt_token,
-    verify_jwt_token,
-)
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from .constants.url_names import (
     CHANGE_PASS_URL_NAME,
     LOGOUT_URL_NAME,
     PASS_RESET_CONFIRM_URL_NAME,
     PASS_RESET_URL_NAME,
-    REFRESH_TOKEN_URL_NAME,
-    TOKEN_AUTH_URL_NAME,
+    TOKEN_OBTAIN_PAIR_URL_NAME,
+    TOKEN_REFRESH_URL_NAME,
     TOKEN_VERIFY_URL_NAME,
     USER_API_URL_NAME,
     USER_REGISTRATION_URL_NAME,
 )
-from .views import UserApiView, UserRegistrationView
+from .views import (
+    MyTokenObtainPairView,
+    MyTokenVerifyView,
+    UserApiView,
+    UserRegistrationView,
+)
 
 urlpatterns = [
     path("", UserRegistrationView.as_view(), name=USER_REGISTRATION_URL_NAME),
-    path("api-token-auth/", ObtainJSONWebToken.as_view(), name=TOKEN_AUTH_URL_NAME),
-    path("api-token-refresh/", refresh_jwt_token, name=REFRESH_TOKEN_URL_NAME),
-    path("api-token-verify/", verify_jwt_token, name=TOKEN_VERIFY_URL_NAME),
+    path(
+        "api/token/", MyTokenObtainPairView.as_view(), name=TOKEN_OBTAIN_PAIR_URL_NAME
+    ),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name=TOKEN_REFRESH_URL_NAME),
+    path("api/token/verify/", MyTokenVerifyView.as_view(), name=TOKEN_VERIFY_URL_NAME),
     path("logout/", LogoutView.as_view(), name=LOGOUT_URL_NAME),
     path("password/change/", PasswordChangeView.as_view(), name=CHANGE_PASS_URL_NAME),
     path("password/reset/", PasswordResetView.as_view(), name=PASS_RESET_URL_NAME),

@@ -8,17 +8,17 @@ from django.conf import settings
 import pytest
 from pytest_factoryboy import register
 
-from apps.users.tests.constants import TEST_EMAIL, TEST_PASSWORD, TOKEN_AUTH_URL
+from apps.users.tests.constants import TEST_EMAIL, TEST_PASSWORD, TOKEN_OBTAIN_PAIR_URL
 from apps.users.tests.factories import UserFactory
 
 
 @pytest.fixture()
 def logged_in_client(user, client):
     response = client.post(
-        TOKEN_AUTH_URL, {"email": user.email, "password": TEST_PASSWORD}
+        TOKEN_OBTAIN_PAIR_URL, {"email": user.email, "password": TEST_PASSWORD}
     )
     assert response.status_code == 200
-    client.defaults["HTTP_AUTHORIZATION"] = f"Bearer {response.data['token']}"
+    client.defaults["HTTP_AUTHORIZATION"] = f"Bearer {response.data['access']}"
     return client
 
 

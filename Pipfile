@@ -18,7 +18,7 @@ whitenoise = "*"
 urllib3 = "*"
 saasy = "*"
 django-rest-auth = "*"
-djangorestframework-jwt = "*"
+djangorestframework-simplejwt = "*"
 
 [dev-packages]
 django-werkzeug = "*"

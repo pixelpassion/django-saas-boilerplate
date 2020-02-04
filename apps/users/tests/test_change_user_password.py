@@ -24,6 +24,7 @@ def test_change_password_invalid_data(user, logged_in_client, payload):
     response = logged_in_client.post(
         CHANGE_PASS_URL, payload, content_type="application/json"
     )
+
     user.refresh_from_db()
     assert response.status_code == 400
     assert not user.check_password(NEW_TEST_PASSWORD)

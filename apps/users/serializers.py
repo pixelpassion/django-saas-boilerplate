@@ -8,19 +8,50 @@ from django.utils.http import urlsafe_base64_decode as uid_decoder
 
 from rest_auth.serializers import PasswordResetSerializer
 from rest_framework import serializers
-from rest_framework_jwt.settings import api_settings
-from rest_framework_jwt.utils import jwt_encode_handler
+from rest_framework_simplejwt.serializers import (
+    TokenObtainPairSerializer,
+    TokenVerifySerializer,
+)
+from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
 
 from .constants.messages import (
     EXPIRED_LINK_MESSAGE,
+    INVALID_ACCESS_TOKEN_MESSAGE,
     REQUIRED_FLAG_MESSAGE,
     UNIQUE_EMAIL_MESSAGE,
 )
-from .custom_jwt import custom_jwt_payload_handler
 from .forms import CustomPasswordResetForm
 from .models import User
 
-jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["security_hash"] = str(user.security_hash)
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+
+        data["refresh"] = str(refresh)
+        data["access"] = str(refresh.access_token)
+        data["email"] = self.user.email
+        data["first_name"] = self.user.first_name
+        data["last_name"] = self.user.last_name
+
+        return data
+
+
+class MyTokenVerifySerializer(TokenVerifySerializer):
+    def validate(self, attrs):
+        token = UntypedToken(attrs["token"])
+        if token:
+            user = User.objects.get(id=token["user_id"])
+            if user.security_hash != token["security_hash"]:
+                raise serializers.ValidationError(INVALID_ACCESS_TOKEN_MESSAGE)
+        return {}
 
 
 class CustomPasswordResetSerializer(PasswordResetSerializer):
@@ -107,7 +138,8 @@ class UserRegistrationSerializer(BaseUserSerializer):
     """ User registration serializer
     """
 
-    token = serializers.SerializerMethodField(read_only=True)
+    access = serializers.SerializerMethodField(read_only=True)
+    refresh = serializers.SerializerMethodField(read_only=True)
     first_name = serializers.CharField(max_length=256, required=True)
     last_name = serializers.CharField(max_length=256, required=True)
     password = serializers.CharField(write_only=True)
@@ -115,16 +147,25 @@ class UserRegistrationSerializer(BaseUserSerializer):
 
     class Meta(BaseUserSerializer.Meta):
         fields = BaseUserSerializer.Meta.fields + [
-            "token",
+            "access",
+            "refresh",
             "first_name",
             "last_name",
             "password",
             "privacy_policy",
         ]
 
-    def get_token(self, obj: User) -> str:
-        payload = custom_jwt_payload_handler(obj)
-        return jwt_encode_handler(payload)
+    @classmethod
+    def get_token(cls, user: User):
+        return RefreshToken.for_user(user)
+
+    def get_access(self, obj: User) -> str:
+        refresh = self.get_token(obj)
+        return str(refresh.access_token)
+
+    def get_refresh(self, obj: User) -> str:
+        refresh = self.get_token(obj)
+        return str(refresh)
 
     def validate_privacy_policy(self, data: bool) -> bool:
         if not data:

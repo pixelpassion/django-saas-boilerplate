@@ -1,6 +1,6 @@
-import datetime
 import os
 import sys
+from datetime import timedelta
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -262,7 +262,7 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "EXCEPTION_HANDLER": "apps.core.custom_exceptions.custom_exception_handler",
 }
@@ -279,14 +279,25 @@ REST_AUTH_SERIALIZERS = {
     ),
 }
 
-JWT_AUTH = {
-    "JWT_EXPIRATION_DELTA": datetime.timedelta(seconds=60 * 60 * 72),
-    "JWT_ALLOW_REFRESH": env.bool("JWT_ALLOW_REFRESH", True),
-    "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=60 * 60 * 12),
-    "JWT_AUTH_HEADER_PREFIX": "Bearer",
-    "JWT_DECODE_HANDLER": "apps.users.custom_jwt.custom_jwt_decode_handler",
-    "JWT_PAYLOAD_HANDLER": "apps.users.custom_jwt.custom_jwt_payload_handler",
-    "JWT_RESPONSE_PAYLOAD_HANDLER": "apps.users.utils.jwt_response_payload_handler",
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "JTI_CLAIM": "jti",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
 
 ########################################################################################
