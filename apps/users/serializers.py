@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
@@ -18,6 +17,8 @@ from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
 from .constants.messages import (
     EXPIRED_LINK_MESSAGE,
     INVALID_TOKEN_MESSAGE,
+    NO_REQUEST_IN_CONTEXT_MESSAGE,
+    NO_USER_IN_REQUEST_MESSAGE,
     REQUIRED_FLAG_MESSAGE,
     UNIQUE_EMAIL_MESSAGE,
 )
@@ -36,18 +37,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["security_hash"] = str(user.security_hash)
         return token
 
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        refresh = self.get_token(self.user)
-
-        data["refresh"] = str(refresh)
-        data["access"] = str(refresh.access_token)
-        data["email"] = self.user.email
-        data["first_name"] = self.user.first_name
-        data["last_name"] = self.user.last_name
-
-        return data
-
 
 def validate_token_by_security_hash(token: object):
     """ Сhecks if the user security_hash is equal to the security_hash from the token
@@ -55,6 +44,7 @@ def validate_token_by_security_hash(token: object):
     user = User.objects.get(id=token["user_id"])
     if str(user.security_hash) != token["security_hash"]:
         raise serializers.ValidationError(INVALID_TOKEN_MESSAGE)
+    return
 
 
 class CustomTokenVerifySerializer(TokenVerifySerializer):
@@ -164,8 +154,8 @@ class UserRegistrationSerializer(BaseUserSerializer):
     """ User registration serializer
     """
 
-    access = serializers.SerializerMethodField(read_only=True)
-    refresh = serializers.SerializerMethodField(read_only=True)
+    access_token = serializers.SerializerMethodField(read_only=True)
+    refresh_token = serializers.SerializerMethodField(read_only=True)
     first_name = serializers.CharField(max_length=256, required=True)
     last_name = serializers.CharField(max_length=256, required=True)
     password = serializers.CharField(write_only=True)
@@ -173,25 +163,21 @@ class UserRegistrationSerializer(BaseUserSerializer):
 
     class Meta(BaseUserSerializer.Meta):
         fields = BaseUserSerializer.Meta.fields + [
-            "access",
-            "refresh",
+            "access_token",
+            "refresh_token",
             "first_name",
             "last_name",
             "password",
             "privacy_policy",
         ]
 
-    @classmethod
-    def get_token(cls, user: User):
-        return RefreshToken.for_user(user)
+    def get_access_token(self, user: User) -> str:
+        refresh_token = RefreshToken.for_user(user)
+        return str(refresh_token.access_token)
 
-    def get_access(self, obj: User) -> str:
-        refresh = self.get_token(obj)
-        return str(refresh.access_token)
-
-    def get_refresh(self, obj: User) -> str:
-        refresh = self.get_token(obj)
-        return str(refresh)
+    def get_refresh_token(self, user: User) -> str:
+        refresh_token = RefreshToken.for_user(user)
+        return str(refresh_token)
 
     def validate_privacy_policy(self, data: bool) -> bool:
         if not data:
@@ -205,14 +191,12 @@ class UserRegistrationSerializer(BaseUserSerializer):
     def create(self, validated_data):
         email = validated_data.get("email")
         user = User.objects.create(
-            **{
-                "privacy_policy": validated_data.get("privacy_policy"),
-                "first_name": validated_data.get("first_name"),
-                "last_name": validated_data.get("last_name"),
-                "email": email,
-                "username": email,
-                "is_active": False,
-            }
+            privacy_policy=validated_data.get("privacy_policy"),
+            first_name=validated_data.get("first_name"),
+            last_name=validated_data.get("last_name"),
+            email=email,
+            username=email,
+            is_active=False,
         )
         user.set_password(validated_data.get("password"))
         user.save()
@@ -232,7 +216,12 @@ class CustomPasswordChangeSerializer(serializers.Serializer):
         super(CustomPasswordChangeSerializer, self).__init__(*args, **kwargs)
 
         self.request = self.context.get("request")
-        self.user = getattr(self.request, "user", None)
+        if self.request:
+            self.user = getattr(self.request, "user", None)
+            if not self.user:
+                raise serializers.ValidationError(NO_USER_IN_REQUEST_MESSAGE)
+        else:
+            raise serializers.ValidationError(NO_REQUEST_IN_CONTEXT_MESSAGE)
 
     def validate(self, attrs):
         self.set_password_form = self.set_password_form_class(
@@ -250,4 +239,3 @@ class CustomPasswordChangeSerializer(serializers.Serializer):
 
     def save(self):
         self.set_password_form.save()
-        update_session_auth_hash(self.request, self.user)

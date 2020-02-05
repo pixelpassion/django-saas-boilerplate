@@ -61,13 +61,6 @@ def test_login_returned_data(client, user):
     response = client.post(TOKEN_OBTAIN_PAIR_URL, payload)
     assert response.status_code == 200
 
-    assert set(["refresh", "access", "email", "first_name", "last_name"]) == set(
+    assert set(["refresh", "access"]) == set(
         [field for field, value in response.data.items()]
     )
-
-    for field, value in response.data.items():
-        if field not in ["refresh", "access"]:
-            if field == "full_name":
-                assert value == user.get_full_name()
-            else:
-                assert getattr(user, field) == value

@@ -30,19 +30,19 @@ def test_normal_registration_returned_data(client):
 
     user = User.objects.latest("id")
 
-    assert set(["first_name", "last_name", "email", "access", "refresh"]) == set(
-        [field for field, value in response.data.items()]
-    )
+    assert set(
+        ["first_name", "last_name", "email", "access_token", "refresh_token"]
+    ) == set([field for field, value in response.data.items()])
 
     for field, value in response.data.items():
-        if field not in ["access", "refresh"]:
+        if field not in ["access_token", "refresh_token"]:
             if field == "full_name":
                 assert value == user.get_full_name()
             else:
                 assert getattr(user, field) == value
 
     # check access token
-    response = client.post(TOKEN_VERIFY_URL, {"token": response.data["access"]})
+    response = client.post(TOKEN_VERIFY_URL, {"token": response.data["access_token"]})
 
 
 def test_registration_unaccepted_privacy_policy(client):
