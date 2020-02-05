@@ -10,13 +10,14 @@ from rest_auth.serializers import PasswordResetSerializer
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer,
+    TokenRefreshSerializer,
     TokenVerifySerializer,
 )
 from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
 
 from .constants.messages import (
     EXPIRED_LINK_MESSAGE,
-    INVALID_ACCESS_TOKEN_MESSAGE,
+    INVALID_TOKEN_MESSAGE,
     REQUIRED_FLAG_MESSAGE,
     UNIQUE_EMAIL_MESSAGE,
 )
@@ -24,7 +25,11 @@ from .forms import CustomPasswordResetForm
 from .models import User
 
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """ CustomTokenObtainPairSerializer is designed to add the user security_hash
+        to token attributes and return additional data with token data
+    """
+
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
@@ -44,14 +49,35 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 
-class MyTokenVerifySerializer(TokenVerifySerializer):
+def validate_token_by_security_hash(token: object):
+    """ Сhecks if the user security_hash is equal to the security_hash from the token
+    """
+    user = User.objects.get(id=token["user_id"])
+    if str(user.security_hash) != token["security_hash"]:
+        raise serializers.ValidationError(INVALID_TOKEN_MESSAGE)
+
+
+class CustomTokenVerifySerializer(TokenVerifySerializer):
+    """ CustomTokenVerifySerializer is designed to configure the validate
+        method and verify the token by user security_hash
+    """
+
     def validate(self, attrs):
         token = UntypedToken(attrs["token"])
-        if token:
-            user = User.objects.get(id=token["user_id"])
-            if user.security_hash != token["security_hash"]:
-                raise serializers.ValidationError(INVALID_ACCESS_TOKEN_MESSAGE)
+        validate_token_by_security_hash(token)
         return {}
+
+
+class CustomTokenRefreshSerializer(TokenRefreshSerializer):
+    """ CustomTokenRefreshSerializer is designed to configure the validate
+        method and verify the token by user security_hash
+    """
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = RefreshToken(attrs["refresh"])
+        validate_token_by_security_hash(refresh)
+        return data
 
 
 class CustomPasswordResetSerializer(PasswordResetSerializer):

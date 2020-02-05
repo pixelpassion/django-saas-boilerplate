@@ -6,7 +6,6 @@ from rest_auth.views import (
     PasswordResetConfirmView,
     PasswordResetView,
 )
-from rest_framework_simplejwt.views import TokenRefreshView
 
 from .constants.url_names import (
     CHANGE_PASS_URL_NAME,
@@ -21,6 +20,7 @@ from .constants.url_names import (
 )
 from .views import (
     MyTokenObtainPairView,
+    MyTokenRefreshView,
     MyTokenVerifyView,
     UserApiView,
     UserRegistrationView,
@@ -31,7 +31,9 @@ urlpatterns = [
     path(
         "api/token/", MyTokenObtainPairView.as_view(), name=TOKEN_OBTAIN_PAIR_URL_NAME
     ),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name=TOKEN_REFRESH_URL_NAME),
+    path(
+        "api/token/refresh/", MyTokenRefreshView.as_view(), name=TOKEN_REFRESH_URL_NAME
+    ),
     path("api/token/verify/", MyTokenVerifyView.as_view(), name=TOKEN_VERIFY_URL_NAME),
     path("logout/", LogoutView.as_view(), name=LOGOUT_URL_NAME),
     path("password/change/", PasswordChangeView.as_view(), name=CHANGE_PASS_URL_NAME),

@@ -2,25 +2,34 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
 
 from apps.core.custom_email_backend import SaasyEmailMessage
 
 from .models import User
 from .serializers import (
-    MyTokenObtainPairSerializer,
-    MyTokenVerifySerializer,
+    CustomTokenObtainPairSerializer,
+    CustomTokenRefreshSerializer,
+    CustomTokenVerifySerializer,
     UserDetailSerializer,
     UserRegistrationSerializer,
 )
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class MyTokenVerifyView(TokenVerifyView):
-    serializer_class = MyTokenVerifySerializer
+    serializer_class = CustomTokenVerifySerializer
+
+
+class MyTokenRefreshView(TokenRefreshView):
+    serializer_class = CustomTokenRefreshSerializer
 
 
 class UserRegistrationView(APIView):
