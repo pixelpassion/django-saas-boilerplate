@@ -154,8 +154,12 @@ class UserRegistrationSerializer(BaseUserSerializer):
     """ User registration serializer
     """
 
-    access_token = serializers.SerializerMethodField(read_only=True)
-    refresh_token = serializers.SerializerMethodField(read_only=True)
+    access = serializers.SerializerMethodField(
+        read_only=True, method_name="get_access_token"
+    )
+    refresh = serializers.SerializerMethodField(
+        read_only=True, method_name="get_refresh_token"
+    )
     first_name = serializers.CharField(max_length=256, required=True)
     last_name = serializers.CharField(max_length=256, required=True)
     password = serializers.CharField(write_only=True)
@@ -163,8 +167,8 @@ class UserRegistrationSerializer(BaseUserSerializer):
 
     class Meta(BaseUserSerializer.Meta):
         fields = BaseUserSerializer.Meta.fields + [
-            "access_token",
-            "refresh_token",
+            "access",
+            "refresh",
             "first_name",
             "last_name",
             "password",
