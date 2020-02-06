@@ -15,12 +15,21 @@ def custom_exception_handler(exc: object, context: dict):
 
     if hasattr(response, "data"):
         if isinstance(exc, rest_extencions.APIException):
-            exception_data = response.data["detail"]
-            response.data = {"messages": exception_data.__str__()}
-            response.data["error_code"] = exception_data.code
+            exception_details = response.data.get("detail")
+            messages = []
+            error_codes = []
+            if exception_details:
+                messages.append(exception_details.__str__())
+                error_codes.append(exception_details.code)
+            else:
+                for key, value in response.data.items():
+                    messages.append(f"{key}: {value[0].__str__()}")
+                    error_codes.append(value[0].code)
+            response.data = {"messages": messages}
+            response.data["error_code"] = error_codes
         elif isinstance(exc, Exception):
             response.data = {"messages": response.data}
-            response.data["error_code"] = exc.__class__.__name__
+            response.data["error_code"] = [exc.__class__.__name__]
         response.data["status_code"] = response.status_code
 
     headers = {}

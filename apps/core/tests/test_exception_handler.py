@@ -10,13 +10,10 @@ EXC_MESSAGE = "error_message"
 
 def check_response_data(response, status_code, error_code, exc_message):
     assert response.status_code == status_code
-    assert response.data["error_code"] == error_code
+    assert response.data["error_code"] == [error_code]
     assert response.data["status_code"] == status_code
     response_messages = response.data["messages"]
-    if type(response_messages) in [tuple, list]:
-        assert exc_message in response_messages
-    else:
-        assert response_messages == exc_message
+    assert exc_message in response_messages
 
 
 def get_exception_and_context(rf, exc_class):
