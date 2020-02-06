@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import PasswordResetForm
 
-from apps.core.custom_email_backend import SaasyEmailMessage
+from apps.gdpr.email_service import SaasyEmailService
 from apps.users.models import User
 
 
@@ -30,7 +30,4 @@ class CustomPasswordResetForm(PasswordResetForm):
             email=self.cleaned_data["email"], is_active=True
         ).first()
         if user:
-            email_message = SaasyEmailMessage(
-                template="reset-password", context={"link": "link"}, to=[user.email]
-            )
-            email_message.send()
+            SaasyEmailService().send_reset_password_email(user)

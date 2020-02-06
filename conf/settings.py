@@ -44,6 +44,9 @@ environ.Env.read_env(env_file=os.path.join(BASE_DIR, ".env"))
 # Fail hard, every environment needs to set the stage
 ENV = env.str("ENV")
 
+# Urls
+PUBLIC_URL = env.str("PUBLIC_URL", default="example.com")
+
 # Some handling for Heroku
 
 HEROKU_APP_ID = env.str("HEROKU_APP_ID", default=None)

@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from apps.core.custom_email_backend import SaasyEmailMessage
+from apps.gdpr.email_service import SaasyEmailService
 
 from .models import User
 from .serializers import (
@@ -47,12 +47,8 @@ class UserRegistrationView(APIView):
         )
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            email_message = SaasyEmailMessage(
-                template="activate-account",
-                context={"link": "link"},
-                to=[self.request.data["email"]],
-            )
-            email_message.send()
+            user = User.objects.get(email=self.request.data["email"])
+            SaasyEmailService().send_user_account_activation_email(user)
             return Response(serializer.data, status=201)
         return Response(serializer.data)
 
