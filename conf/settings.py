@@ -157,6 +157,7 @@ INSTALLED_APPS = [
     "django_rq",
     "apps.core",
     "apps.users",
+    "apps.gdpr",
 ]
 
 MIDDLEWARE = [
@@ -174,6 +175,16 @@ MIDDLEWARE = [
 
 if ENV == "local" and DEBUG:
     INSTALLED_APPS = INSTALLED_APPS + ["django_werkzeug"]
+
+########################################################################################
+#                                                                                      #
+#                                     GDPR settings                                    #
+#                                                                                      #
+########################################################################################
+GDPR_ADMINISTRATOR_EMAIL = env.bool("GDPR_ADMINISTRATOR_EMAIL", default=None)
+GDPR_SUPPORT_EMAIL = env.bool(
+    "GDPR_ADMINISTRATOR_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
+)
 
 ########################################################################################
 #                                                                                      #
