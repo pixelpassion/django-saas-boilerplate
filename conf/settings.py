@@ -188,6 +188,9 @@ GDPR_ADMINISTRATOR_EMAIL = env.bool("GDPR_ADMINISTRATOR_EMAIL", default=None)
 GDPR_SUPPORT_EMAIL = env.bool(
     "GDPR_ADMINISTRATOR_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
 )
+INACTIVE_ACCOUNT_DELETION_IN_WEEKS = env.int(
+    "INACTIVE_ACCOUNT_DELETION_IN_WEEKS", default=52
+)
 
 ########################################################################################
 #                                                                                      #

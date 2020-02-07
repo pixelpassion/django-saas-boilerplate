@@ -2,9 +2,12 @@ from django.utils.encoding import force_text
 
 import pytest
 
+from apps.core.tests.base_test_utils import (
+    generate_uid_and_token,
+    mock_email_backend_send_messages,
+)
 from apps.users.constants.messages import EXPIRED_LINK_MESSAGE
 
-from .base import generate_uid_and_token, mock_email_backend_send_messages
 from .constants import NEW_TEST_PASSWORD, PASS_RESET_CONFIRM_URL, PASS_RESET_URL
 
 pytestmark = pytest.mark.django_db

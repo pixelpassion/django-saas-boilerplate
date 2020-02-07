@@ -1,8 +1,7 @@
 import pytest
 
+from apps.core.tests.base_test_utils import mock_email_backend_send_messages
 from apps.users.forms import CustomPasswordResetForm
-
-from .base import mock_email_backend_send_messages
 
 pytestmark = pytest.mark.django_db
 

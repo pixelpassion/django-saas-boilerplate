@@ -2,6 +2,10 @@ from django.conf import settings as project_settings
 
 import pytest
 
+from apps.core.tests.base_test_utils import (
+    mock_email_service_function,
+    set_custom_email_backend_settings,
+)
 from apps.gdpr.constants import (
     ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE,
     ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE,
@@ -17,14 +21,9 @@ pytestmark = pytest.mark.django_db
 email_service = SaasyEmailService()
 
 
-def mock_email_service_function(mocker, settings, func_name):
-    settings.SAASY_API_KEY = "some_key"
-    settings.EMAIL_BACKEND = "apps.core.custom_email_backend.CustomEmailBackend"
-    return mocker.patch(f"apps.gdpr.email_service.SaasyEmailService.{func_name}")
-
-
 def test_send_account_was_deleted_email(user, mocker, settings):
-    mocked_email_func = mock_email_service_function(mocker, settings, "_send_message")
+    set_custom_email_backend_settings(settings)
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     email_service.send_account_was_deleted_email(user)
     assert mocked_email_func.call_count == 1
@@ -35,7 +34,8 @@ def test_send_account_was_deleted_email(user, mocker, settings):
 
 
 def test_send_account_was_recovered_email(user, mocker, settings):
-    mocked_email_func = mock_email_service_function(mocker, settings, "_send_message")
+    set_custom_email_backend_settings(settings)
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     email_service.send_account_was_recovered_email(user)
     assert mocked_email_func.call_count == 1
@@ -46,7 +46,8 @@ def test_send_account_was_recovered_email(user, mocker, settings):
 
 
 def test_send_warning_about_upcoming_account_deletion(user, mocker, settings):
-    mocked_email_func = mock_email_service_function(mocker, settings, "_send_message")
+    set_custom_email_backend_settings(settings)
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     weeks = 5
     email_service.send_warning_about_upcoming_account_deletion(user, weeks)
@@ -63,7 +64,8 @@ def test_send_warning_about_upcoming_account_deletion(user, mocker, settings):
 
 
 def test_send_inactive_account_was_deleted_email(user, mocker, settings):
-    mocked_email_func = mock_email_service_function(mocker, settings, "_send_message")
+    set_custom_email_backend_settings(settings)
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     email_service.send_inactive_account_was_deleted_email(user)
 
@@ -75,7 +77,8 @@ def test_send_inactive_account_was_deleted_email(user, mocker, settings):
 
 
 def test_send_reset_password_email(user, mocker, settings):
-    mocked_email_func = mock_email_service_function(mocker, settings, "_send_message")
+    set_custom_email_backend_settings(settings)
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     email_service.send_reset_password_email(user)
     assert mocked_email_func.call_count == 1
@@ -87,7 +90,8 @@ def test_send_reset_password_email(user, mocker, settings):
 
 
 def test_send_user_account_activation_email(user, mocker, settings):
-    mocked_email_func = mock_email_service_function(mocker, settings, "_send_message")
+    set_custom_email_backend_settings(settings)
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     email_service.send_user_account_activation_email(user)
     assert mocked_email_func.call_count == 1
