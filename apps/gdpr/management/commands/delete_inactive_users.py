@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
     def _get_users_for_deletion(self):
         return User.objects.filter(
-            is_deleted=True,
+            is_deleted=False,
             warning_sent_email=User.SECOND_WARNING_SENT,
             last_login__lte=timezone.now()
             - timedelta(weeks=self.settings_deletion_weeks),
@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
     def _get_users_for_second_warning_email(self):
         return User.objects.filter(
-            is_deleted=True,
+            is_deleted=False,
             warning_sent_email=User.FIRST_WARNING_SENT,
             last_login__lt=timezone.now()
             - timedelta(weeks=self.settings_warning_weeks[0]),
@@ -36,7 +36,7 @@ class Command(BaseCommand):
 
     def _get_users_for_first_warning_email(self):
         return User.objects.filter(
-            is_deleted=True,
+            is_deleted=False,
             warning_sent_email=User.NO_WARNING,
             last_login__lt=timezone.now()
             - timedelta(weeks=self.settings_warning_weeks[0]),

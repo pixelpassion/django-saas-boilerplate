@@ -32,7 +32,7 @@ def create_users_with_different_last_login_dates(user_factory):
         else:
             warning_sent_email = User.SECOND_WARNING_SENT
         user_factory(
-            is_deleted=True,
+            is_deleted=False,
             last_login=timezone.now() - timedelta(weeks=weeks),
             warning_sent_email=warning_sent_email,
         )
@@ -176,7 +176,7 @@ def test_delete_inactive_users_command_flow(user_factory, mocker):
 
 def test_delete_inactive_users_command_deletion_email_sending(user_factory, mocker):
     user_factory(
-        is_deleted=True,
+        is_deleted=False,
         last_login=timezone.now() - timedelta(weeks=55),
         warning_sent_email=User.SECOND_WARNING_SENT,
     )
@@ -194,7 +194,7 @@ def test_delete_inactive_users_command_wrong_warning_sent_email_status(
     user_factory, mocker, warning_sent_email_status
 ):
     user_factory(
-        is_deleted=True,
+        is_deleted=False,
         last_login=timezone.now() - timedelta(weeks=55),
         warning_sent_email=warning_sent_email_status,
     )
@@ -210,7 +210,7 @@ def test_warning_inactive_users_command_warning_email_sending(
     user_factory, mocker, weeks
 ):
     user_factory(
-        is_deleted=True,
+        is_deleted=False,
         last_login=timezone.now() - timedelta(weeks=weeks),
         warning_sent_email=User.FIRST_WARNING_SENT,
     )
@@ -225,7 +225,7 @@ def test_warning_inactive_users_command_wrong_warning_sent_email_status(
     user_factory, mocker
 ):
     user_factory(
-        is_deleted=True,
+        is_deleted=False,
         last_login=timezone.now() - timedelta(weeks=4),
         warning_sent_email=User.SECOND_WARNING_SENT,
     )
@@ -251,7 +251,7 @@ def test_sent_email_inactive_users_one_week(user_factory, weeks, mocker):
         mocker, "send_warning_about_upcoming_account_deletion"
     )
     user = user_factory(
-        is_deleted=True,
+        is_deleted=False,
         last_login=timezone.now() - timedelta(weeks=weeks),
         warning_sent_email=User.NO_WARNING,
     )
@@ -269,7 +269,7 @@ def test_sent_email_inactive_users_four_week(user_factory, weeks, mocker):
         mocker, "send_warning_about_upcoming_account_deletion"
     )
     user = user_factory(
-        is_deleted=True,
+        is_deleted=False,
         last_login=timezone.now() - timedelta(weeks=weeks),
         warning_sent_email=User.FIRST_WARNING_SENT,
     )
@@ -287,7 +287,7 @@ def test_sent_email_inactive_users_settings_week(user_factory, weeks, mocker):
         mocker, "send_inactive_account_was_deleted_email"
     )
     user_factory(
-        is_deleted=True,
+        is_deleted=False,
         last_login=timezone.now() - timedelta(weeks=weeks),
         warning_sent_email=User.SECOND_WARNING_SENT,
     )
@@ -303,7 +303,7 @@ def test_delete_inactive_users_command_not_deleted_users(user_factory, mocker):
     user_factory(
         is_deleted=False,
         last_login=timezone.now() - timedelta(weeks=55),
-        warning_sent_email=User.SECOND_WARNING_SENT,
+        warning_sent_email=User.NO_WARNING,
     )
     mocked_email_func = mock_email_service_function(
         mocker, "send_inactive_account_was_deleted_email"
@@ -312,9 +312,9 @@ def test_delete_inactive_users_command_not_deleted_users(user_factory, mocker):
     assert mocked_email_func.call_count == 0
 
 
-def test_warning_inactive_users_command_not_deleted_users(user_factory, mocker):
+def test_warning_inactive_users_command_deleted_users(user_factory, mocker):
     user_factory(
-        is_deleted=False,
+        is_deleted=True,
         last_login=timezone.now() - timedelta(weeks=5),
         warning_sent_email=User.FIRST_WARNING_SENT,
     )
