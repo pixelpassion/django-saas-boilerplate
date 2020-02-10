@@ -10,9 +10,11 @@ from apps.users.models import User
 
 class Command(BaseCommand):
     help = "Deletes inactive users and sends warning messages"
-    settings_deletion_weeks = settings.INACTIVE_ACCOUNT_DELETION_IN_WEEKS
-    settings_warning_weeks = settings.INACTIVE_ACCOUNT_WARNING_IN_WEEKS
     email_service = SaasyEmailService()
+
+    def __init__(self):
+        self.settings_deletion_weeks = settings.INACTIVE_ACCOUNT_DELETION_IN_WEEKS
+        self.settings_warning_weeks = settings.INACTIVE_ACCOUNT_WARNING_IN_WEEKS
 
     def _get_users_for_deletion(self):
         return User.objects.filter(
@@ -22,7 +24,7 @@ class Command(BaseCommand):
             - timedelta(weeks=self.settings_deletion_weeks),
         )
 
-    def _get_users_for_four_week_warning_email(self):
+    def _get_users_for_second_warning_email(self):
         return User.objects.filter(
             is_deleted=True,
             warning_sent_email=User.FIRST_WARNING_SENT,
@@ -32,7 +34,7 @@ class Command(BaseCommand):
             - timedelta(weeks=self.settings_deletion_weeks),
         )
 
-    def _get_users_for_one_week_warning_email(self):
+    def _get_users_for_first_warning_email(self):
         return User.objects.filter(
             is_deleted=True,
             warning_sent_email=User.NO_WARNING,
@@ -43,24 +45,26 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        users_for_deletion = self._get_users_for_deletion()
-        users_four_week = self._get_users_for_four_week_warning_email()
-        users_one_week = self._get_users_for_one_week_warning_email()
+        if self.settings_deletion_weeks is not None:
+            users_for_deletion = self._get_users_for_deletion()
 
-        for users, weeks in {
-            users_four_week: self.settings_warning_weeks[1],
-            users_one_week: self.settings_warning_weeks[0],
-        }.items():
-            for user in users:
-                self.email_service.send_warning_about_upcoming_account_deletion(
-                    user, weeks
-                )
-                user.warning_sent_email = (
-                    User.FIRST_WARNING_SENT
-                    if weeks == self.settings_warning_weeks[0]
-                    else User.SECOND_WARNING_SENT
-                )
-                user.save()
-        for user in users_for_deletion:
-            self.email_service.send_inactive_account_was_deleted_email(user)
-        users_for_deletion.delete()
+            if self.settings_warning_weeks is not None:
+                users_for_second_warning = self._get_users_for_second_warning_email()
+                users_for_first_warning = self._get_users_for_first_warning_email()
+                for users, weeks in {
+                    users_for_second_warning: self.settings_warning_weeks[1],
+                    users_for_first_warning: self.settings_warning_weeks[0],
+                }.items():
+                    for user in users:
+                        self.email_service.send_warning_about_upcoming_account_deletion(
+                            user, weeks
+                        )
+                        user.warning_sent_email = (
+                            User.FIRST_WARNING_SENT
+                            if weeks == self.settings_warning_weeks[0]
+                            else User.SECOND_WARNING_SENT
+                        )
+                        user.save()
+            for user in users_for_deletion:
+                self.email_service.send_inactive_account_was_deleted_email(user)
+            users_for_deletion.delete()

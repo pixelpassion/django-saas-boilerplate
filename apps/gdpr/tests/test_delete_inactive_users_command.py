@@ -44,9 +44,8 @@ def test_delete_inactive_users_command_if_settings_deletion_weeks_is_none(
     settings.INACTIVE_ACCOUNT_DELETION_IN_WEEKS = None
     create_users_with_different_last_login_dates(user_factory)
 
-    users_before = User.objects.count()
-
     create_users_with_different_last_login_dates(user_factory)
+    users_before = User.objects.count()
 
     mocked_warning_emails_func = mock_email_service_function(
         mocker, "send_warning_about_upcoming_account_deletion"
@@ -66,9 +65,9 @@ def test_delete_inactive_users_command_if_settings_warning_weeks_is_none(
 ):
     settings.INACTIVE_ACCOUNT_WARNING_IN_WEEKS = None
 
+    create_users_with_different_last_login_dates(user_factory)
     users_before = User.objects.count()
 
-    create_users_with_different_last_login_dates(user_factory)
     users_for_deletion_count = User.objects.filter(
         last_login__lte=timezone.now() - timedelta(weeks=52),
         warning_sent_email=User.SECOND_WARNING_SENT,
@@ -84,18 +83,13 @@ def test_delete_inactive_users_command_if_settings_warning_weeks_is_none(
     call_command("delete_inactive_users")
     assert mocked_warning_emails_func.call_count == 0
     assert mocked_delete_email_func.call_count == users_for_deletion_count
-    assert users_before == User.objects.count()
+    assert users_before - users_for_deletion_count == User.objects.count()
 
 
 def test_delete_inactive_users_command_if_deletion_bcc_email_is_none(
     user_factory, mocker, settings
 ):
     settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL = None
-    create_users_with_different_last_login_dates(user_factory)
-
-    users_before = User.objects.count()
-
-    create_users_with_different_last_login_dates(user_factory)
 
     mocked_warning_emails_func = mock_email_service_function(
         mocker, "send_warning_about_upcoming_account_deletion"
@@ -104,10 +98,23 @@ def test_delete_inactive_users_command_if_deletion_bcc_email_is_none(
         mocker, "send_inactive_account_was_deleted_email"
     )
 
+    create_users_with_different_last_login_dates(user_factory)
+    users_before = User.objects.count()
+
+    users_for_deletion_count = User.objects.filter(
+        last_login__lte=timezone.now() - timedelta(weeks=52),
+        warning_sent_email=User.SECOND_WARNING_SENT,
+    ).count()
+    users_for_waring_count = User.objects.filter(
+        last_login__lt=timezone.now() - timedelta(weeks=1),
+        last_login__gt=timezone.now() - timedelta(weeks=52),
+    ).count()
+
     call_command("delete_inactive_users")
-    assert mocked_warning_emails_func.call_count == 0
-    assert mocked_delete_email_func.call_count == 0
-    assert users_before == User.objects.count()
+
+    assert mocked_warning_emails_func.call_count == users_for_waring_count
+    assert mocked_delete_email_func.call_count == users_for_deletion_count
+    assert User.objects.count() == users_before - users_for_deletion_count
 
 
 def test_delete_inactive_users_command_if_warning_bcc_email_is_none(
@@ -115,14 +122,6 @@ def test_delete_inactive_users_command_if_warning_bcc_email_is_none(
 ):
     settings.INACTIVE_ACCOUNT_WARNING_BCC_EMAIL = None
 
-    users_before = User.objects.count()
-
-    create_users_with_different_last_login_dates(user_factory)
-    users_for_deletion_count = User.objects.filter(
-        last_login__lte=timezone.now() - timedelta(weeks=52),
-        warning_sent_email=User.SECOND_WARNING_SENT,
-    ).count()
-
     mocked_warning_emails_func = mock_email_service_function(
         mocker, "send_warning_about_upcoming_account_deletion"
     )
@@ -130,10 +129,23 @@ def test_delete_inactive_users_command_if_warning_bcc_email_is_none(
         mocker, "send_inactive_account_was_deleted_email"
     )
 
+    create_users_with_different_last_login_dates(user_factory)
+    users_before = User.objects.count()
+
+    users_for_deletion_count = User.objects.filter(
+        last_login__lte=timezone.now() - timedelta(weeks=52),
+        warning_sent_email=User.SECOND_WARNING_SENT,
+    ).count()
+    users_for_waring_count = User.objects.filter(
+        last_login__lt=timezone.now() - timedelta(weeks=1),
+        last_login__gt=timezone.now() - timedelta(weeks=52),
+    ).count()
+
     call_command("delete_inactive_users")
-    assert mocked_warning_emails_func.call_count == 0
+
+    assert mocked_warning_emails_func.call_count == users_for_waring_count
     assert mocked_delete_email_func.call_count == users_for_deletion_count
-    assert users_before == User.objects.count()
+    assert User.objects.count() == users_before - users_for_deletion_count
 
 
 def test_delete_inactive_users_command_flow(user_factory, mocker):
@@ -153,13 +165,13 @@ def test_delete_inactive_users_command_flow(user_factory, mocker):
         last_login__lt=timezone.now() - timedelta(weeks=1),
         last_login__gt=timezone.now() - timedelta(weeks=52),
     ).count()
-    users_before_count = User.objects.count()
+    users_before = User.objects.count()
 
     call_command("delete_inactive_users")
 
     assert mocked_warning_emails_func.call_count == users_for_waring_count
     assert mocked_delete_email_func.call_count == users_for_deletion_count
-    assert User.objects.count() == users_before_count - users_for_deletion_count
+    assert User.objects.count() == users_before - users_for_deletion_count
 
 
 def test_delete_inactive_users_command_deletion_email_sending(user_factory, mocker):
@@ -229,8 +241,8 @@ def test_delete_inactive_users_command_functions(user_factory):
     create_users_with_different_last_login_dates(user_factory)
 
     assert command._get_users_for_deletion().count() == 2
-    assert command._get_users_for_four_week_warning_email().count() == 2
-    assert command._get_users_for_one_week_warning_email().count() == 1
+    assert command._get_users_for_second_warning_email().count() == 2
+    assert command._get_users_for_first_warning_email().count() == 1
 
 
 @pytest.mark.parametrize("weeks", [1, 2, 3])
@@ -279,12 +291,12 @@ def test_sent_email_inactive_users_settings_week(user_factory, weeks, mocker):
         last_login=timezone.now() - timedelta(weeks=weeks),
         warning_sent_email=User.SECOND_WARNING_SENT,
     )
-    users_before_count = User.objects.count()
+    users_before = User.objects.count()
 
     call_command("delete_inactive_users")
 
     assert mocked_email_func.call_count == 1
-    assert User.objects.count() == users_before_count - 1
+    assert User.objects.count() == users_before - 1
 
 
 def test_delete_inactive_users_command_not_deleted_users(user_factory, mocker):
