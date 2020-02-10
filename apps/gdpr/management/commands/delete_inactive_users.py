@@ -66,5 +66,5 @@ class Command(BaseCommand):
                         )
                         user.save()
             for user in users_for_deletion:
-                self.email_service.send_inactive_account_was_deleted_email(user)
+                self.email_service.send_account_was_deleted_email(user)
             users_for_deletion.delete()

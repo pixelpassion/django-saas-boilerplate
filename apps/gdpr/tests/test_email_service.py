@@ -4,6 +4,7 @@ import pytest
 
 from apps.core.tests.base_test_utils import mock_email_service_function
 from apps.gdpr.constants import (
+    ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME,
     ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE,
     ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE,
     INACTIVE_ACCOUNT_DELETION_DONE_TEMPLATE,
@@ -18,7 +19,7 @@ pytestmark = pytest.mark.django_db
 email_service = SaasyEmailService()
 
 
-def test_send_account_was_deleted_email(user, mocker):
+def test_send_account_was_deleted_email_not_deleted_user(user, mocker):
     mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     email_service.send_account_was_deleted_email(user)
@@ -26,18 +27,43 @@ def test_send_account_was_deleted_email(user, mocker):
 
     call_data = mocked_email_func.call_args[0]
     assert call_data[0] == user.email
-    assert call_data[1] == ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
-    assert call_data[2] == {
-        "LOGIN_URL": f"{settings.PUBLIC_URL}/login",
-        "FROM_EMAIL": settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL,
-    }
+    assert call_data[1] == INACTIVE_ACCOUNT_DELETION_DONE_TEMPLATE
+    assert call_data[2] == {"FROM_EMAIL": settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL}
 
 
-def test_send_account_was_deleted_email_if_deletion_bcc_email_is_none(
+def test_send_account_was_deleted_email_not_deleted_user_if_deletion_bcc_email_is_none(
     user, mocker, settings
 ):
     settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL = None
     mocked_email_func = mock_email_service_function(mocker, "_send_message")
+
+    email_service.send_account_was_deleted_email(user)
+    assert mocked_email_func.call_count == 0
+
+
+def test_send_account_was_deleted_email_deleted_user(user, mocker):
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
+
+    user.is_deleted = True
+    user.save()
+
+    email_service.send_account_was_deleted_email(user)
+    assert mocked_email_func.call_count == 1
+
+    call_data = mocked_email_func.call_args[0]
+    assert call_data[0] == user.email
+    assert call_data[1] == ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
+    assert call_data[2] == {"FROM_EMAIL": settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL}
+
+
+def test_send_account_was_deleted_email_deleted_user_if_deleted_bcc_email_is_none(
+    user, mocker, settings
+):
+    settings.ACCOUNT_DELETED_BCC_EMAIL = None
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
+
+    user.is_deleted = True
+    user.save()
 
     email_service.send_account_was_deleted_email(user)
     assert mocked_email_func.call_count == 0
@@ -84,18 +110,6 @@ def test_send_warning_about_upcoming_account_deletion_if_warning_bcc_email_is_no
     assert mocked_email_func.call_count == 0
 
 
-def test_send_inactive_account_was_deleted_email(user, mocker):
-    mocked_email_func = mock_email_service_function(mocker, "_send_message")
-
-    email_service.send_inactive_account_was_deleted_email(user)
-
-    assert mocked_email_func.call_count == 1
-
-    call_data = mocked_email_func.call_args[0]
-    assert call_data[0] == user.email
-    assert call_data[1] == INACTIVE_ACCOUNT_DELETION_DONE_TEMPLATE
-
-
 def test_send_reset_password_email(user, mocker):
     mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
@@ -122,3 +136,39 @@ def test_send_user_account_activation_email(user, mocker):
             f"{settings.PUBLIC_URL}/auth/sign-up/success/?hash={user.email}"
         )
     }
+
+
+def test_send_account_scheduled_for_deletion_email(user, mocker):
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
+
+    email_service.send_account_scheduled_for_deletion_email(user)
+    assert mocked_email_func.call_count == 1
+
+    call_data = mocked_email_func.call_args[0]
+    assert call_data[0] == user.email
+
+    assert call_data[1] == ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME
+    assert call_data[2] == {
+        "FROM_EMAIL": settings.ACCOUNT_SCHEDULED_FOR_DELETION_BCC_EMAIL
+    }
+
+
+def test_send_account_scheduled_for_deletion_email_if_scheduled_bcc_email_is_none(
+    user, mocker, settings
+):
+    settings.ACCOUNT_SCHEDULED_FOR_DELETION_BCC_EMAIL = None
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
+
+    email_service.send_account_scheduled_for_deletion_email(user)
+    assert mocked_email_func.call_count == 0
+
+
+@pytest.mark.parametrize("in_days_value", [0, None])
+def test_send_account_scheduled_for_deletion_email_if_deletion_retention(
+    user, mocker, settings, in_days_value
+):
+    settings.ACCOUNT_DELETION_RETENTION_IN_DAYS = in_days_value
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
+
+    email_service.send_account_scheduled_for_deletion_email(user)
+    assert mocked_email_func.call_count == 0

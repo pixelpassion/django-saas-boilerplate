@@ -8,6 +8,7 @@ from saasy.client import Client
 from apps.core.custom_email_backend import SaasyEmailMessage
 
 from .constants import (
+    ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME,
     ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE,
     ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE,
     INACTIVE_ACCOUNT_DELETION_DONE_TEMPLATE,
@@ -30,17 +31,23 @@ class SaasyEmailService:
         email_message.send()
 
     def send_account_was_deleted_email(self, user: object):
-        settings_deletion_bcc_email = settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL
-        if settings_deletion_bcc_email is not None:
-            context = {
-                "LOGIN_URL": self.LOGIN_URL,
-                "FROM_EMAIL": settings_deletion_bcc_email,
-            }
-            self._send_message(user.email, ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE, context)
+        if user.is_deleted:
+            settings_deleted_bcc_email = settings.ACCOUNT_DELETED_BCC_EMAIL
+            if settings_deleted_bcc_email is not None:
+                context = {"FROM_EMAIL": settings_deleted_bcc_email}
+                self._send_message(
+                    user.email, ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE, context
+                )
+        else:
+            settings_deletion_bcc_email = settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL
+            if settings_deletion_bcc_email is not None:
+                context = {"FROM_EMAIL": settings_deletion_bcc_email}
+                self._send_message(
+                    user.email, INACTIVE_ACCOUNT_DELETION_DONE_TEMPLATE, context
+                )
 
     def send_account_was_recovered_email(self, user: object):
-        context = {"LOGIN_URL": self.LOGIN_URL}
-        self._send_message(user.email, ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE, context)
+        self._send_message(user.email, ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE)
 
     def send_warning_about_upcoming_account_deletion(self, user: object, weeks: int):
         settings_warning_bcc_email = settings.INACTIVE_ACCOUNT_WARNING_BCC_EMAIL
@@ -53,9 +60,6 @@ class SaasyEmailService:
             self._send_message(
                 user.email, INACTIVE_ACCOUNT_DELETION_WARNING_TEMPLATE, context
             )
-
-    def send_inactive_account_was_deleted_email(self, user: object):
-        self._send_message(user.email, INACTIVE_ACCOUNT_DELETION_DONE_TEMPLATE)
 
     def send_reset_password_email(self, user: object):
         uuid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -78,3 +82,18 @@ class SaasyEmailService:
         self._send_message(
             user.email, USER_ACCOUNT_VERIFICATION_EMAIL_TEMPLATE, context
         )
+
+    def send_account_scheduled_for_deletion_email(self, user: object):
+        settings_account_scheduled_bcc_email = (
+            settings.ACCOUNT_SCHEDULED_FOR_DELETION_BCC_EMAIL
+        )
+        settings_account_deletion_in_days = settings.ACCOUNT_DELETION_RETENTION_IN_DAYS
+
+        if settings_account_scheduled_bcc_email is not None and (
+            settings_account_deletion_in_days is not None
+            and settings_account_deletion_in_days != 0
+        ):
+            context = {"FROM_EMAIL": settings_account_scheduled_bcc_email}
+            self._send_message(
+                user.email, ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME, context
+            )
