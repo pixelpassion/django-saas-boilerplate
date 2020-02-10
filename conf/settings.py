@@ -184,12 +184,22 @@ if ENV == "local" and DEBUG:
 #                                     GDPR settings                                    #
 #                                                                                      #
 ########################################################################################
-GDPR_ADMINISTRATOR_EMAIL = env.bool("GDPR_ADMINISTRATOR_EMAIL", default=None)
-GDPR_SUPPORT_EMAIL = env.bool(
+GDPR_ADMINISTRATOR_EMAIL = env.str("GDPR_ADMINISTRATOR_EMAIL", default=None)
+GDPR_SUPPORT_EMAIL = env.str(
     "GDPR_ADMINISTRATOR_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
 )
+INACTIVE_ACCOUNT_DELETION_BCC_EMAIL = env.str(
+    "INACTIVE_ACCOUNT_DELETION_BCC_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
+)
+INACTIVE_ACCOUNT_WARNING_BCC_EMAIL = env.str(
+    "INACTIVE_ACCOUNT_WARNING_BCC_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
+)
+
 INACTIVE_ACCOUNT_DELETION_IN_WEEKS = env.int(
     "INACTIVE_ACCOUNT_DELETION_IN_WEEKS", default=52
+)
+INACTIVE_ACCOUNT_WARNING_IN_WEEKS = env.list(
+    "INACTIVE_ACCOUNT_WARNING_IN_WEEKS", default=(1, 4)
 )
 
 ########################################################################################

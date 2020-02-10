@@ -12,10 +12,28 @@ class User(AbstractUser):
     This model is inherited from default user model.
     """
 
+    NO_WARNING, FIRST_WARNING_SENT, SECOND_WARNING_SENT = (
+        "no_warnings",
+        "first_warning_sent",
+        "second_warning_sent",
+    )
+    WARNING_CHOICES = (
+        (NO_WARNING, _("No warnings")),
+        (FIRST_WARNING_SENT, _("First warning sent")),
+        (SECOND_WARNING_SENT, _("Second warning sent")),
+    )
+
     email = models.EmailField(_("Email address"), unique=True)
     privacy_policy = models.BooleanField(_("Privacy policy accepted"), default=True)
     security_hash = models.UUIDField(
         _("Security hash"), default=uuid.uuid4, unique=True
+    )
+    is_deleted = models.BooleanField(_("Deleted"), default=False)
+    warning_sent_email = models.CharField(
+        verbose_name=_("Warning email"),
+        choices=WARNING_CHOICES,
+        max_length=256,
+        default=NO_WARNING,
     )
 
     USERNAME_FIELD = "email"
