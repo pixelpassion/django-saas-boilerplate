@@ -201,6 +201,25 @@ INACTIVE_ACCOUNT_DELETION_IN_WEEKS = env.int(
 INACTIVE_ACCOUNT_WARNING_IN_WEEKS = env.list(
     "INACTIVE_ACCOUNT_WARNING_IN_WEEKS", default=(1, 4)
 )
+if ENV != "test" and (
+    INACTIVE_ACCOUNT_DELETION_IN_WEEKS != 52
+    or INACTIVE_ACCOUNT_WARNING_IN_WEEKS != (1, 4)
+):
+    from .utils import account_warning_and_deletion_in_weeks_are_correct
+
+    if not account_warning_and_deletion_in_weeks_are_correct(
+        INACTIVE_ACCOUNT_DELETION_IN_WEEKS, INACTIVE_ACCOUNT_WARNING_IN_WEEKS
+    ):
+        sys.stderr.write(
+            "Wrong combination of weeks before account deletion and weeks before"
+            " account deletion warning"
+            " (INACTIVE_ACCOUNT_DELETION_IN_WEEKS:"
+            f" {INACTIVE_ACCOUNT_DELETION_IN_WEEKS},"
+            " INACTIVE_ACCOUNT_WARNING_IN_WEEKS:"
+            f" {INACTIVE_ACCOUNT_WARNING_IN_WEEKS}).\n"
+        )
+        INACTIVE_ACCOUNT_DELETION_IN_WEEKS = None
+        INACTIVE_ACCOUNT_WARNING_IN_WEEKS = None
 
 ########################################################################################
 #                                                                                      #
