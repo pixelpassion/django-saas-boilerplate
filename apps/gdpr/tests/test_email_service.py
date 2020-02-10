@@ -1,11 +1,8 @@
-from django.conf import settings as project_settings
+from django.conf import settings
 
 import pytest
 
-from apps.core.tests.base_test_utils import (
-    mock_email_service_function,
-    set_custom_email_backend_settings,
-)
+from apps.core.tests.base_test_utils import mock_email_service_function
 from apps.gdpr.constants import (
     ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE,
     ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE,
@@ -21,8 +18,7 @@ pytestmark = pytest.mark.django_db
 email_service = SaasyEmailService()
 
 
-def test_send_account_was_deleted_email(user, mocker, settings):
-    set_custom_email_backend_settings(settings)
+def test_send_account_was_deleted_email(user, mocker):
     mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     email_service.send_account_was_deleted_email(user)
@@ -33,8 +29,7 @@ def test_send_account_was_deleted_email(user, mocker, settings):
     assert call_data[1] == ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
 
 
-def test_send_account_was_recovered_email(user, mocker, settings):
-    set_custom_email_backend_settings(settings)
+def test_send_account_was_recovered_email(user, mocker):
     mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     email_service.send_account_was_recovered_email(user)
@@ -45,8 +40,7 @@ def test_send_account_was_recovered_email(user, mocker, settings):
     assert call_data[1] == ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE
 
 
-def test_send_warning_about_upcoming_account_deletion(user, mocker, settings):
-    set_custom_email_backend_settings(settings)
+def test_send_warning_about_upcoming_account_deletion(user, mocker):
     mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     weeks = 5
@@ -59,12 +53,11 @@ def test_send_warning_about_upcoming_account_deletion(user, mocker, settings):
     assert call_data[1] == INACTIVE_ACCOUNT_DELETION_WARNING_TEMPLATE
     assert call_data[2] == {
         "WEEKS_LEFT": weeks,
-        "LOGIN_URL": f"{project_settings.PUBLIC_URL}/login",
+        "LOGIN_URL": f"{settings.PUBLIC_URL}/login",
     }
 
 
-def test_send_inactive_account_was_deleted_email(user, mocker, settings):
-    set_custom_email_backend_settings(settings)
+def test_send_inactive_account_was_deleted_email(user, mocker):
     mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     email_service.send_inactive_account_was_deleted_email(user)
@@ -76,8 +69,7 @@ def test_send_inactive_account_was_deleted_email(user, mocker, settings):
     assert call_data[1] == INACTIVE_ACCOUNT_DELETION_DONE_TEMPLATE
 
 
-def test_send_reset_password_email(user, mocker, settings):
-    set_custom_email_backend_settings(settings)
+def test_send_reset_password_email(user, mocker):
     mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     email_service.send_reset_password_email(user)
@@ -89,8 +81,7 @@ def test_send_reset_password_email(user, mocker, settings):
     assert "RESET_PASSWORD_URL" in call_data[2]
 
 
-def test_send_user_account_activation_email(user, mocker, settings):
-    set_custom_email_backend_settings(settings)
+def test_send_user_account_activation_email(user, mocker):
     mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
     email_service.send_user_account_activation_email(user)
@@ -101,6 +92,6 @@ def test_send_user_account_activation_email(user, mocker, settings):
     assert call_data[1] == USER_ACCOUNT_VERIFICATION_EMAIL_TEMPLATE
     assert call_data[2] == {
         "SIGN_UP_VERIFICATION_URL": (
-            f"{project_settings.PUBLIC_URL}/auth/sign-up/success/?hash={user.email}"
+            f"{settings.PUBLIC_URL}/auth/sign-up/success/?hash={user.email}"
         )
     }
