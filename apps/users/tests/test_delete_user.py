@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 
 from apps.core.tests.base_test_utils import mock_email_service_function
+from apps.gdpr.constants import ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
 from apps.users.models import User
 
 from .constants import TEST_PASSWORD, TOKEN_OBTAIN_PAIR_URL, USER_API_URL
@@ -22,6 +23,36 @@ def test_user_deletion_deleted_status(logged_in_client, user, mocker):
     # test user data
     user.refresh_from_db()
     assert user.is_deleted
+
+
+def test_user_deletion_if_retention_in_days_is_zero(
+    logged_in_client, user, mocker, settings
+):
+    settings.ACCOUNT_DELETION_RETENTION_IN_DAYS = 0
+    mock_email_service_function(mocker, "send_account_was_deleted_email")
+    assert not user.is_deleted
+    user_count_before = User.objects.count()
+
+    response = logged_in_client.delete(USER_API_URL)
+    assert response.status_code == 204
+    assert User.objects.count() == user_count_before - 1
+
+
+def test_user_deletion_if_retention_in_days_is_zero_send_mail(
+    logged_in_client, user, mocker, settings
+):
+    settings.ACCOUNT_DELETION_RETENTION_IN_DAYS = 0
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
+    assert not user.is_deleted
+
+    response = logged_in_client.delete(USER_API_URL)
+    assert response.status_code == 204
+
+    # test mail
+    assert mocked_email_func.call_count == 1
+    call_data = mocked_email_func.call_args[0]
+    assert call_data[0] == user.email
+    assert call_data[1] == ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
 
 
 def test_user_deletion_send_email(logged_in_client, mocker):

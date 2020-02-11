@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -77,6 +79,9 @@ class UserApiView(ReadOnlyModelViewSet):
     def perform_destroy(self, request, format=None):
         user = self.get_object()
         user.soft_delete_user()
-
-        SaasyEmailService().send_account_scheduled_for_deletion_email(user)
+        if settings.ACCOUNT_DELETION_RETENTION_IN_DAYS == 0:
+            user.delete()
+            SaasyEmailService().send_account_was_deleted_email(user)
+        else:
+            SaasyEmailService().send_account_scheduled_for_deletion_email(user)
         return Response(status=204)
