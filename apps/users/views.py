@@ -55,10 +55,17 @@ class UserRegistrationView(APIView):
 
 class UserApiView(ReadOnlyModelViewSet):
     serializer_class = UserDetailSerializer
-    http_method_names = ["get"]
+    http_method_names = ["get", "delete"]
 
     def get_queryset(self):
         return User.objects.filter(pk=self.request.user.pk)
 
     def get_object(self):
         return self.request.user
+
+    def perform_destroy(self, request, format=None):
+        user = self.get_object()
+        user.soft_delete_user()
+
+        SaasyEmailService().send_account_scheduled_for_deletion_email(user)
+        return Response(status=204)

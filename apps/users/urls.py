@@ -43,5 +43,9 @@ urlpatterns = [
         PasswordResetConfirmView.as_view(),
         name=PASS_RESET_CONFIRM_URL_NAME,
     ),
-    path("me/", UserApiView.as_view({"get": "retrieve"}), name=USER_API_URL_NAME),
+    path(
+        "me/",
+        UserApiView.as_view({"get": "retrieve", "delete": "perform_destroy"}),
+        name=USER_API_URL_NAME,
+    ),
 ]

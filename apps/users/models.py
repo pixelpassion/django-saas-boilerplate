@@ -1,8 +1,17 @@
 import uuid
+from datetime import timedelta
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext as _
+
+from .constants.messages import (
+    USER_ALREADY_DELETED_MESSAGE,
+    USER_WILL_BE_DELETED_MESSAGE,
+)
 
 
 class User(AbstractUser):
@@ -50,6 +59,22 @@ class User(AbstractUser):
         verbose_name = _("User")
         verbose_name_plural = _("Users")
         app_label = "users"
+
+    def soft_undelete_user(self):
+        if self.last_login > timezone.now() - timedelta(
+            days=settings.ACCOUNT_DELETION_RETENTION_IN_DAYS
+        ):
+            self.is_deleted = False
+            self.save()
+        else:
+            raise ValidationError(USER_WILL_BE_DELETED_MESSAGE)
+
+    def soft_delete_user(self):
+        if self.is_deleted:
+            raise ValidationError(USER_ALREADY_DELETED_MESSAGE)
+        self.is_deleted = True
+        self.last_login = timezone.now()
+        self.save(update_fields=["is_deleted", "last_login"])
 
     def __str__(self):
         """
