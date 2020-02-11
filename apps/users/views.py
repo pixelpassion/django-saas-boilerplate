@@ -23,6 +23,17 @@ from .serializers import (
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
+    def post(self, request, *args, **kwargs):
+        data = super().post(request, *args, **kwargs)
+
+        # soft user undeletion and send recovery email
+        user = User.objects.get(email=self.request.data["email"])
+        if user.is_deleted:
+            user.soft_undelete_user()
+            SaasyEmailService().send_account_was_recovered_email(user)
+
+        return data
+
 
 class MyTokenVerifyView(TokenVerifyView):
     serializer_class = CustomTokenVerifySerializer

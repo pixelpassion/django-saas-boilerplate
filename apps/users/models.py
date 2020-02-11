@@ -60,6 +60,13 @@ class User(AbstractUser):
         verbose_name_plural = _("Users")
         app_label = "users"
 
+    def soft_delete_user(self):
+        if self.is_deleted:
+            raise ValidationError(USER_ALREADY_DELETED_MESSAGE)
+        self.is_deleted = True
+        self.last_login = timezone.now()
+        self.save(update_fields=["is_deleted", "last_login"])
+
     def soft_undelete_user(self):
         if self.last_login > timezone.now() - timedelta(
             days=settings.ACCOUNT_DELETION_RETENTION_IN_DAYS
@@ -68,13 +75,6 @@ class User(AbstractUser):
             self.save()
         else:
             raise ValidationError(USER_WILL_BE_DELETED_MESSAGE)
-
-    def soft_delete_user(self):
-        if self.is_deleted:
-            raise ValidationError(USER_ALREADY_DELETED_MESSAGE)
-        self.is_deleted = True
-        self.last_login = timezone.now()
-        self.save(update_fields=["is_deleted", "last_login"])
 
     def __str__(self):
         """
