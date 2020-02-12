@@ -212,11 +212,11 @@ def test_send_account_info_is_ready_email(user, mocker):
     }
 
 
-def test_send_account_info_is_ready_email_if_settings_email_is_none(
+def test_send_account_info_asked_for_email_if_settings_email_is_none(
     user, mocker, settings
 ):
     settings.ACCOUNT_INFO_ASKED_FOR_EMAIL = None
     mocked_email_func = mock_email_service_function(mocker, "_send_message")
 
-    email_service.send_account_info_is_ready_email(user)
+    email_service.send_account_info_asked_for_email(user)
     assert mocked_email_func.call_count == 0
