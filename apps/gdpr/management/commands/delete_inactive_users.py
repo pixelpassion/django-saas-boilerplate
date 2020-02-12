@@ -44,7 +44,7 @@ class Command(BaseCommand):
             - timedelta(weeks=self.settings_warning_weeks[1]),
         )
 
-    def handle(self, *args, **options):
+    def run_delete_inactive_users_command(self):
         if self.settings_deletion_weeks is not None:
             users_for_deletion = self._get_users_for_deletion()
 
@@ -68,3 +68,6 @@ class Command(BaseCommand):
             for user in users_for_deletion:
                 self.email_service.send_account_was_deleted_email(user)
             users_for_deletion.delete()
+
+    def handle(self, *args, **options):
+        self.run_delete_inactive_users_command()

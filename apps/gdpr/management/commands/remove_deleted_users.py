@@ -12,7 +12,7 @@ class Command(BaseCommand):
     help = "Deletes programmatically deleted users who logged in more than a week ago."
     email_service = SaasyEmailService()
 
-    def handle(self, *args, **options):
+    def run_remove_deleted_users_command(self):
         if settings.ACCOUNT_DELETION_RETENTION_IN_DAYS not in [0, None]:
             users = User.objects.filter(
                 is_deleted=True, last_login__lt=timezone.now() - timedelta(days=7)
@@ -20,3 +20,6 @@ class Command(BaseCommand):
             for user in users:
                 self.email_service.send_account_was_deleted_email(user)
             users.delete()
+
+    def handle(self, *args, **options):
+        self.run_remove_deleted_users_command()

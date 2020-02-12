@@ -33,7 +33,7 @@ class Command(BaseCommand):
             account_info_sent=False,
         )
 
-    def handle(self, *args, **options):
+    def run_send_account_info_command(self):
         users_with_expired_link = self._get_users_with_expired_link()
         users_for_send_account_data_email = (
             self._get_users_for_send_account_data_email()
@@ -45,3 +45,6 @@ class Command(BaseCommand):
             self.email_service.send_account_info_is_ready_email(user)
             user.account_info_sent = True
             user.save(update_fields=["account_info_sent"])
+
+    def handle(self, *args, **options):
+        self.run_send_account_info_command()
