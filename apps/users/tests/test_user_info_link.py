@@ -21,12 +21,11 @@ def test_create_user_info_link_anon_user(client):
 
 
 def test_create_user_info_link_auth_user(logged_in_client, user, mocker):
-
-    mocked_account_info_is_ready_email_func = mock_email_service_function(
-        mocker, "account_info_is_ready_email"
-    )
     mocked_asked_for_email_func = mock_email_service_function(
         mocker, "send_account_info_asked_for_email"
+    )
+    mocked_account_info_is_ready_email_func = mock_email_service_function(
+        mocker, "send_account_info_is_ready_email"
     )
 
     assert user.account_info_link is None
@@ -38,8 +37,8 @@ def test_create_user_info_link_auth_user(logged_in_client, user, mocker):
     user.refresh_from_db()
     assert user.account_info_link is not None
     assert user.last_account_info_created is not None
-    assert mocked_account_info_is_ready_email_func.call_count == 1
     assert mocked_asked_for_email_func.call_count == 1
+    assert mocked_account_info_is_ready_email_func.call_count == 1
 
 
 def test_create_user_info_link_auth_user_info_automated_is_false(
@@ -48,6 +47,9 @@ def test_create_user_info_link_auth_user_info_automated_is_false(
     settings.ACCOUNT_INFO_AUTOMATED = False
     mocked_asked_for_email_func = mock_email_service_function(
         mocker, "send_account_info_asked_for_email"
+    )
+    mocked_account_info_is_ready_email_func = mock_email_service_function(
+        mocker, "send_account_info_is_ready_email"
     )
 
     assert user.account_info_link is None
@@ -60,6 +62,7 @@ def test_create_user_info_link_auth_user_info_automated_is_false(
     assert user.account_info_link is None
     assert user.last_account_info_created is None
     assert mocked_asked_for_email_func.call_count == 1
+    assert mocked_account_info_is_ready_email_func.call_count == 0
 
 
 def test_get_user_info_link_anon_user(client):

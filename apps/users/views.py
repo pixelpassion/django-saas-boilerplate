@@ -104,9 +104,11 @@ class UserAccountDataView(APIView):
         return func
 
     def post(self, request, format=None):
+        user = self.request.user
+        SaasyEmailService().send_account_info_asked_for_email(user)
         if settings.ACCOUNT_INFO_AUTOMATED:
-            user = self.request.user
             user.create_account_info_link()
+            SaasyEmailService().send_account_info_is_ready_email(user)
         return Response(status=201)
 
     def get(self, request, account_info_link, format=None):
