@@ -1,4 +1,8 @@
+from datetime import timedelta
+
 from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -85,3 +89,23 @@ class UserApiView(ReadOnlyModelViewSet):
         else:
             SaasyEmailService().send_account_scheduled_for_deletion_email(user)
         return Response(status=204)
+
+
+class UserAccountDataView(APIView):
+    http_method_names = ["post", "get"]
+
+    def post(self, request, format=None):
+        user = self.request.user
+        user.create_account_info_link()
+        return Response(status=201)
+
+    def get(self, request, account_info_link, format=None):
+        user = get_object_or_404(
+            User,
+            id=self.request.user.id,
+            account_info_link=self.kwargs["account_info_link"],
+            last_account_info_created__gt=timezone.now()
+            - timedelta(days=settings.ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS),
+        )
+        user_data = {"email": user.email}
+        return Response(status=200, data=user_data)
