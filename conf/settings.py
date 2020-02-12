@@ -181,10 +181,22 @@ if ENV == "local" and DEBUG:
 
 ########################################################################################
 #                                                                                      #
-#                                     GDPR settings                                    #
+#                                Account info settings                                 #
 #                                                                                      #
 ########################################################################################
 ACCOUNT_INFO_AUTOMATED = env.bool("ACCOUNT_INFO_AUTOMATED", default=True)
+ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS = env.int(
+    "ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS", default=7
+)
+ACCOUNT_INFO_HANDLER = env.str(
+    "ACCOUNT_INFO_HANDLER", default="apps.gdpr.utils.account_info_handler"
+)
+
+########################################################################################
+#                                                                                      #
+#                                     GDPR settings                                    #
+#                                                                                      #
+########################################################################################
 GDPR_ADMINISTRATOR_EMAIL = env.str("GDPR_ADMINISTRATOR_EMAIL", default=None)
 GDPR_SUPPORT_EMAIL = env.str(
     "GDPR_ADMINISTRATOR_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
@@ -210,9 +222,6 @@ INACTIVE_ACCOUNT_WARNING_IN_WEEKS = env.list(
 )
 ACCOUNT_DELETION_RETENTION_IN_DAYS = env.int(
     "ACCOUNT_DELETION_RETENTION_IN_DAYS", default=7
-)
-ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS = env.int(
-    "ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS", default=7
 )
 
 if ENV != "test" and (

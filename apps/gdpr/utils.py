@@ -1,0 +1,15 @@
+def account_info_handler(user):
+    return {
+        "email": user.email,
+        "username": user.username,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "privacy_policy": user.privacy_policy,
+        "warning_sent_email": user.warning_sent_email,
+        "account_info_link": user.account_info_link,
+        "last_account_info_created": user.last_account_info_created,
+        "is_staff": user.is_staff,
+        "is_active": user.is_active,
+        "date_joined": user.date_joined,
+        "last_login": user.last_login,
+    }
