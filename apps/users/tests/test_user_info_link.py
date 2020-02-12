@@ -8,6 +8,7 @@ import pytest
 
 from apps.core.tests.base_test_utils import mock_email_service_function
 from apps.gdpr.utils import account_info_handler
+from apps.users.constants.messages import USER_ACCOUNT_INFO_HAS_ALREADY_BEEN_SENT
 from apps.users.constants.url_names import GET_USER_DATA_URL_NAME
 
 from .constants import CREATE_USER_DATA_LINK_URL
@@ -30,6 +31,7 @@ def test_create_user_info_link_auth_user(logged_in_client, user, mocker):
 
     assert user.account_info_link is None
     assert user.last_account_info_created is None
+    assert not user.account_info_sent
 
     response = logged_in_client.post(CREATE_USER_DATA_LINK_URL)
     assert response.status_code == 201
@@ -37,8 +39,36 @@ def test_create_user_info_link_auth_user(logged_in_client, user, mocker):
     user.refresh_from_db()
     assert user.account_info_link is not None
     assert user.last_account_info_created is not None
+    assert user.account_info_sent
+
     assert mocked_asked_for_email_func.call_count == 1
     assert mocked_account_info_is_ready_email_func.call_count == 1
+
+
+def test_create_user_info_user_data_already_sended(logged_in_client, user, mocker):
+    mocked_asked_for_email_func = mock_email_service_function(
+        mocker, "send_account_info_asked_for_email"
+    )
+    mocked_account_info_is_ready_email_func = mock_email_service_function(
+        mocker, "send_account_info_is_ready_email"
+    )
+
+    user.account_info_link = uuid.uuid4()
+    user.last_account_info_created = timezone.now()
+    user.account_info_sent = True
+    user.save()
+
+    response = logged_in_client.post(CREATE_USER_DATA_LINK_URL)
+    assert response.status_code == 400
+    assert response.data == USER_ACCOUNT_INFO_HAS_ALREADY_BEEN_SENT
+
+    user.refresh_from_db()
+    assert user.account_info_link is not None
+    assert user.last_account_info_created is not None
+    assert user.account_info_sent
+
+    assert mocked_asked_for_email_func.call_count == 0
+    assert mocked_account_info_is_ready_email_func.call_count == 0
 
 
 def test_create_user_info_link_auth_user_info_automated_is_false(
@@ -54,6 +84,7 @@ def test_create_user_info_link_auth_user_info_automated_is_false(
 
     assert user.account_info_link is None
     assert user.last_account_info_created is None
+    assert not user.account_info_sent
 
     response = logged_in_client.post(CREATE_USER_DATA_LINK_URL)
     assert response.status_code == 201
@@ -61,6 +92,8 @@ def test_create_user_info_link_auth_user_info_automated_is_false(
     user.refresh_from_db()
     assert user.account_info_link is None
     assert user.last_account_info_created is None
+    assert not user.account_info_sent
+
     assert mocked_asked_for_email_func.call_count == 1
     assert mocked_account_info_is_ready_email_func.call_count == 0
 

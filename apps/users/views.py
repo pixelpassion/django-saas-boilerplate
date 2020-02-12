@@ -15,6 +15,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from apps.gdpr.email_service import SaasyEmailService
+from apps.users.constants.messages import USER_ACCOUNT_INFO_HAS_ALREADY_BEEN_SENT
 
 from .models import User
 from .serializers import (
@@ -105,10 +106,14 @@ class UserAccountDataView(APIView):
 
     def post(self, request, format=None):
         user = self.request.user
+        if user.account_info_sent:
+            return Response(status=400, data=USER_ACCOUNT_INFO_HAS_ALREADY_BEEN_SENT)
         SaasyEmailService().send_account_info_asked_for_email(user)
         if settings.ACCOUNT_INFO_AUTOMATED:
             user.create_account_info_link()
             SaasyEmailService().send_account_info_is_ready_email(user)
+            user.account_info_sent = True
+            user.save(update_fields=["account_info_sent"])
         return Response(status=201)
 
     def get(self, request, account_info_link, format=None):

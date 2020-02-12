@@ -48,6 +48,9 @@ class User(AbstractUser):
     last_account_info_created = models.DateTimeField(
         _("Account info link created date"), blank=True, null=True
     )
+    account_info_sent = models.BooleanField(
+        _("Account info has been sent"), default=False
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
@@ -88,7 +91,14 @@ class User(AbstractUser):
     def delete_account_info_link(self):
         self.account_info_link = None
         self.last_account_info_created = None
-        self.save(update_fields=["account_info_link", "last_account_info_created"])
+        self.account_info_sent = False
+        self.save(
+            update_fields=[
+                "account_info_link",
+                "last_account_info_created",
+                "account_info_sent",
+            ]
+        )
 
     def __str__(self):
         """

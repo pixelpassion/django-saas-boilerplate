@@ -10,3 +10,6 @@ NO_USER_IN_REQUEST_MESSAGE = _("No user in the request.")
 NO_REQUEST_IN_CONTEXT_MESSAGE = _("No request in the context.")
 USER_ALREADY_DELETED_MESSAGE = _("User was deleted already.")
 USER_WILL_BE_DELETED_MESSAGE = _("User will be deleted soon.")
+USER_ACCOUNT_INFO_HAS_ALREADY_BEEN_SENT = _(
+    "User account information has already been sent."
+)
