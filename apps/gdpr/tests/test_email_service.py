@@ -84,6 +84,7 @@ def test_send_account_was_recovered_email(user, mocker):
     call_data = mocked_email_func.call_args[0]
     assert call_data[0] == user.email
     assert call_data[1] == ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE
+    assert len(call_data) == 2
 
 
 def test_send_warning_about_upcoming_account_deletion(user, mocker):
@@ -189,6 +190,7 @@ def test_send_account_info_asked_for_email(user, mocker):
     call_data = mocked_email_func.call_args[0]
     assert call_data[0] == user.email
     assert call_data[1] == ACCOUNT_INFO_ASKED_FOR_TEMPLATE
+    assert call_data[2] == {"FROM_EMAIL": dj_settings.ACCOUNT_INFO_ASKED_FOR_EMAIL}
 
 
 def test_send_account_info_is_ready_email(user, mocker):
@@ -201,7 +203,6 @@ def test_send_account_info_is_ready_email(user, mocker):
     assert call_data[0] == user.email
     assert call_data[1] == ACCOUNT_INFO_IS_READY_TEMPLATE
     assert call_data[2] == {
-        "FROM_EMAIL": dj_settings.ACCOUNT_INFO_ASKED_FOR_EMAIL,
         "ACCOUNT_INFO_URL": (
             f"{dj_settings.PUBLIC_URL}/account-data/{user.account_info_link}/"
         ),
