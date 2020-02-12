@@ -44,6 +44,10 @@ class User(AbstractUser):
         max_length=256,
         default=NO_WARNING,
     )
+    account_info_link = models.UUIDField(_("Account info link"), blank=True, null=True)
+    last_account_info_created = models.DateTimeField(
+        _("Account info link created date"), blank=True, null=True
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
@@ -75,6 +79,16 @@ class User(AbstractUser):
             self.save()
         else:
             raise ValidationError(USER_WILL_BE_DELETED_MESSAGE)
+
+    def create_account_info_link(self):
+        self.account_info_link = uuid.uuid4()
+        self.last_account_info_created = timezone.now()
+        self.save(update_fields=["account_info_link", "last_account_info_created"])
+
+    def delete_account_info_link(self):
+        self.account_info_link = None
+        self.last_account_info_created = None
+        self.save(update_fields=["account_info_link", "last_account_info_created"])
 
     def __str__(self):
         """
