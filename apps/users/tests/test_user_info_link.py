@@ -7,6 +7,7 @@ from django.utils import timezone
 import pytest
 
 from apps.core.tests.base_test_utils import mock_email_service_function
+from apps.gdpr.utils import account_info_handler
 from apps.users.constants.url_names import GET_USER_DATA_URL_NAME
 
 from .constants import CREATE_USER_DATA_LINK_URL
@@ -72,7 +73,7 @@ def test_get_user_info_link_auth_user(logged_in_client, user):
         reverse(f"v0:{GET_USER_DATA_URL_NAME}", args=[str(user.account_info_link)])
     )
     assert response.status_code == 200
-    assert response.data == {"email": user.email}
+    assert response.data == account_info_handler(user)
 
 
 def test_get_user_info_link_auth_user_expired_link(logged_in_client, user):

@@ -94,6 +94,15 @@ class UserApiView(ReadOnlyModelViewSet):
 class UserAccountDataView(APIView):
     http_method_names = ["post", "get"]
 
+    def _get_account_info_handler(self):
+        import importlib
+
+        function_string = settings.ACCOUNT_INFO_HANDLER
+        mod_name, func_name = function_string.rsplit(".", 1)
+        mod = importlib.import_module(mod_name)
+        func = getattr(mod, func_name)
+        return func
+
     def post(self, request, format=None):
         if settings.ACCOUNT_INFO_AUTOMATED:
             user = self.request.user
@@ -108,5 +117,5 @@ class UserAccountDataView(APIView):
             last_account_info_created__gt=timezone.now()
             - timedelta(days=settings.ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS),
         )
-        user_data = {"email": user.email}
-        return Response(status=200, data=user_data)
+        account_info_handler = self._get_account_info_handler()
+        return Response(status=200, data=account_info_handler(user))
