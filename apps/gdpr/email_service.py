@@ -8,6 +8,8 @@ from saasy.client import Client
 from apps.core.custom_email_backend import SaasyEmailMessage
 
 from .constants import (
+    ACCOUNT_INFO_ASKED_FOR_TEMPLATE,
+    ACCOUNT_INFO_IS_READY_TEMPLATE,
     ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME,
     ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE,
     ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE,
@@ -97,3 +99,21 @@ class SaasyEmailService:
             self._send_message(
                 user.email, ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME, context
             )
+
+    def send_account_info_asked_for_email(self, user: object):
+        self._send_message(user.email, ACCOUNT_INFO_ASKED_FOR_TEMPLATE)
+
+    def send_account_info_is_ready_email(self, user: object):
+        settings_account_info_asked_for_email = settings.ACCOUNT_INFO_ASKED_FOR_EMAIL
+        if settings_account_info_asked_for_email:
+            context = {
+                "FROM_EMAIL": settings.ACCOUNT_INFO_ASKED_FOR_EMAIL,
+                "ACCOUNT_INFO_URL": (
+                    f"{settings.PUBLIC_URL}/account-data/{user.account_info_link}/"
+                ),
+                "ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS": (
+                    settings.ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS
+                ),
+                "GDPR_SUPPORT_EMAIL": settings.GDPR_SUPPORT_EMAIL,
+            }
+            self._send_message(user.email, ACCOUNT_INFO_IS_READY_TEMPLATE, context)
