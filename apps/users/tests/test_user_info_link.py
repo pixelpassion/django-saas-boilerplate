@@ -34,6 +34,24 @@ def test_create_user_info_link_auth_user(logged_in_client, user, mocker):
     assert mocked_email_func.call_count == 0  # 2
 
 
+def test_create_user_info_link_auth_user_info_automated_is_false(
+    logged_in_client, user, mocker, settings
+):
+    settings.ACCOUNT_INFO_AUTOMATED = False
+    mocked_email_func = mock_email_service_function(mocker, "_send_message")
+
+    assert user.account_info_link is None
+    assert user.last_account_info_created is None
+
+    response = logged_in_client.post(CREATE_USER_DATA_LINK_URL)
+    assert response.status_code == 201
+
+    user.refresh_from_db()
+    assert user.account_info_link is None
+    assert user.last_account_info_created is None
+    assert mocked_email_func.call_count == 0  # 1
+
+
 def test_get_user_info_link_anon_user(client):
     response = client.post(CREATE_USER_DATA_LINK_URL, args=["some_hash"])
     assert response.status_code == 401

@@ -95,8 +95,9 @@ class UserAccountDataView(APIView):
     http_method_names = ["post", "get"]
 
     def post(self, request, format=None):
-        user = self.request.user
-        user.create_account_info_link()
+        if settings.ACCOUNT_INFO_AUTOMATED:
+            user = self.request.user
+            user.create_account_info_link()
         return Response(status=201)
 
     def get(self, request, account_info_link, format=None):

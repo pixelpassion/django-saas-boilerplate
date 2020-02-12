@@ -184,6 +184,7 @@ if ENV == "local" and DEBUG:
 #                                     GDPR settings                                    #
 #                                                                                      #
 ########################################################################################
+ACCOUNT_INFO_AUTOMATED = env.bool("ACCOUNT_INFO_AUTOMATED", default=True)
 GDPR_ADMINISTRATOR_EMAIL = env.str("GDPR_ADMINISTRATOR_EMAIL", default=None)
 GDPR_SUPPORT_EMAIL = env.str(
     "GDPR_ADMINISTRATOR_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
