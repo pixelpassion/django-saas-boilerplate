@@ -22,19 +22,19 @@ email_service = UsersSaasyEmailService()
 
 def test_send_account_was_deleted_email(user, mocker):
     mocked_email_func = mock_users_email_service_function(mocker, "_send_message")
+    bcc_email = dj_settings.ACCOUNT_DELETED_BCC_EMAIL
 
     user.is_deleted = True
     user.save()
 
     email_service.send_account_was_deleted_email(user)
-    assert mocked_email_func.call_count == 1
+    assert mocked_email_func.call_count == 2
 
-    call_data = mocked_email_func.call_args[0]
-    assert call_data[0] == user.email
-    assert call_data[1] == ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
-    assert call_data[2] == {
-        "FROM_EMAIL": dj_settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL
-    }
+    for index, sent_message in enumerate(mocked_email_func.call_args_list):
+        call_data = sent_message[0]
+        assert call_data[0] == user.email if index else bcc_email
+        assert call_data[1] == ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
+        assert len(call_data) == 2
 
 
 def test_send_account_was_deleted_email_if_deleted_bcc_email_is_none(
@@ -47,7 +47,12 @@ def test_send_account_was_deleted_email_if_deleted_bcc_email_is_none(
     user.save()
 
     email_service.send_account_was_deleted_email(user)
-    assert mocked_email_func.call_count == 0
+    assert mocked_email_func.call_count == 1
+
+    call_data = mocked_email_func.call_args_list[0][0]
+    assert call_data[0] == user.email
+    assert call_data[1] == ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
+    assert len(call_data) == 2
 
 
 def test_send_account_was_recovered_email(user, mocker):
@@ -71,7 +76,9 @@ def test_send_reset_password_email(user, mocker):
     call_data = mocked_email_func.call_args[0]
     assert call_data[0] == user.email
     assert call_data[1] == USER_PASSWORD_RESET_EMAIL_TEMPLATE
-    assert "RESET_PASSWORD_URL" in call_data[2]
+    assert "PUBLIC_URL" in call_data[2]
+    assert "UUID" in call_data[2]
+    assert "TOKEN" in call_data[2]
 
 
 def test_send_user_account_activation_email(user, mocker):
@@ -83,26 +90,21 @@ def test_send_user_account_activation_email(user, mocker):
     call_data = mocked_email_func.call_args[0]
     assert call_data[0] == user.email
     assert call_data[1] == USER_ACCOUNT_VERIFICATION_EMAIL_TEMPLATE
-    assert call_data[2] == {
-        "SIGN_UP_VERIFICATION_URL": (
-            f"{dj_settings.PUBLIC_URL}/auth/sign-up/success/?hash={user.email}"
-        )
-    }
+    assert call_data[2] == {"PUBLIC_URL": dj_settings.PUBLIC_URL}
 
 
 def test_send_account_scheduled_for_deletion_email(user, mocker):
     mocked_email_func = mock_users_email_service_function(mocker, "_send_message")
+    bcc_email = dj_settings.ACCOUNT_SCHEDULED_FOR_DELETION_BCC_EMAIL
 
     email_service.send_account_scheduled_for_deletion_email(user)
-    assert mocked_email_func.call_count == 1
+    assert mocked_email_func.call_count == 2
 
-    call_data = mocked_email_func.call_args[0]
-    assert call_data[0] == user.email
-
-    assert call_data[1] == ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME
-    assert call_data[2] == {
-        "FROM_EMAIL": dj_settings.ACCOUNT_SCHEDULED_FOR_DELETION_BCC_EMAIL
-    }
+    for index, sent_message in enumerate(mocked_email_func.call_args_list):
+        call_data = sent_message[0]
+        assert call_data[0] == user.email if index else bcc_email
+        assert call_data[1] == ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME
+        assert len(call_data) == 2
 
 
 def test_send_account_scheduled_for_deletion_email_if_scheduled_bcc_email_is_none(
@@ -112,7 +114,12 @@ def test_send_account_scheduled_for_deletion_email_if_scheduled_bcc_email_is_non
     mocked_email_func = mock_users_email_service_function(mocker, "_send_message")
 
     email_service.send_account_scheduled_for_deletion_email(user)
-    assert mocked_email_func.call_count == 0
+    assert mocked_email_func.call_count == 1
+
+    call_data = mocked_email_func.call_args_list[0][0]
+    assert call_data[0] == user.email
+    assert call_data[1] == ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME
+    assert len(call_data) == 2
 
 
 @pytest.mark.parametrize("in_days_value", [0, None])
@@ -128,18 +135,21 @@ def test_send_account_scheduled_for_deletion_email_if_deletion_retention(
 
 def test_send_account_info_asked_for_email(user, mocker):
     mocked_email_func = mock_users_email_service_function(mocker, "_send_message")
+    bcc_email = dj_settings.ACCOUNT_INFO_ASKED_FOR_EMAIL
 
     email_service.send_account_info_asked_for_email(user)
-    assert mocked_email_func.call_count == 1
+    assert mocked_email_func.call_count == 2
 
-    call_data = mocked_email_func.call_args[0]
-    assert call_data[0] == user.email
-    assert call_data[1] == ACCOUNT_INFO_ASKED_FOR_TEMPLATE
-    assert call_data[2] == {"FROM_EMAIL": dj_settings.ACCOUNT_INFO_ASKED_FOR_EMAIL}
+    for index, sent_message in enumerate(mocked_email_func.call_args_list):
+        call_data = sent_message[0]
+        assert call_data[0] == user.email if index else bcc_email
+        assert call_data[1] == ACCOUNT_INFO_ASKED_FOR_TEMPLATE
+        assert len(call_data) == 2
 
 
 def test_send_account_info_is_ready_email(user, mocker):
     mocked_email_func = mock_users_email_service_function(mocker, "_send_message")
+    user.create_account_info_link()
 
     email_service.send_account_info_is_ready_email(user)
     assert mocked_email_func.call_count == 1
@@ -148,9 +158,8 @@ def test_send_account_info_is_ready_email(user, mocker):
     assert call_data[0] == user.email
     assert call_data[1] == ACCOUNT_INFO_IS_READY_TEMPLATE
     assert call_data[2] == {
-        "ACCOUNT_INFO_URL": (
-            f"{dj_settings.PUBLIC_URL}/account-data/{user.account_info_link}/"
-        ),
+        "PUBLIC_URL": dj_settings.PUBLIC_URL,
+        "ACCOUNT_INFO_LINK": str(user.account_info_link),
         "ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS": (
             dj_settings.ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS
         ),
@@ -165,4 +174,9 @@ def test_send_account_info_asked_for_email_if_settings_email_is_none(
     mocked_email_func = mock_users_email_service_function(mocker, "_send_message")
 
     email_service.send_account_info_asked_for_email(user)
-    assert mocked_email_func.call_count == 0
+    assert mocked_email_func.call_count == 1
+
+    call_data = mocked_email_func.call_args_list[0][0]
+    assert call_data[0] == user.email
+    assert call_data[1] == ACCOUNT_INFO_ASKED_FOR_TEMPLATE
+    assert len(call_data) == 2

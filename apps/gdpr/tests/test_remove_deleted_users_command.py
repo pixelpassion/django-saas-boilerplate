@@ -8,8 +8,6 @@ import pytest
 from apps.users.models import User
 from apps.users.tests.base_test_utils import mock_users_email_service_function
 
-from .base_test_utils import mock_gdpr_email_service_function
-
 pytestmark = pytest.mark.django_db
 
 
@@ -37,25 +35,6 @@ def test_remove_deleted_users_command(user_factory, mocker):
     call_command("remove_deleted_users")
 
     assert mocked_delete_email_func.call_count == users_for_deletion_count
-    assert User.objects.count() == users_before_count - users_for_deletion_count
-
-
-def test_remove_deleted_users_command_if_account_deleted_bcc_email_is_none(
-    user_factory, mocker, settings
-):
-    settings.ACCOUNT_DELETED_BCC_EMAIL = None
-    mocked_delete_email_func = mock_gdpr_email_service_function(mocker, "_send_message")
-
-    users = get_users_for_tests(user_factory)
-    users_before_count = users.count()
-
-    users_for_deletion_count = users.filter(
-        last_login__lt=timezone.now() - timedelta(days=7), is_deleted=True
-    ).count()
-
-    call_command("remove_deleted_users")
-
-    assert mocked_delete_email_func.call_count == 0
     assert User.objects.count() == users_before_count - users_for_deletion_count
 
 

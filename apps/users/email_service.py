@@ -19,9 +19,11 @@ from .constants.template_names import (
 class UsersSaasyEmailService(BaseSaasyEmailService):
     def send_account_was_deleted_email(self, user: object):
         settings_deleted_bcc_email = settings.ACCOUNT_DELETED_BCC_EMAIL
-        if settings_deleted_bcc_email is not None:
-            context = {"FROM_EMAIL": settings_deleted_bcc_email}
-            self._send_message(user.email, ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE, context)
+        if settings_deleted_bcc_email:
+            self._send_message(
+                settings_deleted_bcc_email, ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
+            )
+        self._send_message(user.email, ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE)
 
     def send_account_was_recovered_email(self, user: object):
         self._send_message(user.email, ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE)
@@ -30,20 +32,12 @@ class UsersSaasyEmailService(BaseSaasyEmailService):
         uuid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
 
-        context = {
-            "RESET_PASSWORD_URL": (
-                f"{settings.PUBLIC_URL}/auth/new-password?uid={uuid}&token={token}"
-            )
-        }
+        context = {"PUBLIC_URL": settings.PUBLIC_URL, "UUID": uuid, "TOKEN": token}
         self._send_message(user.email, USER_PASSWORD_RESET_EMAIL_TEMPLATE, context)
 
     def send_user_account_activation_email(self, user: object):
         # TODO: change context
-        context = {
-            "SIGN_UP_VERIFICATION_URL": (
-                f"{settings.PUBLIC_URL}/auth/sign-up/success/?hash={user.email}"
-            )
-        }
+        context = {"PUBLIC_URL": settings.PUBLIC_URL}
         self._send_message(
             user.email, USER_ACCOUNT_VERIFICATION_EMAIL_TEMPLATE, context
         )
@@ -53,27 +47,26 @@ class UsersSaasyEmailService(BaseSaasyEmailService):
             settings.ACCOUNT_SCHEDULED_FOR_DELETION_BCC_EMAIL
         )
         settings_account_deletion_in_days = settings.ACCOUNT_DELETION_RETENTION_IN_DAYS
-
-        if settings_account_scheduled_bcc_email is not None and (
-            settings_account_deletion_in_days is not None
-            and settings_account_deletion_in_days != 0
-        ):
-            context = {"FROM_EMAIL": settings_account_scheduled_bcc_email}
-            self._send_message(
-                user.email, ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME, context
-            )
+        if settings_account_deletion_in_days:
+            if settings_account_scheduled_bcc_email:
+                self._send_message(
+                    settings_account_scheduled_bcc_email,
+                    ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME,
+                )
+            self._send_message(user.email, ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME)
 
     def send_account_info_asked_for_email(self, user: object):
         settings_account_info_asked_for_email = settings.ACCOUNT_INFO_ASKED_FOR_EMAIL
         if settings_account_info_asked_for_email:
-            context = {"FROM_EMAIL": settings.ACCOUNT_INFO_ASKED_FOR_EMAIL}
-            self._send_message(user.email, ACCOUNT_INFO_ASKED_FOR_TEMPLATE, context)
+            self._send_message(
+                settings_account_info_asked_for_email, ACCOUNT_INFO_ASKED_FOR_TEMPLATE
+            )
+        self._send_message(user.email, ACCOUNT_INFO_ASKED_FOR_TEMPLATE)
 
     def send_account_info_is_ready_email(self, user: object):
         context = {
-            "ACCOUNT_INFO_URL": (
-                f"{settings.PUBLIC_URL}/account-data/{user.account_info_link}/"
-            ),
+            "PUBLIC_URL": settings.PUBLIC_URL,
+            "ACCOUNT_INFO_LINK": str(user.account_info_link),
             "ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS": (
                 settings.ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS
             ),

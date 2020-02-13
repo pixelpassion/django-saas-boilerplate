@@ -52,7 +52,7 @@ def test_user_deletion_if_retention_in_days_is_zero_send_mail(
     assert response.status_code == 204
 
     # test mail
-    assert mocked_email_func.call_count == 1
+    assert mocked_email_func.call_count == 2
     call_data = mocked_email_func.call_args[0]
     assert call_data[0] == user.email
     assert call_data[1] == ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
