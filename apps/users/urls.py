@@ -9,6 +9,8 @@ from rest_auth.views import (
 
 from .constants.url_names import (
     CHANGE_PASS_URL_NAME,
+    CREATE_USER_DATA_LINK_URL_NAME,
+    GET_USER_DATA_URL_NAME,
     LOGOUT_URL_NAME,
     PASS_RESET_CONFIRM_URL_NAME,
     PASS_RESET_URL_NAME,
@@ -22,6 +24,7 @@ from .views import (
     MyTokenObtainPairView,
     MyTokenRefreshView,
     MyTokenVerifyView,
+    UserAccountDataView,
     UserApiView,
     UserRegistrationView,
 )
@@ -49,5 +52,15 @@ urlpatterns = [
             {"get": "retrieve", "patch": "update", "delete": "perform_destroy"}
         ),
         name=USER_API_URL_NAME,
+    ),
+    path(
+        "me/account_data/",
+        UserAccountDataView.as_view(),
+        name=CREATE_USER_DATA_LINK_URL_NAME,
+    ),
+    path(
+        "me/account_data/<str:account_info_link>/",
+        UserAccountDataView.as_view(),
+        name=GET_USER_DATA_URL_NAME,
     ),
 ]

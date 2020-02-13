@@ -1,14 +1,13 @@
 import pytest
 
+from apps.core.tests.base_test_utils import mock_email_backend_send_messages
 from apps.users.forms import CustomPasswordResetForm
-
-from .base import mock_email_backend_send_messages
 
 pytestmark = pytest.mark.django_db
 
 
-def test_password_reset_form_with_valid_email(user, mocker, settings):
-    mocked_email_func = mock_email_backend_send_messages(mocker, settings)
+def test_password_reset_form_with_valid_email(user, mocker):
+    mocked_email_func = mock_email_backend_send_messages(mocker)
     form_data = {"email": user.email}
     form = CustomPasswordResetForm(data=form_data)
 
@@ -17,8 +16,8 @@ def test_password_reset_form_with_valid_email(user, mocker, settings):
     assert mocked_email_func.call_count == 1
 
 
-def test_password_reset_form_with_invalid_email(user, mocker, settings):
-    mocked_email_func = mock_email_backend_send_messages(mocker, settings)
+def test_password_reset_form_with_invalid_email(user, mocker):
+    mocked_email_func = mock_email_backend_send_messages(mocker)
     form_data = {"email": "invalid@mail.com"}
     form = CustomPasswordResetForm(data=form_data)
 

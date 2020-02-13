@@ -2,6 +2,10 @@ from copy import deepcopy
 
 import pytest
 
+from apps.core.tests.base_test_utils import (
+    get_mocked_saasy_functions,
+    mock_email_backend_send_messages,
+)
 from apps.users.constants.messages import (
     BLANK_FIELD_MESSAGE,
     REQUIRED_FLAG_MESSAGE,
@@ -15,15 +19,20 @@ from .constants import CORRECT_REG_DATA, TOKEN_VERIFY_URL, USER_REGISTRATION_URL
 pytestmark = pytest.mark.django_db
 
 
-def test_normal_registration(client):
+def test_normal_registration(client, mocker):
+    mocked_create_mail_func, mocked_send_mail_func = get_mocked_saasy_functions(mocker)
     users_before = User.objects.count()
 
     response = client.post(USER_REGISTRATION_URL, CORRECT_REG_DATA, format="json")
     assert response.status_code == 201
     assert User.objects.count() == users_before + 1
 
+    assert mocked_create_mail_func.call_count == 1
+    assert mocked_send_mail_func.call_count == 1
 
-def test_normal_registration_returned_data(client):
+
+def test_normal_registration_returned_data(client, mocker):
+    mock_email_backend_send_messages(mocker)
     response = client.post(USER_REGISTRATION_URL, CORRECT_REG_DATA, format="json")
     assert response.status_code == 201
 

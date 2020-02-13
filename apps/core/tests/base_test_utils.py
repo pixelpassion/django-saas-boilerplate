@@ -10,9 +10,15 @@ def generate_uid_and_token(user):
     return {"uuid": uuid, "token": token}
 
 
-def mock_email_backend_send_messages(mocker, settings):
-    settings.SAASY_API_KEY = "some_key"
-    settings.EMAIL_BACKEND = "apps.core.custom_email_backend.CustomEmailBackend"
+def get_mocked_saasy_functions(mocker):
+    mocked_create_mail_func = mocker.patch("saasy.client.Client.create_mail")
+    mocked_create_mail_func.side_effect = lambda x: {"id": 1}
+    mocked_send_mail_func = mocker.patch("saasy.client.Client.send_mail")
+
+    return mocked_create_mail_func, mocked_send_mail_func
+
+
+def mock_email_backend_send_messages(mocker):
     return mocker.patch(
         f"apps.core.custom_email_backend.CustomEmailBackend.send_messages"
     )
