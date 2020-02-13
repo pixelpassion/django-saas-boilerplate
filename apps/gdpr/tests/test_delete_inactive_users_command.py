@@ -1,6 +1,5 @@
 from datetime import timedelta
 
-from django.conf import settings as project_settings
 from django.core.management import call_command
 from django.utils import timezone
 
@@ -14,14 +13,6 @@ from apps.users.models import User
 from .base_test_utils import mock_gdpr_email_service_function
 
 pytestmark = pytest.mark.django_db
-settings_weeks_deletion = (
-    project_settings.INACTIVE_ACCOUNT_DELETION_IN_WEEKS
-)  # default 52
-settings_weeks_warnings = (
-    project_settings.INACTIVE_ACCOUNT_WARNING_IN_WEEKS
-)  # default (1, 4)
-deletion_bcc_email = project_settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL
-warning_bcc_email = project_settings.INACTIVE_ACCOUNT_WARNING_BCC_EMAIL
 
 
 def create_users_with_different_last_login_dates(user_factory):
@@ -39,10 +30,11 @@ def create_users_with_different_last_login_dates(user_factory):
         )
 
 
-def test_delete_inactive_users_command_if_settings_deletion_weeks_is_none(
-    user_factory, mocker, settings
+@pytest.mark.parametrize("weeks", [0, None])
+def test_delete_inactive_users_command_if_settings_deletion_weeks_is_none_or_zero(
+    user_factory, mocker, settings, weeks
 ):
-    settings.INACTIVE_ACCOUNT_DELETION_IN_WEEKS = None
+    settings.INACTIVE_ACCOUNT_DELETION_IN_WEEKS = weeks
     create_users_with_different_last_login_dates(user_factory)
 
     create_users_with_different_last_login_dates(user_factory)

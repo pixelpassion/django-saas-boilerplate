@@ -13,6 +13,7 @@ class Command(BaseCommand):
     email_service = GDPRSaasyEmailService()
 
     def __init__(self):
+        super().__init__()
         self.settings_deletion_weeks = settings.INACTIVE_ACCOUNT_DELETION_IN_WEEKS
         self.settings_warning_weeks = settings.INACTIVE_ACCOUNT_WARNING_IN_WEEKS
 
@@ -45,7 +46,7 @@ class Command(BaseCommand):
         )
 
     def run_delete_inactive_users_command(self):
-        if self.settings_deletion_weeks is not None:
+        if self.settings_deletion_weeks:
             users_for_deletion = self._get_users_for_deletion()
 
             if self.settings_warning_weeks is not None:
@@ -59,12 +60,11 @@ class Command(BaseCommand):
                         self.email_service.send_warning_about_upcoming_account_deletion(
                             user, weeks
                         )
-                        user.warning_sent_email = (
-                            User.FIRST_WARNING_SENT
-                            if weeks == self.settings_warning_weeks[0]
-                            else User.SECOND_WARNING_SENT
-                        )
-                        user.save()
+                    users.update(
+                        warning_sent_email=User.FIRST_WARNING_SENT
+                        if weeks == self.settings_warning_weeks[0]
+                        else User.SECOND_WARNING_SENT
+                    )
             for user in users_for_deletion:
                 self.email_service.send_inactive_account_was_deleted_email(user)
             users_for_deletion.delete()

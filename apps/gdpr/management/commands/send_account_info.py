@@ -9,10 +9,11 @@ from apps.users.models import User
 
 
 class Command(BaseCommand):
-    help = "Deletes inactive users and sends warning messages"
+    help = "Sends a link to user data or deletes expired links"
     email_service = UsersSaasyEmailService()
 
     def __init__(self):
+        super().__init__()
         self.settings_link_availability_days = (
             settings.ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS
         )
