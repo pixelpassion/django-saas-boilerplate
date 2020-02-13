@@ -52,7 +52,7 @@ def test_send_warning_about_upcoming_account_deletion(user, mocker):
     assert call_data[1] == INACTIVE_ACCOUNT_DELETION_WARNING_TEMPLATE
     assert call_data[2] == {
         "WEEKS_LEFT": weeks,
-        "LOGIN_URL": f"{dj_settings.PUBLIC_URL}/login",
+        "PUBLIC_URL": dj_settings.PUBLIC_URL,
         "FROM_EMAIL": dj_settings.INACTIVE_ACCOUNT_WARNING_BCC_EMAIL,
     }
 

@@ -71,7 +71,9 @@ def test_send_reset_password_email(user, mocker):
     call_data = mocked_email_func.call_args[0]
     assert call_data[0] == user.email
     assert call_data[1] == USER_PASSWORD_RESET_EMAIL_TEMPLATE
-    assert "RESET_PASSWORD_URL" in call_data[2]
+    assert "PUBLIC_URL" in call_data[2]
+    assert "UUID" in call_data[2]
+    assert "TOKEN" in call_data[2]
 
 
 def test_send_user_account_activation_email(user, mocker):
@@ -83,11 +85,7 @@ def test_send_user_account_activation_email(user, mocker):
     call_data = mocked_email_func.call_args[0]
     assert call_data[0] == user.email
     assert call_data[1] == USER_ACCOUNT_VERIFICATION_EMAIL_TEMPLATE
-    assert call_data[2] == {
-        "SIGN_UP_VERIFICATION_URL": (
-            f"{dj_settings.PUBLIC_URL}/auth/sign-up/success/?hash={user.email}"
-        )
-    }
+    assert call_data[2] == {"PUBLIC_URL": dj_settings.PUBLIC_URL}
 
 
 def test_send_account_scheduled_for_deletion_email(user, mocker):
@@ -140,6 +138,7 @@ def test_send_account_info_asked_for_email(user, mocker):
 
 def test_send_account_info_is_ready_email(user, mocker):
     mocked_email_func = mock_users_email_service_function(mocker, "_send_message")
+    user.create_account_info_link()
 
     email_service.send_account_info_is_ready_email(user)
     assert mocked_email_func.call_count == 1
@@ -148,9 +147,8 @@ def test_send_account_info_is_ready_email(user, mocker):
     assert call_data[0] == user.email
     assert call_data[1] == ACCOUNT_INFO_IS_READY_TEMPLATE
     assert call_data[2] == {
-        "ACCOUNT_INFO_URL": (
-            f"{dj_settings.PUBLIC_URL}/account-data/{user.account_info_link}/"
-        ),
+        "PUBLIC_URL": dj_settings.PUBLIC_URL,
+        "ACCOUNT_INFO_LINK": str(user.account_info_link),
         "ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS": (
             dj_settings.ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS
         ),

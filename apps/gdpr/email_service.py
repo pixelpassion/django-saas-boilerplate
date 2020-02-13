@@ -22,7 +22,7 @@ class GDPRSaasyEmailService(BaseSaasyEmailService):
         if settings_warning_bcc_email is not None:
             context = {
                 "WEEKS_LEFT": weeks,
-                "LOGIN_URL": self.LOGIN_URL,
+                "PUBLIC_URL": settings.PUBLIC_URL,
                 "FROM_EMAIL": settings_warning_bcc_email,
             }
             self._send_message(
