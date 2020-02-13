@@ -142,6 +142,7 @@ class UserDetailSerializer(BaseUserSerializer):
             "first_name",
             "last_name",
             "admin_url",
+            "last_password_change_date",
         ]
 
     def get_admin_url(self, instance):

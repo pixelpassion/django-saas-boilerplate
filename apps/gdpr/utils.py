@@ -18,4 +18,5 @@ def account_info_handler(user):
         "is_active": user.is_active,
         "date_joined": change_date_format(user.date_joined),
         "last_login": change_date_format(user.last_login),
+        "last_password_change_date": change_date_format(user.last_password_change_date),
     }

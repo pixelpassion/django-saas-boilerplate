@@ -26,7 +26,10 @@ def test_user_current_user_info_auth(logged_in_client, user):
     assert response.status_code == 200
     for field in returned_data_fields:
         error_message = TEST_ERROR_MESSAGE.format(field)
-        assert response.data[field] == getattr(user, field), error_message
+        if field == "last_password_change_date":
+            assert response.data[field]
+        else:
+            assert response.data[field] == getattr(user, field), error_message
 
 
 def test_get_admin_url_user_is_staff(logged_in_client, user):
