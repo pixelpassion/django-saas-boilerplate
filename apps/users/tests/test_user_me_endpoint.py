@@ -6,7 +6,7 @@ from .constants import USER_API_URL
 
 pytestmark = pytest.mark.django_db
 
-returned_data_fields = ["first_name", "last_name", "email"]
+returned_data_fields = ["first_name", "last_name", "email", "last_password_change_date"]
 TEST_ERROR_MESSAGE = "value for {} field is different"
 
 

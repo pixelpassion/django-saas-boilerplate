@@ -1,4 +1,5 @@
-from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.utils import timezone
 
 from .email_service import UsersSaasyEmailService
 from .models import User
@@ -31,3 +32,11 @@ class CustomPasswordResetForm(PasswordResetForm):
         ).first()
         if user:
             UsersSaasyEmailService().send_reset_password_email(user)
+
+
+class CustomSetPasswordForm(SetPasswordForm):
+    def save(self, commit=True):
+        super().save(commit)
+        self.user.last_password_change_date = timezone.now()
+        self.user.save()
+        return self.user
