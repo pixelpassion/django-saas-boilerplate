@@ -6,10 +6,10 @@ from django.utils import timezone
 
 import pytest
 
-from apps.core.tests.base_test_utils import mock_email_service_function
 from apps.gdpr.management.commands.send_account_info import (
     Command as SendAccountInfoCommand,
 )
+from apps.users.tests.base_test_utils import mock_users_email_service_function
 
 pytestmark = pytest.mark.django_db
 
@@ -46,7 +46,7 @@ def create_users_with_different_link_data(user_factory):
 
 
 def test_send_account_info_command(user_factory, mocker):
-    mocked_delete_email_func = mock_email_service_function(
+    mocked_delete_email_func = mock_users_email_service_function(
         mocker, "send_account_info_is_ready_email"
     )
     (

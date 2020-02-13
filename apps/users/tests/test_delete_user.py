@@ -2,17 +2,19 @@ from datetime import datetime
 
 import pytest
 
-from apps.core.tests.base_test_utils import mock_email_service_function
-from apps.gdpr.constants import ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
+from apps.users.constants.template_names import ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
 from apps.users.models import User
 
+from .base_test_utils import mock_users_email_service_function
 from .constants import TEST_PASSWORD, TOKEN_OBTAIN_PAIR_URL, USER_API_URL
 
 pytestmark = pytest.mark.django_db
 
 
 def test_user_deletion_deleted_status(logged_in_client, user, mocker):
-    mock_email_service_function(mocker, "send_account_scheduled_for_deletion_email")
+    mock_users_email_service_function(
+        mocker, "send_account_scheduled_for_deletion_email"
+    )
     assert not user.is_deleted
     user_count_before = User.objects.count()
 
@@ -29,7 +31,7 @@ def test_user_deletion_if_retention_in_days_is_zero(
     logged_in_client, user, mocker, settings
 ):
     settings.ACCOUNT_DELETION_RETENTION_IN_DAYS = 0
-    mock_email_service_function(mocker, "send_account_was_deleted_email")
+    mock_users_email_service_function(mocker, "send_account_was_deleted_email")
     assert not user.is_deleted
     user_count_before = User.objects.count()
 
@@ -42,7 +44,7 @@ def test_user_deletion_if_retention_in_days_is_zero_send_mail(
     logged_in_client, user, mocker, settings
 ):
     settings.ACCOUNT_DELETION_RETENTION_IN_DAYS = 0
-    mocked_email_func = mock_email_service_function(mocker, "_send_message")
+    mocked_email_func = mock_users_email_service_function(mocker, "_send_message")
     assert not user.is_deleted
 
     response = logged_in_client.delete(USER_API_URL)
@@ -56,7 +58,7 @@ def test_user_deletion_if_retention_in_days_is_zero_send_mail(
 
 
 def test_user_deletion_send_email(logged_in_client, mocker):
-    mocked_email_func = mock_email_service_function(
+    mocked_email_func = mock_users_email_service_function(
         mocker, "send_account_scheduled_for_deletion_email"
     )
 
@@ -67,7 +69,7 @@ def test_user_deletion_send_email(logged_in_client, mocker):
 
 
 def test_change_deleted_status_if_user_logged_in(client, user, mocker):
-    mock_email_service_function(mocker, "send_account_was_recovered_email")
+    mock_users_email_service_function(mocker, "send_account_was_recovered_email")
     user.is_deleted = True
     user.last_login = datetime.today()
     user.save()
@@ -83,7 +85,7 @@ def test_change_deleted_status_if_user_logged_in(client, user, mocker):
 
 
 def test_send_email_deleted_user_logged_in(client, user, mocker):
-    mocked_email_func = mock_email_service_function(
+    mocked_email_func = mock_users_email_service_function(
         mocker, "send_account_was_recovered_email"
     )
     user.is_deleted = True

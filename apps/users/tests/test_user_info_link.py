@@ -6,11 +6,11 @@ from django.utils import timezone
 
 import pytest
 
-from apps.core.tests.base_test_utils import mock_email_service_function
 from apps.gdpr.utils import account_info_handler
 from apps.users.constants.messages import USER_ACCOUNT_INFO_HAS_ALREADY_BEEN_SENT
 from apps.users.constants.url_names import GET_USER_DATA_URL_NAME
 
+from .base_test_utils import mock_users_email_service_function
 from .constants import CREATE_USER_DATA_LINK_URL
 
 pytestmark = pytest.mark.django_db
@@ -22,10 +22,10 @@ def test_create_user_info_link_anon_user(client):
 
 
 def test_create_user_info_link_auth_user(logged_in_client, user, mocker):
-    mocked_asked_for_email_func = mock_email_service_function(
+    mocked_asked_for_email_func = mock_users_email_service_function(
         mocker, "send_account_info_asked_for_email"
     )
-    mocked_account_info_is_ready_email_func = mock_email_service_function(
+    mocked_account_info_is_ready_email_func = mock_users_email_service_function(
         mocker, "send_account_info_is_ready_email"
     )
 
@@ -46,10 +46,10 @@ def test_create_user_info_link_auth_user(logged_in_client, user, mocker):
 
 
 def test_create_user_info_user_data_already_sended(logged_in_client, user, mocker):
-    mocked_asked_for_email_func = mock_email_service_function(
+    mocked_asked_for_email_func = mock_users_email_service_function(
         mocker, "send_account_info_asked_for_email"
     )
-    mocked_account_info_is_ready_email_func = mock_email_service_function(
+    mocked_account_info_is_ready_email_func = mock_users_email_service_function(
         mocker, "send_account_info_is_ready_email"
     )
 
@@ -75,10 +75,10 @@ def test_create_user_info_link_auth_user_info_automated_is_false(
     logged_in_client, user, mocker, settings
 ):
     settings.ACCOUNT_INFO_AUTOMATED = False
-    mocked_asked_for_email_func = mock_email_service_function(
+    mocked_asked_for_email_func = mock_users_email_service_function(
         mocker, "send_account_info_asked_for_email"
     )
-    mocked_account_info_is_ready_email_func = mock_email_service_function(
+    mocked_account_info_is_ready_email_func = mock_users_email_service_function(
         mocker, "send_account_info_is_ready_email"
     )
 

@@ -4,13 +4,13 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from apps.gdpr.email_service import SaasyEmailService
+from apps.gdpr.email_service import GDPRSaasyEmailService
 from apps.users.models import User
 
 
 class Command(BaseCommand):
     help = "Deletes inactive users and sends warning messages"
-    email_service = SaasyEmailService()
+    email_service = GDPRSaasyEmailService()
 
     def __init__(self):
         self.settings_deletion_weeks = settings.INACTIVE_ACCOUNT_DELETION_IN_WEEKS

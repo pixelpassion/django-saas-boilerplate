@@ -14,8 +14,8 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from apps.gdpr.email_service import SaasyEmailService
 from apps.users.constants.messages import USER_ACCOUNT_INFO_HAS_ALREADY_BEEN_SENT
+from apps.users.email_service import UsersSaasyEmailService
 
 from .models import User
 from .serializers import (
@@ -37,7 +37,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
         user = User.objects.get(email=self.request.data["email"])
         if user.is_deleted:
             user.soft_undelete_user()
-            SaasyEmailService().send_account_was_recovered_email(user)
+            UsersSaasyEmailService().send_account_was_recovered_email(user)
 
         return data
 
@@ -66,7 +66,7 @@ class UserRegistrationView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             user = User.objects.get(email=self.request.data["email"])
-            SaasyEmailService().send_user_account_activation_email(user)
+            UsersSaasyEmailService().send_user_account_activation_email(user)
             return Response(serializer.data, status=201)
         return Response(serializer.data)
 
@@ -86,9 +86,9 @@ class UserApiView(ReadOnlyModelViewSet):
         user.soft_delete_user()
         if settings.ACCOUNT_DELETION_RETENTION_IN_DAYS == 0:
             user.delete()
-            SaasyEmailService().send_account_was_deleted_email(user)
+            UsersSaasyEmailService().send_account_was_deleted_email(user)
         else:
-            SaasyEmailService().send_account_scheduled_for_deletion_email(user)
+            UsersSaasyEmailService().send_account_scheduled_for_deletion_email(user)
         return Response(status=204)
 
 
@@ -108,10 +108,10 @@ class UserAccountDataView(APIView):
         user = self.request.user
         if user.account_info_sent:
             return Response(status=400, data=USER_ACCOUNT_INFO_HAS_ALREADY_BEEN_SENT)
-        SaasyEmailService().send_account_info_asked_for_email(user)
+        UsersSaasyEmailService().send_account_info_asked_for_email(user)
         if settings.ACCOUNT_INFO_AUTOMATED:
             user.create_account_info_link()
-            SaasyEmailService().send_account_info_is_ready_email(user)
+            UsersSaasyEmailService().send_account_info_is_ready_email(user)
             user.account_info_sent = True
             user.save(update_fields=["account_info_sent"])
         return Response(status=201)

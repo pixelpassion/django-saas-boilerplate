@@ -4,13 +4,13 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from apps.gdpr.email_service import SaasyEmailService
+from apps.gdpr.email_service import GDPRSaasyEmailService
 from apps.users.models import User
 
 
 class Command(BaseCommand):
     help = "Deletes programmatically deleted users who logged in more than a week ago."
-    email_service = SaasyEmailService()
+    email_service = GDPRSaasyEmailService()
 
     def run_remove_deleted_users_command(self):
         if settings.ACCOUNT_DELETION_RETENTION_IN_DAYS not in [0, None]:

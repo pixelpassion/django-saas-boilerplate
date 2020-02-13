@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import PasswordResetForm
 
-from apps.gdpr.email_service import SaasyEmailService
-from apps.users.models import User
+from .email_service import UsersSaasyEmailService
+from .models import User
 
 
 class CustomPasswordResetForm(PasswordResetForm):
@@ -30,4 +30,4 @@ class CustomPasswordResetForm(PasswordResetForm):
             email=self.cleaned_data["email"], is_active=True
         ).first()
         if user:
-            SaasyEmailService().send_reset_password_email(user)
+            UsersSaasyEmailService().send_reset_password_email(user)

@@ -22,7 +22,3 @@ def mock_email_backend_send_messages(mocker):
     return mocker.patch(
         f"apps.core.custom_email_backend.CustomEmailBackend.send_messages"
     )
-
-
-def mock_email_service_function(mocker, func_name):
-    return mocker.patch(f"apps.gdpr.email_service.SaasyEmailService.{func_name}")
