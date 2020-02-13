@@ -6,6 +6,7 @@ from django.utils import timezone
 import pytest
 
 from apps.users.models import User
+from apps.users.tests.base_test_utils import mock_users_email_service_function
 
 from .base_test_utils import mock_gdpr_email_service_function
 
@@ -22,7 +23,7 @@ def get_users_for_tests(user_factory):
 
 
 def test_remove_deleted_users_command(user_factory, mocker):
-    mocked_delete_email_func = mock_gdpr_email_service_function(
+    mocked_delete_email_func = mock_users_email_service_function(
         mocker, "send_account_was_deleted_email"
     )
 
@@ -62,7 +63,7 @@ def test_remove_deleted_users_command_if_account_deletion_retention_in_days_is_z
     user_factory, mocker, settings
 ):
     settings.ACCOUNT_DELETION_RETENTION_IN_DAYS = 0
-    mocked_delete_email_func = mock_gdpr_email_service_function(
+    mocked_delete_email_func = mock_users_email_service_function(
         mocker, "send_account_was_deleted_email"
     )
 

@@ -3,7 +3,6 @@ from django.conf import settings as dj_settings
 import pytest
 
 from apps.gdpr.constants import (
-    ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE,
     INACTIVE_ACCOUNT_DELETION_DONE_TEMPLATE,
     INACTIVE_ACCOUNT_DELETION_WARNING_TEMPLATE,
 )
@@ -16,10 +15,10 @@ pytestmark = pytest.mark.django_db
 email_service = GDPRSaasyEmailService()
 
 
-def test_send_account_was_deleted_email_not_deleted_user(user, mocker):
+def test_send_inactive_account_was_deleted_email(user, mocker):
     mocked_email_func = mock_gdpr_email_service_function(mocker, "_send_message")
 
-    email_service.send_account_was_deleted_email(user)
+    email_service.send_inactive_account_was_deleted_email(user)
     assert mocked_email_func.call_count == 1
 
     call_data = mocked_email_func.call_args[0]
@@ -30,43 +29,13 @@ def test_send_account_was_deleted_email_not_deleted_user(user, mocker):
     }
 
 
-def test_send_account_was_deleted_email_not_deleted_user_if_deletion_bcc_email_is_none(
+def test_send_inactive_account_was_deleted_email_if_deletion_bcc_email_is_none(
     user, mocker, settings
 ):
     settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL = None
     mocked_email_func = mock_gdpr_email_service_function(mocker, "_send_message")
 
-    email_service.send_account_was_deleted_email(user)
-    assert mocked_email_func.call_count == 0
-
-
-def test_send_account_was_deleted_email_deleted_user(user, mocker):
-    mocked_email_func = mock_gdpr_email_service_function(mocker, "_send_message")
-
-    user.is_deleted = True
-    user.save()
-
-    email_service.send_account_was_deleted_email(user)
-    assert mocked_email_func.call_count == 1
-
-    call_data = mocked_email_func.call_args[0]
-    assert call_data[0] == user.email
-    assert call_data[1] == ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
-    assert call_data[2] == {
-        "FROM_EMAIL": dj_settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL
-    }
-
-
-def test_send_account_was_deleted_email_deleted_user_if_deleted_bcc_email_is_none(
-    user, mocker, settings
-):
-    settings.ACCOUNT_DELETED_BCC_EMAIL = None
-    mocked_email_func = mock_gdpr_email_service_function(mocker, "_send_message")
-
-    user.is_deleted = True
-    user.save()
-
-    email_service.send_account_was_deleted_email(user)
+    email_service.send_inactive_account_was_deleted_email(user)
     assert mocked_email_func.call_count == 0
 
 

@@ -3,8 +3,6 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-from saasy.client import Client
-
 from apps.core.email_service import BaseSaasyEmailService
 
 from .constants.template_names import (
@@ -13,30 +11,17 @@ from .constants.template_names import (
     ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME,
     ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE,
     ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE,
-    INACTIVE_ACCOUNT_DELETION_DONE_TEMPLATE,
     USER_ACCOUNT_VERIFICATION_EMAIL_TEMPLATE,
     USER_PASSWORD_RESET_EMAIL_TEMPLATE,
 )
 
-saasy = Client(auth_token=settings.SAASY_API_KEY)
-
 
 class UsersSaasyEmailService(BaseSaasyEmailService):
     def send_account_was_deleted_email(self, user: object):
-        if user.is_deleted:
-            settings_deleted_bcc_email = settings.ACCOUNT_DELETED_BCC_EMAIL
-            if settings_deleted_bcc_email is not None:
-                context = {"FROM_EMAIL": settings_deleted_bcc_email}
-                self._send_message(
-                    user.email, ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE, context
-                )
-        else:
-            settings_deletion_bcc_email = settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL
-            if settings_deletion_bcc_email is not None:
-                context = {"FROM_EMAIL": settings_deletion_bcc_email}
-                self._send_message(
-                    user.email, INACTIVE_ACCOUNT_DELETION_DONE_TEMPLATE, context
-                )
+        settings_deleted_bcc_email = settings.ACCOUNT_DELETED_BCC_EMAIL
+        if settings_deleted_bcc_email is not None:
+            context = {"FROM_EMAIL": settings_deleted_bcc_email}
+            self._send_message(user.email, ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE, context)
 
     def send_account_was_recovered_email(self, user: object):
         self._send_message(user.email, ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE)

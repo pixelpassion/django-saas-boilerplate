@@ -52,7 +52,7 @@ def test_delete_inactive_users_command_if_settings_deletion_weeks_is_none(
         mocker, "send_warning_about_upcoming_account_deletion"
     )
     mocked_delete_email_func = mock_gdpr_email_service_function(
-        mocker, "send_account_was_deleted_email"
+        mocker, "send_inactive_account_was_deleted_email"
     )
 
     call_command("delete_inactive_users")
@@ -78,7 +78,7 @@ def test_delete_inactive_users_command_if_settings_warning_weeks_is_none(
         mocker, "send_warning_about_upcoming_account_deletion"
     )
     mocked_delete_email_func = mock_gdpr_email_service_function(
-        mocker, "send_account_was_deleted_email"
+        mocker, "send_inactive_account_was_deleted_email"
     )
 
     call_command("delete_inactive_users")
@@ -96,7 +96,7 @@ def test_delete_inactive_users_command_if_deletion_bcc_email_is_none(
         mocker, "send_warning_about_upcoming_account_deletion"
     )
     mocked_delete_email_func = mock_gdpr_email_service_function(
-        mocker, "send_account_was_deleted_email"
+        mocker, "send_inactive_account_was_deleted_email"
     )
 
     create_users_with_different_last_login_dates(user_factory)
@@ -127,7 +127,7 @@ def test_delete_inactive_users_command_if_warning_bcc_email_is_none(
         mocker, "send_warning_about_upcoming_account_deletion"
     )
     mocked_delete_email_func = mock_gdpr_email_service_function(
-        mocker, "send_account_was_deleted_email"
+        mocker, "send_inactive_account_was_deleted_email"
     )
 
     create_users_with_different_last_login_dates(user_factory)
@@ -154,7 +154,7 @@ def test_delete_inactive_users_command_flow(user_factory, mocker):
         mocker, "send_warning_about_upcoming_account_deletion"
     )
     mocked_delete_email_func = mock_gdpr_email_service_function(
-        mocker, "send_account_was_deleted_email"
+        mocker, "send_inactive_account_was_deleted_email"
     )
     create_users_with_different_last_login_dates(user_factory)
 
@@ -182,7 +182,7 @@ def test_delete_inactive_users_command_deletion_email_sending(user_factory, mock
         warning_sent_email=User.SECOND_WARNING_SENT,
     )
     mocked_email_func = mock_gdpr_email_service_function(
-        mocker, "send_account_was_deleted_email"
+        mocker, "send_inactive_account_was_deleted_email"
     )
     call_command("delete_inactive_users")
     assert mocked_email_func.call_count == 1
@@ -200,7 +200,7 @@ def test_delete_inactive_users_command_wrong_warning_sent_email_status(
         warning_sent_email=warning_sent_email_status,
     )
     mocked_email_func = mock_gdpr_email_service_function(
-        mocker, "send_account_was_deleted_email"
+        mocker, "send_inactive_account_was_deleted_email"
     )
     call_command("delete_inactive_users")
     assert mocked_email_func.call_count == 0
@@ -285,7 +285,7 @@ def test_sent_email_inactive_users_four_week(user_factory, weeks, mocker):
 @pytest.mark.parametrize("weeks", [62, 53, 54])
 def test_sent_email_inactive_users_settings_week(user_factory, weeks, mocker):
     mocked_email_func = mock_gdpr_email_service_function(
-        mocker, "send_account_was_deleted_email"
+        mocker, "send_inactive_account_was_deleted_email"
     )
     user_factory(
         is_deleted=False,
@@ -307,7 +307,7 @@ def test_delete_inactive_users_command_not_deleted_users(user_factory, mocker):
         warning_sent_email=User.NO_WARNING,
     )
     mocked_email_func = mock_gdpr_email_service_function(
-        mocker, "send_account_was_deleted_email"
+        mocker, "send_inactive_account_was_deleted_email"
     )
     call_command("delete_inactive_users")
     assert mocked_email_func.call_count == 0

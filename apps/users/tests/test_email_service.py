@@ -6,6 +6,7 @@ from apps.users.constants.template_names import (
     ACCOUNT_INFO_ASKED_FOR_TEMPLATE,
     ACCOUNT_INFO_IS_READY_TEMPLATE,
     ACCOUNT_SCHEDULED_FOR_DELETION_TEMPLATE_NAME,
+    ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE,
     ACCOUNT_WAS_RECOVERED_EMAIL_TEMPLATE,
     USER_ACCOUNT_VERIFICATION_EMAIL_TEMPLATE,
     USER_PASSWORD_RESET_EMAIL_TEMPLATE,
@@ -17,6 +18,36 @@ from .base_test_utils import mock_users_email_service_function
 pytestmark = pytest.mark.django_db
 
 email_service = UsersSaasyEmailService()
+
+
+def test_send_account_was_deleted_email(user, mocker):
+    mocked_email_func = mock_users_email_service_function(mocker, "_send_message")
+
+    user.is_deleted = True
+    user.save()
+
+    email_service.send_account_was_deleted_email(user)
+    assert mocked_email_func.call_count == 1
+
+    call_data = mocked_email_func.call_args[0]
+    assert call_data[0] == user.email
+    assert call_data[1] == ACCOUNT_WAS_DELETED_EMAIL_TEMPLATE
+    assert call_data[2] == {
+        "FROM_EMAIL": dj_settings.INACTIVE_ACCOUNT_DELETION_BCC_EMAIL
+    }
+
+
+def test_send_account_was_deleted_email_if_deleted_bcc_email_is_none(
+    user, mocker, settings
+):
+    settings.ACCOUNT_DELETED_BCC_EMAIL = None
+    mocked_email_func = mock_users_email_service_function(mocker, "_send_message")
+
+    user.is_deleted = True
+    user.save()
+
+    email_service.send_account_was_deleted_email(user)
+    assert mocked_email_func.call_count == 0
 
 
 def test_send_account_was_recovered_email(user, mocker):

@@ -1,10 +1,6 @@
 from django.conf import settings
 
-from saasy.client import Client
-
 from apps.core.custom_email_backend import SaasyEmailMessage
-
-saasy = Client(auth_token=settings.SAASY_API_KEY)
 
 
 class BaseSaasyEmailService:

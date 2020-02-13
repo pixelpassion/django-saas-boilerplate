@@ -36,6 +36,7 @@ def test_user_deletion_if_retention_in_days_is_zero(
     user_count_before = User.objects.count()
 
     response = logged_in_client.delete(USER_API_URL)
+
     assert response.status_code == 204
     assert User.objects.count() == user_count_before - 1
 
