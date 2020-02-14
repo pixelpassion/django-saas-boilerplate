@@ -44,6 +44,9 @@ environ.Env.read_env(env_file=os.path.join(BASE_DIR, ".env"))
 # Fail hard, every environment needs to set the stage
 ENV = env.str("ENV")
 
+# Urls
+PUBLIC_URL = env.str("PUBLIC_URL", default="example.com")
+
 # Some handling for Heroku
 
 HEROKU_APP_ID = env.str("HEROKU_APP_ID", default=None)
@@ -157,6 +160,7 @@ INSTALLED_APPS = [
     "django_rq",
     "apps.core",
     "apps.users",
+    "apps.gdpr",
 ]
 
 MIDDLEWARE = [
@@ -174,6 +178,74 @@ MIDDLEWARE = [
 
 if ENV == "local" and DEBUG:
     INSTALLED_APPS = INSTALLED_APPS + ["django_werkzeug"]
+
+########################################################################################
+#                                                                                      #
+#                                Account info settings                                 #
+#                                                                                      #
+########################################################################################
+ACCOUNT_INFO_AUTOMATED = env.bool("ACCOUNT_INFO_AUTOMATED", default=True)
+ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS = env.int(
+    "ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS", default=7
+)
+ACCOUNT_INFO_HANDLER = env.str(
+    "ACCOUNT_INFO_HANDLER", default="apps.gdpr.utils.account_info_handler"
+)
+
+########################################################################################
+#                                                                                      #
+#                                     GDPR settings                                    #
+#                                                                                      #
+########################################################################################
+GDPR_ADMINISTRATOR_EMAIL = env.str("GDPR_ADMINISTRATOR_EMAIL", default=None)
+GDPR_SUPPORT_EMAIL = env.str(
+    "GDPR_ADMINISTRATOR_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
+)
+INACTIVE_ACCOUNT_DELETION_BCC_EMAIL = env.str(
+    "INACTIVE_ACCOUNT_DELETION_BCC_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
+)
+INACTIVE_ACCOUNT_WARNING_BCC_EMAIL = env.str(
+    "INACTIVE_ACCOUNT_WARNING_BCC_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
+)
+ACCOUNT_SCHEDULED_FOR_DELETION_BCC_EMAIL = env.str(
+    "ACCOUNT_DELETED_BCC_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
+)
+ACCOUNT_DELETED_BCC_EMAIL = env.str(
+    "ACCOUNT_DELETED_BCC_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
+)
+ACCOUNT_INFO_ASKED_FOR_EMAIL = env.str(
+    "ACCOUNT_INFO_ASKED_FOR_EMAIL", default=GDPR_ADMINISTRATOR_EMAIL
+)
+
+INACTIVE_ACCOUNT_DELETION_IN_WEEKS = env.int(
+    "INACTIVE_ACCOUNT_DELETION_IN_WEEKS", default=52
+)
+INACTIVE_ACCOUNT_WARNING_IN_WEEKS = env.list(
+    "INACTIVE_ACCOUNT_WARNING_IN_WEEKS", default=(1, 4)
+)
+ACCOUNT_DELETION_RETENTION_IN_DAYS = env.int(
+    "ACCOUNT_DELETION_RETENTION_IN_DAYS", default=7
+)
+
+if ENV != "test" and (
+    INACTIVE_ACCOUNT_DELETION_IN_WEEKS != 52
+    or INACTIVE_ACCOUNT_WARNING_IN_WEEKS != (1, 4)
+):
+    from .utils import account_warning_and_deletion_in_weeks_are_correct
+
+    if not account_warning_and_deletion_in_weeks_are_correct(
+        INACTIVE_ACCOUNT_DELETION_IN_WEEKS, INACTIVE_ACCOUNT_WARNING_IN_WEEKS
+    ):
+        sys.stderr.write(
+            "Wrong combination of weeks before account deletion and weeks before"
+            " account deletion warning"
+            " (INACTIVE_ACCOUNT_DELETION_IN_WEEKS:"
+            f" {INACTIVE_ACCOUNT_DELETION_IN_WEEKS},"
+            " INACTIVE_ACCOUNT_WARNING_IN_WEEKS:"
+            f" {INACTIVE_ACCOUNT_WARNING_IN_WEEKS}).\n"
+        )
+        INACTIVE_ACCOUNT_DELETION_IN_WEEKS = None
+        INACTIVE_ACCOUNT_WARNING_IN_WEEKS = None
 
 ########################################################################################
 #                                                                                      #

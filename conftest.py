@@ -12,6 +12,12 @@ from apps.users.tests.constants import TEST_EMAIL, TEST_PASSWORD, TOKEN_OBTAIN_P
 from apps.users.tests.factories import UserFactory
 
 
+@pytest.fixture(scope="session", autouse=True)
+def set_mail_backend():
+    settings.SAASY_API_KEY = "some_test_key"
+    settings.EMAIL_BACKEND = "apps.core.custom_email_backend.CustomEmailBackend"
+
+
 @pytest.fixture()
 def logged_in_client(user, client):
     response = client.post(
