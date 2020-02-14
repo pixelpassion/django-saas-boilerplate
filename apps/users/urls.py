@@ -52,12 +52,12 @@ urlpatterns = [
         name=USER_API_URL_NAME,
     ),
     path(
-        "me/account_data/",
+        "me/account-data/",
         UserAccountDataView.as_view(),
         name=CREATE_USER_DATA_LINK_URL_NAME,
     ),
     path(
-        "me/account_data/<str:account_info_link>/",
+        "me/account-data/<str:account_info_link>/",
         UserAccountDataView.as_view(),
         name=GET_USER_DATA_URL_NAME,
     ),
