@@ -1,10 +1,9 @@
 def change_date_format(date):
-    if date:
-        return date.strftime("%d/%m/%Y %H:%m:%S")
-    return None
+    return date.strftime("%d/%m/%Y %H:%m:%S")
 
 
 def account_info_handler(user):
+
     return {
         "email": user.email,
         "username": user.username,
@@ -13,9 +12,13 @@ def account_info_handler(user):
         "privacy_policy": user.privacy_policy,
         "warning_sent_email": user.warning_sent_email,
         "account_info_link": user.account_info_link,
-        "last_account_info_created": change_date_format(user.last_account_info_created),
+        "last_account_info_created": change_date_format(user.last_account_info_created)
+        if user.last_account_info_created
+        else None,
         "is_staff": user.is_staff,
         "is_active": user.is_active,
-        "date_joined": change_date_format(user.date_joined),
-        "last_login": change_date_format(user.last_login),
+        "date_joined": change_date_format(user.date_joined)
+        if user.date_joined
+        else None,
+        "last_login": change_date_format(user.last_login) if user.last_login else None,
     }
