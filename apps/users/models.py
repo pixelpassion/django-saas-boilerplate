@@ -51,6 +51,9 @@ class User(AbstractUser):
     account_info_sent = models.BooleanField(
         _("Account info has been sent"), default=False
     )
+    last_password_change_date = models.DateTimeField(
+        _("Last password change date"), blank=True, null=True
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
@@ -99,6 +102,10 @@ class User(AbstractUser):
                 "account_info_sent",
             ]
         )
+
+    def set_password(self, raw_password):
+        super().set_password(raw_password)
+        self.last_password_change_date = timezone.now()
 
     def __str__(self):
         """

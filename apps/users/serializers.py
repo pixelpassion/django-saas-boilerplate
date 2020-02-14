@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_text
@@ -22,7 +22,7 @@ from .constants.messages import (
     REQUIRED_FLAG_MESSAGE,
     UNIQUE_EMAIL_MESSAGE,
 )
-from .forms import CustomPasswordResetForm
+from .forms import CustomPasswordResetForm, CustomSetPasswordForm
 from .models import User
 
 
@@ -87,7 +87,7 @@ class CustomPasswordResetConfirmSerializer(serializers.Serializer):
     uid = serializers.CharField()
     token = serializers.CharField()
 
-    set_password_form_class = SetPasswordForm
+    set_password_form_class = CustomSetPasswordForm
 
     def validate(self, attrs):
         self._errors = {}
@@ -142,6 +142,7 @@ class UserDetailSerializer(BaseUserSerializer):
             "first_name",
             "last_name",
             "admin_url",
+            "last_password_change_date",
         ]
 
     def get_admin_url(self, instance):

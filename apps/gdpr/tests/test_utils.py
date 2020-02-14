@@ -19,5 +19,8 @@ def test_account_info_handler(user):
         "is_active": user.is_active,
         "date_joined": user.date_joined.strftime("%d/%m/%Y %H:%m:%S"),
         "last_login": None,
+        "last_password_change_date": user.last_password_change_date.strftime(
+            "%d/%m/%Y %H:%m:%S"
+        ),
     }
     assert account_info_handler(user) == needed_data

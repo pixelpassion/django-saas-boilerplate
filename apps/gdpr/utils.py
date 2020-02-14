@@ -21,4 +21,7 @@ def account_info_handler(user):
         if user.date_joined
         else None,
         "last_login": change_date_format(user.last_login) if user.last_login else None,
+        "last_password_change_date": change_date_format(user.last_password_change_date)
+        if user.last_password_change_date
+        else None,
     }
