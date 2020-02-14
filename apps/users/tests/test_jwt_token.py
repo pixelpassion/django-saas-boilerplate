@@ -5,8 +5,8 @@ import pytest
 from apps.users.constants.messages import INVALID_TOKEN_MESSAGE
 
 from .constants import (
+    GENERATE_CODE_URL,
     TEST_PASSWORD,
-    TOKEN_OBTAIN_PAIR_URL,
     TOKEN_REFRESH_URL,
     TOKEN_VERIFY_URL,
     USER_API_URL,
@@ -18,7 +18,7 @@ pytestmark = pytest.mark.django_db
 def test_change_security_hash(user, client):
     # get valid token
     payload = {"email": user.email, "password": TEST_PASSWORD}
-    response = client.post(TOKEN_OBTAIN_PAIR_URL, payload)
+    response = client.post(GENERATE_CODE_URL, payload)
     assert response.status_code == 200
     access = response.data.get("access")
     refresh = response.data.get("refresh")
@@ -42,7 +42,7 @@ def test_change_security_hash(user, client):
 def test_refresh_token_after_security_hash_change(user, client):
     # get valid token
     payload = {"email": user.email, "password": TEST_PASSWORD}
-    response = client.post(TOKEN_OBTAIN_PAIR_URL, payload)
+    response = client.post(GENERATE_CODE_URL, payload)
     assert response.status_code == 200
     access = response.data.get("access")
     refresh = response.data.get("refresh")

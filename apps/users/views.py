@@ -8,10 +8,11 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView,
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
+from trench.views.simplejwt import (
+    JSONWebTokenLoginOrRequestMFACode,
+    JSONWebTokenLoginWithMFACode,
 )
 
 from apps.users.constants.messages import USER_ACCOUNT_INFO_HAS_ALREADY_BEEN_SENT
@@ -27,19 +28,30 @@ from .serializers import (
 )
 
 
-class MyTokenObtainPairView(TokenObtainPairView):
+class BaseMyTokenObtainPairView:
     serializer_class = CustomTokenObtainPairSerializer
 
-    def post(self, request, *args, **kwargs):
-        data = super().post(request, *args, **kwargs)
-
+    def handle_user_login(self, request, serializer, *args, **kwargs):
         # soft user undeletion and send recovery email
         user = User.objects.get(email=self.request.data["email"])
         if user.is_deleted:
             user.soft_undelete_user()
             UsersSaasyEmailService().send_account_was_recovered_email(user)
 
-        return data
+        token = RefreshToken.for_user(serializer.user)
+        return Response({"refresh": str(token), "access": str(token.access_token)})
+
+
+class MyTokenObtainPairView(
+    BaseMyTokenObtainPairView, JSONWebTokenLoginOrRequestMFACode
+):
+    ...
+
+
+class MyTokenObtainPairViewWithMFA(
+    BaseMyTokenObtainPairView, JSONWebTokenLoginWithMFACode
+):
+    ...
 
 
 class MyTokenVerifyView(TokenVerifyView):

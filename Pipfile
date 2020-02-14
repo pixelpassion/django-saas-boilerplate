@@ -19,6 +19,7 @@ urllib3 = "*"
 saasy = "*"
 django-rest-auth = "*"
 djangorestframework-simplejwt = "*"
+django-trench = "*"
 
 [dev-packages]
 django-werkzeug = "*"

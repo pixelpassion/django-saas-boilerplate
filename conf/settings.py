@@ -156,6 +156,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_extensions",
     "rest_framework",
+    "trench",
     "rest_auth",
     "django_rq",
     "apps.core",
@@ -191,6 +192,37 @@ ACCOUNT_INFO_LINK_AVAILABILITY_IN_DAYS = env.int(
 ACCOUNT_INFO_HANDLER = env.str(
     "ACCOUNT_INFO_HANDLER", default="apps.gdpr.utils.account_info_handler"
 )
+
+########################################################################################
+#                                                                                      #
+#                                   Trench settings                                    #
+#                                                                                      #
+########################################################################################
+
+TRENCH_AUTH = {
+    "FROM_EMAIL": "no-reply@boilerplate.org",
+    "USER_ACTIVE_FIELD": "is_active",
+    "BACKUP_CODES_QUANTITY": 5,
+    "BACKUP_CODES_LENGTH": 10,
+    "BACKUP_CODES_CHARACTERS": (
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    ),
+    "ENCRYPT_BACKUP_CODES": True,
+    "SECRET_KEY_LENGTH": 16,
+    "DEFAULT_VALIDITY_PERIOD": 30,
+    "CONFIRM_DISABLE_WITH_CODE": True,
+    "CONFIRM_BACKUP_CODES_REGENERATION_WITH_CODE": True,
+    "ALLOW_BACKUP_CODES_REGENERATION": True,
+    "APPLICATION_ISSUER_NAME": "Boilerplate",
+    "MFA_METHODS": {
+        "app": {
+            "VERBOSE_NAME": "app",
+            "VALIDITY_PERIOD": 60 * 10,
+            "USES_THIRD_PARTY_CLIENT": True,
+            "HANDLER": "trench.backends.application.ApplicationBackend",
+        }
+    },
+}
 
 ########################################################################################
 #                                                                                      #
