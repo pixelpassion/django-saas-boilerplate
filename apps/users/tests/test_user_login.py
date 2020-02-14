@@ -54,8 +54,8 @@ def test_2fa_integration(user, logged_in_client, client):
     # Step 4: login with otp data
     response = client.post(GENERATE_TOKEN_URL, payload)
     assert response.status_code == 200
-    assert response.data["token"]
-    client.defaults["HTTP_AUTHORIZATION"] = f"Bearer {response.data['token']}"
+    assert response.data["access"]
+    client.defaults["HTTP_AUTHORIZATION"] = f"Bearer {response.data['access']}"
 
     # Step 5: request backup codes
     response = client.post(mfa_backup_codes, {"code": create_otp_code(secret)})

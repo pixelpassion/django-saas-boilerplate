@@ -29,23 +29,25 @@ from .serializers import (
 
 
 class BaseMyTokenObtainPairView:
-    serializer_class = CustomTokenObtainPairSerializer
-
     def handle_user_login(self, request, serializer, *args, **kwargs):
         # soft user undeletion and send recovery email
-        user = User.objects.get(email=self.request.data["email"])
+        if request.user and isinstance(request.user, User):
+            user = request.user
+        else:
+            user = User.objects.get(email=self.request.data["email"])
         if user.is_deleted:
             user.soft_undelete_user()
             UsersSaasyEmailService().send_account_was_recovered_email(user)
 
         token = RefreshToken.for_user(serializer.user)
+        token["security_hash"] = str(user.security_hash)
         return Response({"refresh": str(token), "access": str(token.access_token)})
 
 
 class MyTokenObtainPairView(
     BaseMyTokenObtainPairView, JSONWebTokenLoginOrRequestMFACode
 ):
-    ...
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class MyTokenObtainPairViewWithMFA(
