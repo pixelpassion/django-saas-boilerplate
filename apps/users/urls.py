@@ -48,7 +48,9 @@ urlpatterns = [
     ),
     path(
         "me/",
-        UserApiView.as_view({"get": "retrieve", "delete": "perform_destroy"}),
+        UserApiView.as_view(
+            {"get": "retrieve", "patch": "update", "delete": "perform_destroy"}
+        ),
         name=USER_API_URL_NAME,
     ),
     path(
