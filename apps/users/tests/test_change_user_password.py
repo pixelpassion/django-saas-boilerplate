@@ -31,6 +31,7 @@ def test_change_password_invalid_data(user, logged_in_client, payload):
 
 
 def test_change_password_valid_data(user, logged_in_client):
+    old_password_change_date = user.last_password_change_date
     payload = {"old_password": TEST_PASSWORD, "new_password": NEW_TEST_PASSWORD}
     response = logged_in_client.post(
         CHANGE_PASS_URL, payload, content_type="application/json"
@@ -38,3 +39,4 @@ def test_change_password_valid_data(user, logged_in_client):
     user.refresh_from_db()
     assert response.status_code == 200
     assert user.check_password(NEW_TEST_PASSWORD)
+    assert user.last_password_change_date != old_password_change_date

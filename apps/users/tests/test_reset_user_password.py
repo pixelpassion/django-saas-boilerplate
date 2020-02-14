@@ -34,6 +34,7 @@ def test_password_reset_with_valid_email(user, client, mocker):
 
 
 def test_password_set_with_valid_password(user, client):
+    old_password_change_date = user.last_password_change_date
     url_kwargs = generate_uid_and_token(user)
 
     post_data = {
@@ -47,6 +48,7 @@ def test_password_set_with_valid_password(user, client):
 
     assert response.status_code == 200
     assert user.check_password(NEW_TEST_PASSWORD)
+    assert user.last_password_change_date != old_password_change_date
 
 
 def test_password_set_with_invalid_uid_and_token(user, client):

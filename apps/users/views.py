@@ -7,7 +7,7 @@ from django.utils import timezone
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 from trench.views.simplejwt import (
@@ -83,9 +83,9 @@ class UserRegistrationView(APIView):
         return Response(serializer.data)
 
 
-class UserApiView(ReadOnlyModelViewSet):
+class UserApiView(ModelViewSet):
     serializer_class = UserDetailSerializer
-    http_method_names = ["get", "delete"]
+    http_method_names = ["get", "patch", "delete"]
 
     def get_queryset(self):
         return User.objects.filter(pk=self.request.user.pk)
