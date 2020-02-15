@@ -1,98 +1,21 @@
-# Python CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-python/ for more details
-##
-version: 2
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
 jobs:
-  build:
-    working_directory: ~/repo
-    docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.7
-        environment:
-          - DJANGO_SETTINGS_MODULE: conf.settings.local
-          - STAGE: test
-          - DATABASE_URL: postgres://postgres@127.0.0.1:5432/postgres
-
-      #Start test database & Redis
-      - image: circleci/postgres:11.2
-        environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-          POSTGRES_PASSWORD: ""
-      - image: redis:5.0.4
-
+  build-and-test:
+    executor: python/default
     steps:
-      - run:
-          name: Install dockerize
-          command:
-            # Avoid Dockerize race conditions - https://discuss.circleci.com/t/prevent-race-conditions-by-waiting-for-services-with-dockerize/11215/3
-            if \[ -f /usr/local/bin/dockerize \]; then
-            echo "dockerize found; skipping installation";
-            else wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-            && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-            && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz;
-            fi
-          environment:
-            DOCKERIZE_VERSION: v0.3.0
-
-      - setup_remote_docker:
-          docker_layer_caching: true
-
-      - run:
-          name: Wait for Postgres database to be up
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
-
-      - run:
-          name: Wait for Redis to be up
-          command: dockerize -wait tcp://localhost:6379 -timeout 1m
-
       - checkout
-
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "Pipfile.lock" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
       - run:
-          name: Install requirements from Pipenv
-          command: |
-            pipenv install --deploy --dev
-            pipenv check --deploy --dev
-            pipenv graph
-
-      - run:
-          name: Test for missing or conflicting migrations
-          command: |
-            pipenv run python manage.py makemigrations --check
-
-      - run:
-          name: Run tests and create a Report
-          command: |
-            mkdir test-reports
-            pipenv run create-coverage
-            pipenv run codecov-report
-
-      - save_cache:
-          key: v1-dependencies-{{ checksum "Pipfile.lock" }}
-          paths:
-            - ~/.local
-            - ~/.cache
-            - ~/repo/.git
-            - ~/repo/_static
-
-      - store_artifacts:
-          path: htmlcov
-          destination: htmlcov
-
-      - store_test_results:
-          path: test-reports
-          destination: test-reports
+          command: ./manage.py test
+          name: Test
 
 workflows:
-  version: 2
-  build-and-deploy:
+  main:
     jobs:
-      - build
+      - build-and-test
