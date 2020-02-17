@@ -6,7 +6,7 @@ from apps.users.constants.template_names import ACCOUNT_WAS_DELETED_EMAIL_TEMPLA
 from apps.users.models import User
 
 from .base_test_utils import mock_users_email_service_function
-from .constants import TEST_PASSWORD, TOKEN_OBTAIN_PAIR_URL, USER_API_URL
+from .constants import GENERATE_CODE_URL, TEST_PASSWORD, USER_API_URL
 
 pytestmark = pytest.mark.django_db
 
@@ -76,7 +76,7 @@ def test_change_deleted_status_if_user_logged_in(client, user, mocker):
     user.save()
 
     response = client.post(
-        TOKEN_OBTAIN_PAIR_URL, {"email": user.email, "password": TEST_PASSWORD}
+        GENERATE_CODE_URL, {"email": user.email, "password": TEST_PASSWORD}
     )
     assert response.status_code == 200
 
@@ -94,7 +94,7 @@ def test_send_email_deleted_user_logged_in(client, user, mocker):
     user.save()
 
     response = client.post(
-        TOKEN_OBTAIN_PAIR_URL, {"email": user.email, "password": TEST_PASSWORD}
+        GENERATE_CODE_URL, {"email": user.email, "password": TEST_PASSWORD}
     )
 
     assert response.status_code == 200
