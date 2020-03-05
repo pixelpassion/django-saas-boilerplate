@@ -12,7 +12,6 @@
    "website":"https://www.pixelpassion.io",
    "repository":"https://github.com/pixelpassion/django-rest-boilerplate",
    "env":{
-      "ALLOWED_HOSTS":"*",
       "CORS_ORIGIN_WHITELIST":"*",
       "ENV":"production",
       "SECRET_KEY":{
@@ -39,5 +38,5 @@
     {
       "url": "https://github.com/heroku/heroku-buildpack-python.git"
     }
-  ]  
+  ]
 }
