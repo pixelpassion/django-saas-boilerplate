@@ -1,6 +1,6 @@
 [![pixelpassion.io](https://img.shields.io/badge/made%20by-pixelpassion.io-blue.svg)](https://www.pixelpassion.io/)
 
-# `🥜 django-rest-boilerplate`
+# `🥜 django-saas-boilerplate`
 
 A boilerplate to get started with Django, django-rest-framework on Heroku. It is great to start a API-first SaaS-application. 
 
