@@ -1,0 +1,12 @@
+h3 {
+  color: #9cc8cc;
+}
+.icon-block{
+  justify-content: center
+}
+
+.fixed-bottom {
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
