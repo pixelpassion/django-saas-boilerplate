@@ -3,67 +3,97 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
-    <title>Title</title>
-
-
+    <title>Django-saas-boilerplate</title>
     <link rel="stylesheet" type="text/css" href="{% static 'welcome/style.css' %}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://kit.fontawesome.com/cd29786464.js" crossorigin="anonymous"></script>
 </head>
 <body>
-<h1 style="display: inline">django-saas-boilerplate </h1>   <h4 style="display: inline">is up and running</h4>
-<div class="container" style="background-color:#bec9d3;">
-  <div class="row justify-content-md-center">
-    <div class="col col-lg-2">
-        <label for="exampleFormControlTextarea1">Example textarea</label>
-    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-    </div>
-    </div>
+<h1 class="d-inline">django-saas-boilerplate </h1>   <h4 class="d-inline">is up and running</h4>
 
-  <div class="row justify-content-md-center">
-    <div class="col col-lg-2">
-        <label for="exampleFormControlTextarea1">Example textarea</label>
-    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-    </div>
-    </div>
 
-  <div class="row justify-content-md-center">
-    <div class="col col-lg-2">
-        <label for="exampleFormControlTextarea1">Example textarea</label>
-    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-    </div>
-    </div>
+<div style="margin-top: 10%">
+<div class="container">
+  <div class="item" style="text-align:right">App Title</div>
+    {% if not APP_NAME %}
+      <div class="item"><textarea class="form-control" id="NOAppTitleTextArea" rows="3"
+      placeholder="Please set up APP_NAME - it is used as title in emails etc"></textarea></div>
+  <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
+    {% else %}
+    <div class="item"><textarea class="form-control" id="AppTitleTextArea"
+                                 placeholder={{APP_NAME}} rows="3"></textarea></div>
+    <div class="item"></div>
+    {% endif %}
 
-  <div class="row justify-content-md-center">
-    <div class="col col-lg-2">
-       <label for="exampleFormControlTextarea1">Example textarea</label>
-    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-    </div>
-    </div>
-  </div>
-
-<div class="container-fluid fixed-bottom" style="background-color:#bec9d3;">
-  <div class="row">
-    <div class="col ">
-        <div class="icon-block">
-            <i class="fas fa-exclamation-circle fa-2x"></i>
-      <h5>Getting started & Examples</h5>
-        <p>Get started, Manual, Examples</p>
-                </div>
-    </div>
-    <div class="col">
-        <i class="fas fa-search fa-2x"></i>
-      <h5>API Documentation</h5>
-        <p>Check out all existing endpoints</p>
-    </div>
-    <div class="col">
-        <i class="fas fa-user-alt fa-2x"></i>
-      <h5>Community Chat</h5>
-        <p>Get support if you have questions</p>
-    </div>
-  </div>
 </div>
+<div class="container">
+  <div class="item" style="text-align:right">API URL</div>
+    {% if not API_URL %}
+  <div class="item"><textarea class="form-control" id="API_URLTextarea"
+                              placeholder="Please set up API_URL" rows="3"></textarea></div>
+  <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
+    {% else %}
+    <div class="item"><textarea class="form-control" id="NOAPI_URLTextarea"
+                                 placeholder={{API_URL}} rows="3"></textarea></div>
+    <div class="item"></div>
+    {% endif %}
+</div>
+<div class="container">
+  <div class="item" style="text-align:right">Sentry</div>
+    {% if not SENTRY_DSN %}
+  <div class="item"><textarea class="form-control" id="SENTRY_DSNTextarea" rows="3"
+  placeholder="Please set SENTRY_DSN - it is used for error monitoring"></textarea></div>
+  <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
+    {% else %}
+          <div class="item"><textarea class="form-control" id="NOSENTRY_DSNTextarea"
+                                  rows="3" placeholder={{SENTRY_DSN}}></textarea></div>
+    <div class="item"></div>
+    {% endif %}
+</div>
+<div class="container">
+  <div class="item" style="text-align:right">Public API Documentation</div>
+    {% if not PUBLIC_API_DOCUMENTATION %}
+    <div class="item"><textarea class="form-control" id="PUBLIC_API_DOCUMENTATIONTextarea" rows="3"
+                                placeholder="You should probably set PUBLIC_API_DOCUMENTATION=False in most cases"></textarea></div>
+  <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
+    {% else %}
+      <div class="item"><textarea class="form-control" id="NOPUBLIC_API_DOCUMENTATIONTextarea"
+                                  rows="3" placeholder={{PUBLIC_API_DOCUMENTATION}}></textarea></div>
+    <div class="item"></div>
+    {% endif %}
+
+    <div class="fixed-bottom">
+    <div class="footer-block">
+        <div class="footer-icon">
+            <i class="fas fa-exclamation-circle fa-2x"></i>
+        </div>
+        <div>
+      <h5 class="footer-text">Getting started & Examples</h5>
+        <p class="footer-text" >Get started, Manual, Examples</p>
+            </div>
+    </div>
+    <div class="footer-block">
+        <div class="footer-icon">
+        <i class="fas fa-search fa-2x"></i>
+        </div>
+        <div>
+      <h5 class="footer-text">API Documentation</h5>
+        <p class="footer-text">Check out all existing endpoints</p>
+            </div>
+    </div>
+    <div class="footer-block">
+        <div class="footer-icon">
+        <i class="fas fa-user-alt fa-2x"></i>
+            </div>
+        <div>
+      <h5 class="footer-text">Community Chat</h5>
+        <p class="footer-text">Get support if you have questions</p>
+            </div>
+    </div>
+</div>
+</div>
+    </div>
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
@@ -71,4 +101,3 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 </body>
-</html>
