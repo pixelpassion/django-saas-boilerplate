@@ -24,6 +24,9 @@
 .exclamation{
   color: red;
 }
+.check-mark{
+  color: green;
+}
 .footer-block {
   display: flex;align-items: center;
 }
