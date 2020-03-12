@@ -14,9 +14,12 @@ def test_welcome_view_get_context_data(settings):
         assert name not in context
 
 
-def test_welcome_page_view_integration_test(client):
+def test_welcome_page_view_integration_test(client, settings):
     """Assert that anonymous client can access WelcomePageView and that
     welcome.html used as a template"""
+    settings.STATICFILES_STORAGE = (
+        "django.contrib.staticfiles.storage.StaticFilesStorage"
+    )
     response = client.get("")
     assert response.status_code == 200
     assert "welcome.html" in (t.name for t in response.templates)
