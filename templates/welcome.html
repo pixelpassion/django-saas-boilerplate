@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Django-saas-boilerplate</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'welcome/style.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/cd29786464.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<h1 class="d-inline" style="margin-left: 5%">django-saas-boilerplate </h1>   <h4 class="d-inline">is up and running</h4>
+
+
+<div style="margin-top: 10%">
+<div class="container">
+  <div class="item" style="text-align:right">App Title</div>
+    {% if not APP_NAME %}
+      <div class="item"><textarea class="form-control" id="NOAppTitleTextArea" rows="3"
+      placeholder="Please set up APP_NAME - it is used as title in emails etc"></textarea></div>
+  <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
+    {% else %}
+    <div class="item"><textarea class="form-control" id="AppTitleTextArea"
+                                 placeholder="APP_NAME is set" rows="3"></textarea></div>
+    <div class="item check-mark"><i class="fas fa-check-square fa-2x"></i></div>
+    {% endif %}
+
+</div>
+<div class="container">
+  <div class="item" style="text-align:right">API URL</div>
+    {% if not API_URL %}
+  <div class="item"><textarea class="form-control" id="API_URLTextarea"
+                              placeholder="Please set up API_URL" rows="3"></textarea></div>
+  <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
+    {% else %}
+    <div class="item"><textarea class="form-control" id="NOAPI_URLTextarea"
+                                 placeholder="API_URL is set" rows="3"></textarea></div>
+    <div class="item check-mark"><i class="fas fa-check-square fa-2x"></i></div>
+    {% endif %}
+</div>
+<div class="container">
+  <div class="item" style="text-align:right">Sentry</div>
+    {% if not SENTRY_DSN %}
+  <div class="item"><textarea class="form-control" id="SENTRY_DSNTextarea" rows="3"
+  placeholder="Please set SENTRY_DSN - it is used for error monitoring"></textarea></div>
+  <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
+    {% else %}
+          <div class="item"><textarea class="form-control" id="NOSENTRY_DSNTextarea"
+                                  rows="3" placeholder="SENTRY_DSN is set"></textarea></div>
+    <div class="item check-mark"><i class="fas fa-check-square fa-2x"></i></div>
+    {% endif %}
+</div>
+<div class="container">
+  <div class="item" style="text-align:right">Public API Documentation</div>
+    {% if not PUBLIC_API_DOCUMENTATION %}
+    <div class="item"><textarea class="form-control" id="PUBLIC_API_DOCUMENTATIONTextarea" rows="3"
+                                placeholder="You should probably set PUBLIC_API_DOCUMENTATION=False in most cases"></textarea></div>
+  <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
+    {% else %}
+      <div class="item"><textarea class="form-control" id="NOPUBLIC_API_DOCUMENTATIONTextarea"
+                                  rows="3" placeholder="PUBLIC_API_DOCUMENTATION is set"></textarea></div>
+    <div class="item check-mark"><i class="fas fa-check-square fa-2x"></i></div>
+    {% endif %}
+
+    <div class="fixed-bottom">
+    <div class="footer-block">
+        <div class="footer-icon">
+            <i class="fas fa-exclamation-circle fa-2x"></i>
+        </div>
+        <div>
+      <a href="django-saas-boilerplate.com/docs/"><h5 class="footer-text">Getting started & Examples</h5></a>
+        <p class="footer-text" >Get started, Manual, Examples</p>
+            </div>
+    </div>
+    <div class="footer-block">
+        <div class="footer-icon">
+        <i class="fas fa-search fa-2x"></i>
+        </div>
+        <div>
+      <h5 class="footer-text">API Documentation</h5>
+        <p class="footer-text">Check out all existing endpoints</p>
+            </div>
+    </div>
+    <div class="footer-block">
+        <div class="footer-icon">
+        <i class="fas fa-user-alt fa-2x"></i>
+            </div>
+        <div>
+      <a href="slack-invite.getautomagically.io/"><h5 class="footer-text">Community Chat</h5></a>
+        <p class="footer-text">Get support if you have questions</p>
+            </div>
+    </div>
+</div>
+</div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>

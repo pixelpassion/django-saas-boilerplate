@@ -1,0 +1,38 @@
+.fixed-bottom {
+  position: fixed;
+  bottom: 0px;
+  padding: 17px 0 18px 0;
+  text-align: center;
+  width: 100%;
+  bottom: 0px;
+  display: flex;
+  justify-content: space-evenly;
+  background-color:#bec9d3;
+}
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.item {
+  flex: 0 32%;
+  height: 100px;
+  margin-bottom: 2%; /* (100-32*3)/2 */
+}
+
+.exclamation{
+  color: red;
+}
+.check-mark{
+  color: green;
+}
+.footer-block {
+  display: flex;align-items: center;
+}
+.footer-icon {
+  margin: 10px; padding: 10px; margin-bottom: 8%
+ }
+.footer-text {
+  text-align: left;
+}
