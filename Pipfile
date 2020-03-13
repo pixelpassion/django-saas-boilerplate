@@ -20,7 +20,7 @@ saasy = "*"
 django-rest-auth = "*"
 djangorestframework-simplejwt = "*"
 django-trench = "*"
-django-rest-swagger = "*"
+drf-yasg="*"
 
 [dev-packages]
 django-werkzeug = "*"

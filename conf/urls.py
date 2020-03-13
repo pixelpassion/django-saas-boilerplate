@@ -2,11 +2,21 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path, re_path
 
-from rest_framework_swagger.views import get_swagger_view
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
 
 from apps.core.views import WelcomePageView
 
-schema_view = get_swagger_view(title="Django-saas-boilerplate API")
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Django-saas-boilerplate API",
+        default_version="v0",
+        description="Django-saas-boilerplate API",
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
 
 
 urlpatterns = (
@@ -17,4 +27,8 @@ urlpatterns = (
 )
 
 if settings.PUBLIC_API_DOCUMENTATION:
-    urlpatterns += (path("api/docs/", schema_view, name="docs"),)
+    urlpatterns += (
+        re_path(
+            r"^docs/$", schema_view.with_ui("swagger", cache_timeout=0), name="docs"
+        ),
+    )

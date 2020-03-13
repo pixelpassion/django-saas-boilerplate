@@ -156,7 +156,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_extensions",
     "rest_framework",
-    "rest_framework_swagger",
+    "drf_yasg",
     "trench",
     "rest_auth",
     "django_rq",
