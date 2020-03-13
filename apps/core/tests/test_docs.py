@@ -6,7 +6,7 @@ from django.urls import clear_url_caches
 import pytest
 
 pytestmark = pytest.mark.django_db
-DOCS_URL = "/api/docs/"
+DOCS_URL = "/docs/"
 
 
 @pytest.fixture
@@ -35,6 +35,10 @@ def reloaded_urlconfs(all_urlconfs):
 
 def test_docs_view_env_true(client, settings, reloaded_urlconfs):
     """Test docs view when PUBLIC_API_DOCUMENTATION is True."""
+    settings.STATICFILES_STORAGE = (
+        "django.contrib.staticfiles.storage.StaticFilesStorage"
+    )
+    # added because swagger need statifiles to show web page
     settings.PUBLIC_API_DOCUMENTATION = True
     reloaded_urlconfs()
     response = client.get(DOCS_URL)
