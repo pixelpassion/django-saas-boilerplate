@@ -156,6 +156,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_extensions",
     "rest_framework",
+    "drf_yasg",
     "trench",
     "rest_auth",
     "django_rq",
@@ -485,6 +486,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 #                                                                                      #
 ########################################################################################
 
+PUBLIC_API_DOCUMENTATION = env.bool("PUBLIC_API_DOCUMENTATION", default=False)
 SAASY_API_KEY = env.str("SAASY_API_KEY", default=None)
 if SAASY_API_KEY:
     EMAIL_BACKEND = "apps.core.custom_email_backend.CustomEmailBackend"
