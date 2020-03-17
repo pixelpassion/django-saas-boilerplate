@@ -10,7 +10,7 @@ def test_welcome_view_get_context_data(settings):
     view = WelcomePageView()
     context = view.get_context_data()
     assert "APP_NAME" in context
-    for name in ["API_URL", "SENTRY_DSN", "PUBLIC_API_DOCUMENTATION"]:
+    for name in ["API_URL", "SENTRY_DSN", "PUBLIC_API_DOCUMENTATION", "DEBUG"]:
         assert name not in context
 
 
