@@ -2,7 +2,7 @@
 
 # `🥜 django-saas-boilerplate`
 
-A boilerplate to get started with Django, django-rest-framework on Heroku. It is great to start a API-first SaaS-application. 
+A boilerplate to get started with Django, django-rest-framework on Heroku. It is great to start a API-first SaaS-application.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/pixelpassion/django-rest-boilerplate)
 
@@ -21,26 +21,26 @@ A boilerplate to get started with Django, django-rest-framework on Heroku. It is
 * Build in support for [Sentry](https://sentry.io) Error monitoring
 * Continuous integration with [CircleCI](https://circleci.com)
 * Deployment for Heroku with [Procfile](https://devcenter.heroku.com/articles/procfile), [app.json](https://devcenter.heroku.com/articles/app-json-schema), [Whitenoise](https://devcenter.heroku.com/articles/django-assets) and [Foreman](https://devcenter.heroku.com/articles/heroku-local#run-your-app-locally-using-foreman)
-* Docker files of [Postgres](https://www.postgresql.org) and [Redis](https://redis.io) for easier local development 
+* Docker files of [Postgres](https://www.postgresql.org) and [Redis](https://redis.io) for easier local development
 * Support of [Docker deployments on Heroku](https://devcenter.heroku.com/categories/deploying-with-docker)
 * Code formatting done with [Black](https://www.mattlayman.com/blog/2018/python-code-black/)
 * [Werkzeug](https://github.com/joeyespo/django-werkzeug), [iPython](https://ipython.org/install.html), [django-extensions](https://github.com/django-extensions/django-extensions), [django-debug-toolbar](https://github.com/jazzband/django-debug-toolbar) and [ipdb](https://pypi.org/project/ipdb/) installed for local debugging
 * [Pipenv](https://github.com/pypa/pipenv) integrated with the required packages
 * [Django Admin](https://docs.djangoproject.com/en/2.2/ref/contrib/admin/) with some links & optimizations
-* Helpful [Github templates](https://help.github.com/en/articles/about-issue-and-pull-request-templates) for issue creation and pull requests 
+* Helpful [Github templates](https://help.github.com/en/articles/about-issue-and-pull-request-templates) for issue creation and pull requests
 
 ### Layout
 
 ```
 django-rest-boilerplate
 ├── .circleci                           // CircleCI configuration
-|   ├── config.yml                      
-├── .github                             
-|   ├── ISSUE_TEMPLATE                  
+|   ├── config.yml  
+├── .github  
+|   ├── ISSUE_TEMPLATE  
 |   |   ├── bug---problem.md            // A Github template for reporting bugs
 |   |   └── feature_request.md          // A Github template for posting new features
 |   ├── PULL_REQUEST_TEMPLATE.md        // A Github template layout for Pull requests
-├── apps                                
+├── apps  
 |   ├── core                            // Django core app
 |   ├── users                           // Django Users app
 ├── conf                                // Django configuration folder
@@ -55,24 +55,24 @@ django-rest-boilerplate
 |   ├── Docker                          // Docker container
 |   |   ├── postgres                    // Postgres Docker
 |   |   ├── redis                       // Redis Docker
-├── .coveragerc                         
-├── .env.example                        // Copy to .env for local development                  
-├── .gitignore                          // Default .gitignore                         
-├── .pre-commit-config.yaml                         
-├── .prospector.yaml                         
-├── LICENSE                         
-├── Pipfile                             // Pipenv file                      
-├── Pipfile.lock                        // Pipenv lock file                         
-├── Procfile                            // Declaration of Heroku processes                       
-├── README.md                         
-├── app.json                            // For automated Heroku deployment                         
-├── conftest.py                         
-├── docker-compose.yml                  // Docker handling for local development                        
-├── manage.py                         
-├── pytest.ini                         
-├── runtime.txt                         // Python version for Heroku deployment                         
-├── setup.cfg                         
-├── tasks.py                                             
+├── .coveragerc  
+├── .env.example                        // Copy to .env for local development  
+├── .gitignore                          // Default .gitignore  
+├── .pre-commit-config.yaml  
+├── .prospector.yaml  
+├── LICENSE  
+├── Pipfile                             // Pipenv file  
+├── Pipfile.lock                        // Pipenv lock file  
+├── Procfile                            // Declaration of Heroku processes  
+├── README.md  
+├── app.json                            // For automated Heroku deployment  
+├── conftest.py  
+├── docker-compose.yml                  // Docker handling for local development  
+├── manage.py  
+├── pytest.ini  
+├── runtime.txt                         // Python version for Heroku deployment  
+├── setup.cfg  
+├── tasks.py  
 ```
 
 ## Documentation
@@ -85,26 +85,28 @@ Download & install the Docker Community edition
 * https://www.docker.com/community-edition
 
 Run the following commands, it will build & start the needed containers (Django, Worker, Postgres DB, Redis, Mailhog):
-
-```bash
-pipenv install --dev
-inv db
-inv migrate
-inv create-admin
-inv runserver
-```
-
-
 ```
 pipenv install --dev
 docker-compose up -d
+./manage.py migrate
+./manage.py runserver
 ```
 
 Open your browser and go to http://localhost:8000/
 
 ## Deployment
+You can deploy project to Heroku using `Deploy` button or Heroku instructions
+https://devcenter.heroku.com/categories/working-with-django
 
+## Environment variables required to deploy project
+| Name                  | What is it?                    |       Default        |
+| --------------------- | ------------------------------ | ---------------------|
+| DATABASE_URL       | Database's url          |  postgresql://${DB_USER}:${DB_PASSWORD}@localhost:${DOCKER_POSTGRES_PORT}/postgres for local, Heroku sets it automatically
+| REDIS_URL       | Redis's url          |  redis://redis:${DOCKER_REDIS_PORT} for local, Heroku sets it automatically
+| ENV       | App's environment         |  
+|SECRET_KEY|Secret key that django requires for security| Heroku sets it automatically
 
+All other envs you can find in env.example
 ## Install & Run Locally
 
 This project contains docker integration. You can run it with `pipenv run go-docker`.
