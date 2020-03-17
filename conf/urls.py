@@ -26,7 +26,7 @@ urlpatterns = (
     path("", WelcomePageView.as_view()),
 )
 
-if settings.PUBLIC_API_DOCUMENTATION:
+if settings.PUBLIC_API_DOCUMENTATION or settings.DEBUG:
     urlpatterns += (
         re_path(
             r"^docs/$", schema_view.with_ui("swagger", cache_timeout=0), name="docs"

@@ -78,8 +78,13 @@
         <i class="fas fa-search fa-2x"></i>
         </div>
         <div>
-      <h5 class="footer-text">API Documentation</h5>
+        {% if PUBLIC_API_DOCUMENTATION or DEBUG %}
+      <a href="{% url 'docs' %}"><h5 class="footer-text">API Documentation</h5></a>
         <p class="footer-text">Check out all existing endpoints</p>
+            {% else %}
+             <h5 class="footer-text">API Documentation</h5>
+        <p class="footer-text">Check out all existing endpoints</p>
+            {% endif %}
             </div>
     </div>
     <div class="footer-block">
