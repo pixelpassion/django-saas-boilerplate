@@ -33,13 +33,27 @@ def reloaded_urlconfs(all_urlconfs):
     return _reloaded_urlconfs
 
 
-def test_docs_view_env_true(client, settings, reloaded_urlconfs):
+def test_docs_view_public_api_doc_true(client, settings, reloaded_urlconfs):
     """Test docs view when PUBLIC_API_DOCUMENTATION is True."""
     settings.STATICFILES_STORAGE = (
         "django.contrib.staticfiles.storage.StaticFilesStorage"
     )
     # added because swagger need statifiles to show web page
     settings.PUBLIC_API_DOCUMENTATION = True
+    settings.DEBUG = False
+    reloaded_urlconfs()
+    response = client.get(DOCS_URL)
+    assert response.status_code == 200
+
+
+def test_docs_view_debug_true(client, settings, reloaded_urlconfs):
+    """Test docs view when DEBUG is True."""
+    settings.STATICFILES_STORAGE = (
+        "django.contrib.staticfiles.storage.StaticFilesStorage"
+    )
+    # added because swagger need statifiles to show web page
+    settings.DEBUG = True
+    settings.PUBLIC_API_DOCUMENTATION = False
     reloaded_urlconfs()
     response = client.get(DOCS_URL)
     assert response.status_code == 200
@@ -48,6 +62,7 @@ def test_docs_view_env_true(client, settings, reloaded_urlconfs):
 def test_docs_view_env_false(client, settings, reloaded_urlconfs):
     """Test docs view when PUBLIC_API_DOCUMENTATION is False."""
     settings.PUBLIC_API_DOCUMENTATION = False
+    settings.DEBUG = False
     reloaded_urlconfs()
     response = client.get(DOCS_URL)
     assert response.status_code == 404

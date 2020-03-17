@@ -13,6 +13,7 @@ class WelcomePageView(TemplateView):
             "API_URL",
             "SENTRY_DSN",
             "PUBLIC_API_DOCUMENTATION",
+            "DEBUG",
         ]:
             variable = getattr(settings, var_name, None)
             if variable:
