@@ -14,55 +14,55 @@
 
 
 <div style="margin-top: 10%">
+{% if not APP_NAME %}
 <div class="container">
   <div class="item" style="text-align:right">App Title</div>
-    {% if not APP_NAME %}
       <div class="item"><textarea class="form-control" id="NOAppTitleTextArea" rows="3"
       placeholder="Please set up APP_NAME - it is used as title in emails etc"></textarea></div>
   <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
-    {% else %}
-    <div class="item"><textarea class="form-control" id="AppTitleTextArea"
-                                 placeholder="APP_NAME is set" rows="3"></textarea></div>
-    <div class="item check-mark"><i class="fas fa-check-square fa-2x"></i></div>
-    {% endif %}
 
 </div>
+{% endif %}
+{% if not API_URL %}
 <div class="container">
   <div class="item" style="text-align:right">API URL</div>
-    {% if not API_URL %}
+
   <div class="item"><textarea class="form-control" id="API_URLTextarea"
                               placeholder="Please set up API_URL" rows="3"></textarea></div>
   <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
-    {% else %}
-    <div class="item"><textarea class="form-control" id="NOAPI_URLTextarea"
-                                 placeholder="API_URL is set" rows="3"></textarea></div>
-    <div class="item check-mark"><i class="fas fa-check-square fa-2x"></i></div>
-    {% endif %}
+
 </div>
+{% endif %}
+    {% if not SENTRY_DSN %}
 <div class="container">
   <div class="item" style="text-align:right">Sentry</div>
-    {% if not SENTRY_DSN %}
+
   <div class="item"><textarea class="form-control" id="SENTRY_DSNTextarea" rows="3"
   placeholder="Please set SENTRY_DSN - it is used for error monitoring"></textarea></div>
   <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
-    {% else %}
-          <div class="item"><textarea class="form-control" id="NOSENTRY_DSNTextarea"
-                                  rows="3" placeholder="SENTRY_DSN is set"></textarea></div>
-    <div class="item check-mark"><i class="fas fa-check-square fa-2x"></i></div>
-    {% endif %}
+
 </div>
+    {% endif %}
+    {% if PUBLIC_API_DOCUMENTATION %}
 <div class="container">
   <div class="item" style="text-align:right">Public API Documentation</div>
-    {% if not PUBLIC_API_DOCUMENTATION %}
-    <div class="item"><textarea class="form-control" id="PUBLIC_API_DOCUMENTATIONTextarea" rows="3"
-                                placeholder="You should probably set PUBLIC_API_DOCUMENTATION=False in most cases"></textarea></div>
-  <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
-    {% else %}
-      <div class="item"><textarea class="form-control" id="NOPUBLIC_API_DOCUMENTATIONTextarea"
-                                  rows="3" placeholder="PUBLIC_API_DOCUMENTATION is set"></textarea></div>
-    <div class="item check-mark"><i class="fas fa-check-square fa-2x"></i></div>
-    {% endif %}
 
+    <div class="item"><textarea class="form-control" id="PUBLIC_API_DOCUMENTATIONTextarea" rows="3"
+                                placeholder="PUBLIC_API_DOCUMENTATION is set True. It might be a security warning"></textarea></div>
+  <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
+
+</div>
+     {% endif %}
+        {% if DEBUG %}
+<div class="container">
+  <div class="item" style="text-align:right">DEBUG</div>
+
+    <div class="item"><textarea class="form-control" id="DebugTextarea" rows="3"
+                                placeholder="DEBUG=True should never be used"></textarea></div>
+  <div class="item exclamation"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
+
+</div>
+     {% endif %}
     <div class="fixed-bottom">
     <div class="footer-block">
         <div class="footer-icon">
