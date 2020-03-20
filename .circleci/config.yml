@@ -76,7 +76,7 @@ jobs:
             poetry run codecov-report
 
       - save_cache:
-          key: v1-dependencies-{{ checksum "Pipfile.lock" }}
+          key: v1-dependencies-{{ checksum "poetry.lock" }}
           paths:
             - ~/.local
             - ~/.cache
