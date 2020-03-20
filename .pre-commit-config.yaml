@@ -26,19 +26,20 @@ repos:
   hooks:
   - id: isort
     name: isort-local
-    entry : pipenv run isort
+    entry : poetry run isort
     language: python
     types: [python]
     pass_filenames: true
   - id: missing-migrations
     name: missing-migrations-local
-    entry: pipenv run ./manage.py makemigrations --check
+    entry: poetry run ./manage.py makemigrations --check
     language: system
     always_run: true
     pass_filenames: false
   - id: prospector
     name: prospector-local
-    entry: pipenv run prospector --messages-only --
+    entry: poetry run prospector --messages-only --
     language: python
     types: [python]
     pass_filenames: true
+
