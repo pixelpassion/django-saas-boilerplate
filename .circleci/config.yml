@@ -72,8 +72,8 @@ jobs:
           name: Run tests and create a Report
           command: |
             mkdir test-reports
-            poetry run create-coverage
-            poetry run codecov-report
+            coverage run -m py.test
+            coverage xml
 
       - save_cache:
           key: v1-dependencies-{{ checksum "poetry.lock" }}
