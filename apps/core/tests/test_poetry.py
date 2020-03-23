@@ -6,7 +6,8 @@ import pytest
 
 @pytest.fixture
 def remove_tempdir(request):
-    """ This fixture remove temporary directory created for the media root
+    """ This fixture remove temporary temprequirements.txt created for the
+        test_requirements_circleci test.
     """
 
     def fin():
