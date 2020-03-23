@@ -52,7 +52,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "Pipfile.lock" }}
+            - v1-dependencies-{{ checksum "poetry.lock" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
@@ -72,8 +72,8 @@ jobs:
           name: Run tests and create a Report
           command: |
             mkdir test-reports
-            coverage run -m py.test
-            coverage xml
+            poetry run create-coverage
+            poetry run codecov-report
 
       - save_cache:
           key: v1-dependencies-{{ checksum "poetry.lock" }}
