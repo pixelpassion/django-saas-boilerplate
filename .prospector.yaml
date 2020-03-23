@@ -42,3 +42,4 @@ ignore-paths:
   - scripts
   - .env
   - .venv
+  - requirements.txt

@@ -52,31 +52,31 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "Pipfile.lock" }}
+            - v1-dependencies-{{ checksum "poetry.lock" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
       - run:
-          name: Install requirements from Pipenv
+          name: Install requirements from Poetry
           command: |
-            pipenv install --deploy --dev
-            pipenv check --deploy --dev
-            pipenv graph
+            poetry install
+            poetry check
+            poetry show
 
       - run:
           name: Test for missing or conflicting migrations
           command: |
-            pipenv run python manage.py makemigrations --check
+            poetry run python manage.py makemigrations --check
 
       - run:
           name: Run tests and create a Report
           command: |
             mkdir test-reports
-            pipenv run create-coverage
-            pipenv run codecov-report
+            poetry run create-coverage
+            poetry run codecov-report
 
       - save_cache:
-          key: v1-dependencies-{{ checksum "Pipfile.lock" }}
+          key: v1-dependencies-{{ checksum "poetry.lock" }}
           paths:
             - ~/.local
             - ~/.cache
