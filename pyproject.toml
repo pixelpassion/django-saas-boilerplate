@@ -60,6 +60,7 @@ go-docker = "scripts.poetry_scripts:go_docker"
 create-coverage = "scripts.poetry_scripts:coverage_report"
 check-coverage = "scripts.poetry_scripts:check_coverage"
 codecov-report = "scripts.poetry_scripts:coverage_xml"
+generate-requirements = "scripts.poetry_scripts:generate_requirements"
 
 [build-system]
 requires = ["poetry>=0.12"]
