@@ -38,7 +38,7 @@ jobs:
             DOCKERIZE_VERSION: v0.3.0
 
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
 
       - run:
           name: Wait for Postgres database to be up
