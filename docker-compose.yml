@@ -15,12 +15,12 @@ services:
     environment:
       POSTGRES_USER: ${PROJECT_NAME}
       POSTGRES_DB: ${PROJECT_NAME}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     command: -c fsync=off -c synchronous_commit=off -c full_page_writes=off
     networks:
       - default
     ports:
-      - "${DOCKER_POSTGRES_PORT}:5432"
+      - "5432:5432"
 
   redis:
     restart: on-failure
@@ -33,7 +33,69 @@ services:
     networks:
       - default
     ports:
-      - "${DOCKER_REDIS_PORT}:6379"
+      - "6379:6379"
+
+  backend:
+    image: ${PROJECT_NAME}_backend
+    container_name: ${PROJECT_NAME}_backend
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    restart: on-failure
+    ports:
+      - "8000:8000"
+    working_dir: /app
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://${PROJECT_NAME}:${DB_PASSWORD}@postgres:5432/${PROJECT_NAME}
+      - ALLOWED_HOSTS=*
+      - SECRET_KEY=notsafeforproduction
+      - CORS_ORIGIN_ALLOW_ALL=True
+      - RQ_HOST=redis
+      - RQ_PORT=${DOCKER_REDIS_PORT}
+      - DJANGO_SETTINGS_MODULE=conf.settings
+      - PORT=${PORT}
+      - HOSTNAME=${HOSTNAME}
+    volumes:
+      - .:/app
+    networks:
+      - default
+    stdin_open: true
+    tty: true
+    depends_on:
+      - postgres
+      - redis
+      - rqworkers
+
+  rqworkers:
+    image: ${PROJECT_NAME}_rqworkers
+    container_name: ${PROJECT_NAME}_rqworkers
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: always
+    working_dir: /app
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://${PROJECT_NAME}:${DB_PASSWORD}@postgres:5432/${PROJECT_NAME}
+      - ALLOWED_HOSTS=*
+      - SECRET_KEY=notsafeforproduction
+      - CORS_ORIGIN_ALLOW_ALL=True
+      - RQ_HOST=redis
+      - RQ_PORT=${DOCKER_REDIS_PORT}
+      - DJANGO_SETTINGS_MODULE=conf.settings
+      - PORT=${PORT}
+      - HOSTNAME=${HOSTNAME}
+    volumes:
+      - .:/app
+    networks:
+      - default
+    command: /bin/bash -c "python manage.py rqworker default"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - postgres
+      - redis
 
 networks:
   default:
